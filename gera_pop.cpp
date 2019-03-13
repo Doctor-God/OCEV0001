@@ -1,5 +1,6 @@
 #include <bits/stdc++.h>
-#include <boost/variant.hpp>
+#include <variant>
+// #include <boost/variant.hpp>
 
 using namespace std;
 
@@ -16,19 +17,19 @@ mt19937 gen(rd());
 
 int getRandInt(int a, int b);
 double getRandDouble(double a, double b);
+void shuffle(vvi &v);
 
-void print_matrix(boost::variant<vvb, vvi, vvd> &matrix, int tipo);
+void print_matrix(variant<vvb, vvi, vvd> &matrix, int tipo);
 template<typename T>
-void print_matrix(boost::variant<vvb, vvi, vvd> &matrix);
+void print_matrix(variant<vvb, vvi, vvd> &matrix);
 
-boost::variant<vvb, vvi, vvd> gera_populacao(int size, int n_vars, int tipo, boost::variant<int, double> upper, boost::variant<int, double> lower);
-// boost::variant<vvb, vvi> gera_populacao(int size, int n_vars, int tipo);
+variant<vvb, vvi, vvd> gera_populacao(int size, int n_vars, int tipo, variant<int, double> upper, variant<int, double> lower);
 // void delete_pop
 
 
 int main(int argc, char const *argv[]){
-	
-	//pop_size n_vars tipo_cod 
+
+	//pop_size n_vars tipo_cod
 	if(argc < 4){
 		cout << "./a.out pop_size n_vars tipo_cod [lim_inferior] [lim_superior]" << endl;
 		exit(1);
@@ -37,7 +38,7 @@ int main(int argc, char const *argv[]){
 	int size, n_vars, tipo;
 
 	tipo = stoi(argv[3]); //bin = 0   int = 1   int_permut = 2    real = 3
-	
+
 	if((tipo == 0 or tipo == 2) and argc > 4){
 		cout << "Codificações Binária ou Inteira Permutada não necessitam de limites inferior e superior." << endl;
 		exit(1);
@@ -46,8 +47,8 @@ int main(int argc, char const *argv[]){
 		cout << "Codificações Inteira e Real necessitam de limites inferior e superior." << endl;
 		exit(1);
 	}
-	
-	boost::variant<int, double> upper = 0, lower = 0;
+
+	variant<int, double> upper = 0, lower = 0;
 	if(tipo == 1 or tipo == 3){
 		if(tipo == 1){
 			lower = stoi(argv[4]);
@@ -62,11 +63,11 @@ int main(int argc, char const *argv[]){
 	size = stoi(argv[1]);
 	n_vars = stoi(argv[2]);
 
-	boost::variant<vvb, vvi, vvd> populacao;
+	variant<vvb, vvi, vvd> populacao;
 	populacao = gera_populacao(size, n_vars, tipo, upper, lower);
 
 	print_matrix(populacao, tipo);
-	
+
 
 	return 0;
 }
@@ -81,7 +82,16 @@ double getRandDouble(double a, double b){
 	return dis(gen);
 }
 
-void print_matrix(boost::variant<vvb, vvi, vvd> &matrix, int tipo){
+void shuffle(vector<int> &v){
+	int size = v.size();
+	for(int i = 0; i < size-1; i++){
+		int j = getRandInt(i, size-1);
+		swap(v[i], v[j]);
+	}
+}
+
+
+void print_matrix(variant<vvb, vvi, vvd> &matrix, int tipo){
 	if(tipo == 1 or tipo == 2){
 		print_matrix<vvi>(matrix);
 	}
@@ -95,10 +105,10 @@ void print_matrix(boost::variant<vvb, vvi, vvd> &matrix, int tipo){
 
 
 template<typename T>
-void print_matrix(boost::variant<vvb, vvi, vvd> &m){
+void print_matrix(variant<vvb, vvi, vvd> &m){
 	cout << fixed;
     cout << setprecision(4);
-	T matrix = boost::get<T>(m);
+	T matrix = get<T>(m);
 	int rows = matrix.size();
 	int cols = matrix[0].size();
 	for(int i = 0; i <rows; i++){
@@ -111,7 +121,7 @@ void print_matrix(boost::variant<vvb, vvi, vvd> &m){
 }
 
 
-boost::variant<vvb, vvi, vvd> gera_populacao(int size, int n_vars, int tipo, boost::variant<int, double> upper, boost::variant<int, double> lower){
+variant<vvb, vvi, vvd> gera_populacao(int size, int n_vars, int tipo, variant<int, double> upper, variant<int, double> lower){
 	if(tipo == 0){
 		vvb pop(size, vector<bool>(n_vars));
 		for(int i = 0; i < size; i++){
@@ -119,14 +129,14 @@ boost::variant<vvb, vvi, vvd> gera_populacao(int size, int n_vars, int tipo, boo
 				pop[i][j] = (bool) getRandInt(0, 1);
 			}
 		}
-		return pop;		
+		return pop;
 	}
 	else if(tipo == 1){
 		vvi pop(size, vector<int>(n_vars));
 		for(int i = 0; i < size; i++){
 			for(int j = 0; j < n_vars; j++){
-				pop[i][j] = round(getRandDouble(boost::get<int>(upper), boost::get<int>(lower))); //Segfault se usar getRandInt diretamente
-				// pop[i][j] = getRandInt(boost::get<int>(upper), boost::get<int>(lower)); //Segfault se usar getRandInt diretamente
+				pop[i][j] = round(getRandDouble(get<int>(upper), get<int>(lower))); //Segfault se usar getRandInt diretamente
+				// pop[i][j] = getRandInt(get<int>(upper), get<int>(lower)); //Segfault se usar getRandInt diretamente
 			}
 		}
 		return pop;
@@ -137,7 +147,7 @@ boost::variant<vvb, vvi, vvd> gera_populacao(int size, int n_vars, int tipo, boo
 			for(int j = 0; j < n_vars; j++){
 				pop[i][j] = j;
 			}
-			shuffle(pop[i].begin(), pop[i].end(), gen);
+			shuffle(pop[i]);
 		}
 		return pop;
 	}
@@ -145,10 +155,9 @@ boost::variant<vvb, vvi, vvd> gera_populacao(int size, int n_vars, int tipo, boo
 		vvd pop(size, vector<double>(n_vars));
 		for(int i = 0; i < size; i++){
 			for(int j = 0; j < n_vars; j++){
-				pop[i][j] = getRandDouble(boost::get<double>(upper), boost::get<double>(lower));
+				pop[i][j] = getRandDouble(get<double>(upper), get<double>(lower));
 			}
 		}
 		return pop;
 	}
 }
-
