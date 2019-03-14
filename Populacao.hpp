@@ -1,20 +1,30 @@
 #ifndef CLASSE_POPULACAO
 #define CLASSE_POPULACAO
 
-typedef vector<vector<int> > vvi;
-typedef vector<vector<bool> > vvb;
-typedef vector<vector<double> > vvd;
+#include <variant>
+#include "util.hpp"
 
 class Populacao{
 private:
-    std::variant<vvb, vvi, vvd> pop;
+    std::variant<vvb, vvi, vvd> mat;
     int indiv;
     int vars;
     int tipo;
+    std::variant<int, double> upper;
+    std::variant<int, double> lower;
+
+    template <typename T>
+    void print();
+
+
 public:
     Populacao(int size, int n_vars, int tipo, std::variant<int, double> upper, std::variant<int, double> lower);
 
-    print()
+    ~Populacao();
+
+    void gerar();
+
+    void print();
 
 };
 
