@@ -108,32 +108,3 @@ void Populacao::print(){
 	std::cout << std::endl;
 
 }
-
-// void print_matrix(variant<vvb, vvi, vvd> &matrix, int tipo){
-// 	if(tipo == 1 or tipo == 2){
-// 		print_matrix<vvi>(matrix);
-// 	}
-// 	else if(tipo == 0){
-// 		print_matrix<vvb>(matrix);
-// 	}
-// 	else if(tipo == 3){
-// 		print_matrix<vvd>(matrix);
-// 	}
-// }
-
-
-// template<typename T>
-// void print_matrix(variant<vvb, vvi, vvd> &m){
-// 	std::cout << fixed;
-//     std::cout << setprecision(4);
-// 	T matrix = get<T>(m);
-// 	int rows = matrix.size();
-// 	int cols = matrix[0].size();
-// 	for(int i = 0; i <rows; i++){
-// 		for(int j = 0; j < cols; j++){
-// 			std::cout << setw(10) << matrix[i][j];
-// 		}
-// 		std::cout << std::endl;
-// 	}
-// 	std::cout << std::endl;
-// }
