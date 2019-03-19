@@ -42,9 +42,16 @@ int main(int argc, char const *argv[]){
 	size = stoi(argv[1]);
 	n_vars = stoi(argv[2]);
 
-	Populacao *pop = new Populacao(size, n_vars, tipo, upper, lower);
-	pop->gerar();
-	pop->print();
+	Populacao *pop = FactoryPopulacao::build(size, n_vars, tipo, upper, lower);
+	if(pop){
+		pop->gerar();
+		pop->print();
+	}
+	else{
+		cout << "Erro na instaciação da população\n";
+		exit(1);
+	}
+
 
 
 	return 0;

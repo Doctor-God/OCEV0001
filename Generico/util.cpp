@@ -2,6 +2,7 @@
 
 #include <random>
 
+
 std::random_device rd{};
 std::mt19937 gen(rd());
 
@@ -22,3 +23,6 @@ void shuffle(std::vector<int> &v){
 		std::swap(v[i], v[j]);
 	}
 }
+
+
+
