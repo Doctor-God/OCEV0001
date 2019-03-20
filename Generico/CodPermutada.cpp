@@ -1,6 +1,7 @@
 #include "CodPermutada.hpp"
 
 #include "util.hpp"
+#include "Problem.hpp"
 
 #include <cmath>
 
@@ -19,4 +20,15 @@ void CodPermutada::gerar(){
 		shuffle(pop[i]);
 	}
 	mat = pop;
+}
+
+vector<double> fitness(){
+	Problem p();
+	return fitness(p.getFunc(this->problem));
+}
+
+vector<double> fitness(double (*func)(std::vector<int>)){
+
+}
+
 }

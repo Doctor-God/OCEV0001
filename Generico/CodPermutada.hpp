@@ -14,6 +14,11 @@ private:
     void gerar();
     void print();
 
+    std::vector<double> fitness();
+
+    std::vector<double> fitness(double (*func)(std::vector<int>));
+
+
 public:
 };
 
