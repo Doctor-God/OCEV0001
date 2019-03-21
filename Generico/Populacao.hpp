@@ -21,6 +21,7 @@ public:
 
     virtual void print() = 0;
 
+    // virtual std::vector<double> fitness();
     virtual std::vector<double> fitness() = 0;
 
 };

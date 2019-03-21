@@ -1,14 +1,23 @@
 #include "Problem.hpp"
 
-Problem::Problem(){
-    funcao.add["nqueens"] = nQUeens;
+Problem::Problem();
+    i_funcao.add["nqueens"] = nQUeens;
 }
 
-FnPtr getFunc(std::string nome){
-    return funcao[nome];
+b_func Problem::get_bFunc(std::string nome){
+    return b_funcao[nome];
+
+}
+
+i_func Problem::get_iFunc(std::string nome){
+    return i_funcao[nome];
+}
+
+d_func Problem::get_dFunc(std::string nome){
+    return d_funcao[nome];
 }
 
 
-double Problem::nQueens(vector<int> indiv){
+double Problem::nQueens(std::vector<int> indiv){
 
 }

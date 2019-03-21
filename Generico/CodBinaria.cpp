@@ -19,3 +19,7 @@ void CodBinaria::gerar(){
 	}
 	mat = pop;
 }
+
+std::vector<double> CodBinaria::fitness(){
+
+}

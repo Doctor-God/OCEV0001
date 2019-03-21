@@ -22,13 +22,12 @@ void CodPermutada::gerar(){
 	mat = pop;
 }
 
-vector<double> fitness(){
-	Problem p();
-	return fitness(p.getFunc(this->problem));
+std::vector<double> CodPermutada::fitness(){
+	Problem p;
+	return fitness(p.get_iFunc(this->problem));
 }
 
-vector<double> fitness(double (*func)(std::vector<int>)){
-
-}
+std::vector<double> CodPermutada::fitness(double (*func)(std::vector<int>)){
+	std::vector<double> valores(indiv);
 
 }

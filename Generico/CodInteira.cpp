@@ -21,6 +21,10 @@ void CodInteira::gerar(){
 	mat = pop;
 }
 
+std::vector<double> CodInteira::fitness(){
+
+}
+
 void CodInteira::setUpper(int u){
 	upper = u;
 }

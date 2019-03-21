@@ -21,7 +21,7 @@ Populacao *FactoryPopulacao::build(int size, int n_vars, int tipo, std::string p
 		pop = new CodInteira();
 		pop->indiv = size;
 		pop->vars = n_vars;
-		pop->problem = problem
+		pop->problem = problem;
 		pop->setUpper(std::get<int>(upper));
 		pop->setLower(std::get<int>(lower));
 		return pop;
@@ -30,25 +30,7 @@ Populacao *FactoryPopulacao::build(int size, int n_vars, int tipo, std::string p
 		CodPermutada *pop;
 		pop = new CodPermutada();
 		pop->indiv = size;
-		pop->vars = n_vted:
-    int indiv;
-    int vars;
-    std::string problem;
-
-    Populacao();
-    ~Populacao();
-ted:
-    int indiv;
-    int vars;
-    std::string problem;
-
-    Populacao();
-    ~Populacao();
-
-public:
-
-public:
-ars;
+		pop->vars = n_vars;
 		pop->problem = problem;
 		return pop;
 	}

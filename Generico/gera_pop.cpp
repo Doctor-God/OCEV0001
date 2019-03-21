@@ -7,14 +7,14 @@ using namespace std;
 
 
 int main(int argc, char const *argv[]){
-
+	int size, n_vars, tipo;
+	string problem;
 	//pop_size n_vars tipo_cod
 	if(argc < 5){
 		cout << "./a.out pop_size n_vars tipo_cod problem [lim_inferior] [lim_superior]" << endl;
 		exit(1);
 	}
 
-	int size, n_vars, tipo;
 
 	tipo = stoi(argv[3]); //bin = 0   int = 1   int_permut = 2    real = 3
 

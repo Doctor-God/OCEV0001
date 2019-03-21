@@ -19,6 +19,10 @@ void CodReal::gerar(){
 	mat = pop;
 }
 
+std::vector<double> CodReal::fitness(){
+
+}
+
 void CodReal::setUpper(double u){
 	upper = u;
 }
