@@ -20,6 +20,15 @@ void CodBinaria::gerar(){
 	mat = pop;
 }
 
-std::vector<double> CodBinaria::fitness(){
 
+//Chamada de fora
+std::vector<double> CodBinaria::fitness(){
+	Problem<bool> prob;
+	return fitness(prob.getFuncao(this->problem));
+}
+
+
+//Execução interna
+std::vector<double> CodBinaria::fitness(std::function<std::vector<double>(vvb) > avalia){
+	return avalia(mat);
 }

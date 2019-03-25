@@ -1,7 +1,6 @@
 #include "CodPermutada.hpp"
 
 #include "util.hpp"
-#include "Problem.hpp"
 
 #include <cmath>
 
@@ -22,12 +21,22 @@ void CodPermutada::gerar(){
 	mat = pop;
 }
 
+//Chamada de fora
 std::vector<double> CodPermutada::fitness(){
-	Problem p;
-	return fitness(p.get_iFunc(this->problem));
+	Problem<int> prob;
+	return fitness(prob.getFuncao(this->problem));
 }
 
-std::vector<double> CodPermutada::fitness(double (*func)(std::vector<int>)){
-	std::vector<double> valores(indiv);
+
+//Execução interna
+std::vector<double> CodPermutada::fitness(std::function<std::vector<double>(vvi) > avalia){
+	// std::vector<double> valores(indiv);
+	
+	// for(int i = 0; i < indiv; i++){
+	// 	std::vector<int> atual = mat[i]; //Copia o vetor do indiv atual, acho (talvez seja mais interessante utilizar um ponteiro)
+	// 	valores[i] = avalia(atual);
+	// }
+
+	return avalia(mat);
 
 }

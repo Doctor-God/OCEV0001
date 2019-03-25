@@ -4,6 +4,8 @@
 #include <vector>
 #include <iostream>
 #include <iomanip>
+#include <numeric>
+#include <algorithm>
 
 typedef std::vector<std::vector<int> > vvi;
 typedef std::vector<std::vector<bool> > vvb;
@@ -15,6 +17,19 @@ double getRandDouble(double a, double b);
 
 void shuffle(std::vector<int> &v);
 
+template <typename T>
+std::vector<size_t> sort_indexes(const std::vector<T> &v){
+
+  // initialize original index locations
+  std::vector<size_t> idx(v.size());
+  std::iota(idx.begin(), idx.end(), 0);
+
+  // sort indexes based on comparing values in v
+  std::sort(idx.begin(), idx.end(),
+       [&v](size_t i1, size_t i2) {return v[i1] > v[i2];});
+
+  return idx;
+}
 
 template <typename T>
 void print_matrix(std::vector<std::vector<T> > matrix){

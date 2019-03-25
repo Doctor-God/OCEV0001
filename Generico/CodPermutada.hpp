@@ -2,6 +2,8 @@
 #define CLASSE_CODPERMUTADA
 
 #include "Populacao.hpp"
+#include "Problem.hpp"
+
 
 class CodPermutada : public Populacao{
 friend class FactoryPopulacao;
@@ -16,7 +18,9 @@ private:
 
     std::vector<double> fitness();
 
-    std::vector<double> fitness(double (*func)(std::vector<int>));
+    std::vector<double> fitness(std::function<std::vector<double>(vvi) > avalia);
+
+    // vector<int> bestFit();
 
 
 public:

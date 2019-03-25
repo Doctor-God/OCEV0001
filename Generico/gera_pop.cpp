@@ -46,11 +46,21 @@ int main(int argc, char const *argv[]){
 	Populacao *pop = FactoryPopulacao::build(size, n_vars, tipo, problem, upper, lower);
 	if(pop){
 		pop->gerar();
-		pop->print();
 	}
 	else{
 		cout << "Erro na instaciação da população\n";
 		exit(1);
+	}
+	cout << "Indivíduos" << endl;
+	pop->print();
+
+
+	vector<double> temp = pop->fitness();
+	vector<size_t> idx = sort_indexes(temp);
+
+	cout << "Melhores" << endl;	
+	for(auto i : idx){
+		cout << i << ": " << temp[i] << endl;
 	}
 
 

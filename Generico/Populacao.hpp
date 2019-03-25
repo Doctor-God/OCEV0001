@@ -24,6 +24,8 @@ public:
     // virtual std::vector<double> fitness();
     virtual std::vector<double> fitness() = 0;
 
+    // virtual std::vector<int> bestFit() = 0;
+
 };
 
 class FactoryPopulacao{
