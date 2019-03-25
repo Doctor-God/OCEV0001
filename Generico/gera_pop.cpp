@@ -58,7 +58,7 @@ int main(int argc, char const *argv[]){
 	vector<double> temp = pop->fitness();
 	vector<size_t> idx = sort_indexes(temp);
 
-	cout << "Melhores" << endl;	
+	cout << "Melhores" << endl;
 	for(auto i : idx){
 		cout << i << ": " << temp[i] << endl;
 	}

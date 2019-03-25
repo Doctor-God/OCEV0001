@@ -6,7 +6,7 @@
 #include <algorithm>
 #include "util.hpp"
 
- 
+
 // typedef double (*b_func)(std::vector<bool>);
 // typedef double (*i_func)(std::vector<int>);
 // typedef double (*d_func)(std::vector<double>);
@@ -18,6 +18,7 @@ private:
     std::map<std::string, std::function<std::vector<double>(std::vector<std::vector<T> >)> > funcao;
     static std::vector<double> nQueens(vvi popul);
 	static std::vector<double> slide_max(vvb popul);
+    static std::vector<double> fabrica_radios(vvb popul);
 
 
 public:

@@ -64,11 +64,49 @@ std::vector<double> Problem<bool>::slide_max(vvb popul){
 	return valores;
 }
 
+template<> inline
+std::vector<double> Problem<bool>::fabrica_radios(vvb popul){
+	std::vector<double> valores(popul.size());
+
+	double offset_st = (24.0)/std::pow(2, 5);
+	double offset_lx = (16.0)/std::pow(2, 5);
+
+	#pragma omp parallel for
+	for(int i = 0; i < popul.size(); i++){
+		unsigned long long int b_st = 0, b_lx = 0;
+		int sign = 1;
+
+		//Decodifica primeira variável (ST)
+		for(int j = 9; j >= 5; j--){
+			b_st += popul[i][j]*sign;
+			sign *= 2;
+		}
+
+		sign = 1;
+		//Decodifica segunda variável (LX)
+		for(int j = 4; j >= 0; j--){
+			b_lx += popul[i][j]*sign;
+			sign *= 2;
+		}
+
+		int st = std::round(b_st*offset_st);
+		int lx = std::round(b_lx*offset_lx);
+
+		//Restrição (st + 2lx <= 40)
+		double h = std::max(0.0, (st + 2.0*lx - 40.0)/16.0);
+
+		//Função fitness (função objetivo/valor_máximo - restrição)
+		valores[i] = (30.0*st + 40.0*lx)/1360.0 - h;
+	}
+
+	return valores;
+}
+
 
 template<> inline
 Problem<bool>::Problem(){
-    funcao.insert(std::pair<std::string, std::function<std::vector<double>(vvb)> >("slide_max", slide_max));
-
+	funcao.insert(std::pair<std::string, std::function<std::vector<double>(vvb)> >("slide_max", slide_max));
+	funcao.insert(std::pair<std::string, std::function<std::vector<double>(vvb)> >("fabrica_radios", fabrica_radios));
 }
 
 template<> inline
@@ -100,4 +138,3 @@ std::function<std::vector<double>(std::vector<std::vector<T> >)> Problem<T>::get
 // d_func Problem::get_dFunc(std::string nome){
 //     return d_funcao[nome];
 // }
-
