@@ -10,13 +10,12 @@ protected:
     int indiv;
     int vars;
     std::string problem;
+    std::string selection_method;
 
     Populacao();
     ~Populacao();
 
 public:
-
-
     virtual void gerar() = 0;
 
     virtual void print() = 0;

@@ -1,6 +1,7 @@
 #include "CodInteira.hpp"
 
 #include "util.hpp"
+#include "Problem.hpp"
 
 #include <cmath>
 
@@ -22,7 +23,13 @@ void CodInteira::gerar(){
 }
 
 std::vector<double> CodInteira::fitness(){
+	Problem<int> prob;
+	return fitness(prob.getFuncao(this->problem));
+}
 
+std::vector<vvi> selection(){
+	Selection<int> s;
+	// return s.getFuncao(this->selection_method)(popul, )
 }
 
 void CodInteira::setUpper(int u){

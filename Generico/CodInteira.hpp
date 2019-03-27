@@ -19,6 +19,8 @@ private:
 
     std::vector<double> fitness();
 
+    sted::vector<vvi> selection();
+
 public:
 
     void setUpper(int u);

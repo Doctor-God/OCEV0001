@@ -1,6 +1,7 @@
 #include "CodReal.hpp"
 
 #include "util.hpp"
+#include "Problem.hpp"
 
 CodReal::CodReal(){}
 
@@ -20,7 +21,8 @@ void CodReal::gerar(){
 }
 
 std::vector<double> CodReal::fitness(){
-
+	Problem<double> prob;
+	return fitness(prob.getFuncao(this->problem));
 }
 
 void CodReal::setUpper(double u){

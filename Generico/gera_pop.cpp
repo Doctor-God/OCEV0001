@@ -55,13 +55,13 @@ int main(int argc, char const *argv[]){
 	pop->print();
 
 
-	vector<double> temp = pop->fitness();
-	vector<size_t> idx = sort_indexes(temp);
-
-	cout << "Melhores" << endl;
-	for(auto i : idx){
-		cout << i << ": " << temp[i] << endl;
-	}
+	// vector<double> temp = pop->fitness();
+	// vector<size_t> idx = sort_indexes(temp);
+	//
+	// cout << "Melhores" << endl;
+	// for(auto i : idx){
+	// 	cout << i << ": " << temp[i] << endl;
+	// }
 
 
 
