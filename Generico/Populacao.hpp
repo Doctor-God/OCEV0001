@@ -12,6 +12,8 @@ protected:
     std::string problem;
     std::string selection_method;
 
+    std::vector<double> scores;
+
     Populacao();
     ~Populacao();
 

@@ -19,7 +19,7 @@ private:
 
     std::vector<double> fitness();
 
-    sted::vector<vvi> selection();
+    std::vector<vvi> selection();
 
 public:
 

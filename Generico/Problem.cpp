@@ -66,7 +66,7 @@ std::vector<double> Problem<bool>::slide_max(vvb popul){
 
 template<> inline
 std::vector<double> Problem<bool>::fabrica_radios(vvb popul){
-	std::vector<double> valores(popul.size());
+	std::vector<double> valores(popul.size(), 0); //Depois do tamanho da pop, tem 1.0 se o indivíduo violou alguma restrição
 
 	double offset_st = (24.0)/std::pow(2, 5);
 	double offset_lx = (16.0)/std::pow(2, 5);
@@ -94,6 +94,8 @@ std::vector<double> Problem<bool>::fabrica_radios(vvb popul){
 
 		//Restrição (st + 2lx <= 40)
 		double h = std::max(0.0, (st + 2.0*lx - 40.0)/16.0);
+		if(h !=0)
+			valores[popul.size() + i -1] = 1; // Seta que o indivíduo violou restrição
 
 		//Função fitness (função objetivo/valor_máximo - restrição)
 		valores[i] = (30.0*st + 40.0*lx)/1360.0 - h;

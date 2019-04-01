@@ -2,6 +2,7 @@
 
 #include "util.hpp"
 #include "Problem.hpp"
+#include "Selection.hpp"
 
 #include <cmath>
 
@@ -29,7 +30,7 @@ std::vector<double> CodInteira::fitness(){
 
 std::vector<vvi> selection(){
 	Selection<int> s;
-	// return s.getFuncao(this->selection_method)(popul, )
+	return s.getFuncao(this->selection_method)(popul, scores);
 }
 
 void CodInteira::setUpper(int u){
