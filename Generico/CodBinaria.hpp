@@ -2,7 +2,6 @@
 #define CLASSE_CODBINARIA
 
 #include "Populacao.hpp"
-#include "Problem.hpp"
 
 class CodBinaria : public Populacao{
 friend class FactoryPopulacao;
@@ -15,8 +14,11 @@ private:
     void gerar();
     void print();
 
-    std::vector<double> fitness();
-	std::vector<double> fitness(std::function<std::vector<double>(vvb) > avalia);
+    double GA();
+
+    Score_Restricao fitness();
+
+    vvb selection();
 
 
 public:

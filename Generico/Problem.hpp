@@ -12,34 +12,21 @@
 // typedef double (*d_func)(std::vector<double>);
 
 
+
 template <typename T>
 class Problem{
 private:
-    std::map<std::string, std::function<std::vector<double>(std::vector<std::vector<T> >)> > funcao;
-    static std::vector<double> nQueens(vvi popul);
-	static std::vector<double> slide_max(vvb popul);
-    static std::vector<double> fabrica_radios(vvb popul);
+    std::map<std::string, std::function<Score_Restricao(std::vector<std::vector<T> >)> > funcao;
+    static Score_Restricao nQueens(vvi popul);
+	static Score_Restricao slide_max(vvb popul);
+    static Score_Restricao fabrica_radios(vvb popul);
 
 
 public:
     Problem();
-    std::function<std::vector<double>(std::vector<std::vector<T> >)> getFuncao(std::string nome);
+    std::function<Score_Restricao(std::vector<std::vector<T> >)> getFuncao(std::string nome);
 };
 
 #include "Problem.cpp"
-
-// class Problem{
-// private:
-//     std::map<std::string, b_func> b_funcao;
-//     std::map<std::string, i_func> i_funcao;
-//     std::map<std::string, d_func> d_funcao;
-//     double nQueens(std::vector<double> indiv);
-
-// public:
-//     Problem();
-//     b_func get_bFunc(std::string nome);
-//     i_func get_iFunc(std::string nome);
-//     d_func get_dFunc(std::string nome);
-// };
 
 #endif

@@ -7,13 +7,14 @@
 #include "CodReal.hpp"
 
 
-Populacao *FactoryPopulacao::build(int size, int n_vars, int tipo, std::string problem, std::variant<int, double> upper, std::variant<int, double> lower){
+Populacao *FactoryPopulacao::build(int size, int n_vars, int tipo, std::string problem, std::string select, std::variant<int, double> upper, std::variant<int, double> lower){
 	if(tipo == 0){
 		CodBinaria *pop;
 		pop = new CodBinaria();
 		pop->indiv = size;
 		pop->vars = n_vars;
 		pop->problem = problem;
+		pop->selection_method = select;
 		return pop;
 	}
 	else if(tipo == 1){
@@ -22,6 +23,7 @@ Populacao *FactoryPopulacao::build(int size, int n_vars, int tipo, std::string p
 		pop->indiv = size;
 		pop->vars = n_vars;
 		pop->problem = problem;
+		pop->selection_method = select;
 		pop->setUpper(std::get<int>(upper));
 		pop->setLower(std::get<int>(lower));
 		return pop;
@@ -32,6 +34,8 @@ Populacao *FactoryPopulacao::build(int size, int n_vars, int tipo, std::string p
 		pop->indiv = size;
 		pop->vars = n_vars;
 		pop->problem = problem;
+		pop->selection_method = select;
+
 		return pop;
 	}
 	else if(tipo == 3){
@@ -40,6 +44,7 @@ Populacao *FactoryPopulacao::build(int size, int n_vars, int tipo, std::string p
 		pop->indiv = size;
 		pop->vars = n_vars;
 		pop->problem = problem;
+		pop->selection_method = select;
 		pop->setUpper(std::get<double>(upper));
 		pop->setLower(std::get<double>(lower));
 		return pop;

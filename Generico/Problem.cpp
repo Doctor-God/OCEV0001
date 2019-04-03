@@ -1,44 +1,59 @@
 #include <cmath>
 #include <iostream>
+#include <omp.h>
+
 
 //Permutação e inteiro não são diferenciado aqui, mas poderiam ser, com vontade o suficiente
 
 template<> inline
-std::vector<double> Problem<int>::nQueens(vvi popul){
+Score_Restricao Problem<int>::nQueens(vvi popul){
 	//Por enquanto vamos quantificar apenas uma colisão por rainha, mas é possivel quantificar todas elas
 	// int max_colisoes = popul.size(); //Todas as rainhas colidem-se
 	std::vector<double> valores(popul.size());
+	std::vector<bool> restricao(popul.size(), false);
 
-	#pragma omp parallel for
+
+	#pragma omp parallel for shared(valores)
 	for(int k = 0; k < popul.size(); k++){
+		std::vector<bool> colided(popul.size(), false);	
 		int colisoes = 0;
 		for(int i = 0; i < popul[k].size()-1; i++){
 			for(int j = i + 1; j < popul[k].size(); j++){
-				if(std::abs(i - j) == std::abs(popul[k][i] - popul[k][j])){
+				if(std::abs(i - j) == std::abs(popul[k][i] - popul[k][j]) and not colided[j]){
 					colisoes++;
+					colided[j] = true;
 				}
 			}
 		}
 		valores[k] = colisoes;
 	}
 
-	double mais_colisoes = *std::max_element(valores.begin(), valores.end());
+	// double mais_colisoes = *std::max_element(valores.begin(), valores.end());
+	double mais_colisoes = popul[0].size();
 
 	for(int i = 0; i < valores.size(); i++){
+		std::cout << i << "  " << valores[i] << "  " << mais_colisoes << std::endl;
 		valores[i] = 1.0 - valores[i]/mais_colisoes;
 
 	}
 
-	return valores;
+	Score_Restricao retorno;
+	retorno.scores = valores;
+	retorno.restritos = restricao;
+
+
+	return retorno;
 }
 
 template<> inline
-std::vector<double> Problem<bool>::slide_max(vvb popul){
+Score_Restricao Problem<bool>::slide_max(vvb popul){
 	std::vector<double> valores(popul.size());
+	std::vector<bool> restricao(popul.size(), false);
+
 
 	double offset = (2.0 - (-2.0))/std::pow(2, popul[0].size());
 
-	#pragma omp parallel for
+	#pragma omp parallel for shared(valores)
 	for(int i = 0; i < popul.size(); i++){
 		//Transformar o vector<bool> em um valor uint
 		unsigned long long int b = 0;
@@ -60,18 +75,25 @@ std::vector<double> Problem<bool>::slide_max(vvb popul){
 	for(int i = 0; i < popul.size(); i++){
 		valores[i] /= maior;
 	}
+	
+	Score_Restricao retorno;
+	retorno.scores = valores;
+	retorno.restritos = restricao;
 
-	return valores;
+
+	return retorno;
 }
 
 template<> inline
-std::vector<double> Problem<bool>::fabrica_radios(vvb popul){
+Score_Restricao Problem<bool>::fabrica_radios(vvb popul){
 	std::vector<double> valores(popul.size(), 0); //Depois do tamanho da pop, tem 1.0 se o indivíduo violou alguma restrição
+	std::vector<bool> restricao(popul.size(), false);
+
 
 	double offset_st = (24.0)/std::pow(2, 5);
 	double offset_lx = (16.0)/std::pow(2, 5);
 
-	#pragma omp parallel for
+	#pragma omp parallel for shared(valores, restricao)
 	for(int i = 0; i < popul.size(); i++){
 		unsigned long long int b_st = 0, b_lx = 0;
 		int sign = 1;
@@ -95,25 +117,30 @@ std::vector<double> Problem<bool>::fabrica_radios(vvb popul){
 		//Restrição (st + 2lx <= 40)
 		double h = std::max(0.0, (st + 2.0*lx - 40.0)/16.0);
 		if(h !=0)
-			valores[popul.size() + i -1] = 1; // Seta que o indivíduo violou restrição
+			restricao[i] = true; // Seta que o indivíduo violou restrição
 
 		//Função fitness (função objetivo/valor_máximo - restrição)
 		valores[i] = (30.0*st + 40.0*lx)/1360.0 - h;
 	}
 
-	return valores;
+	Score_Restricao retorno;
+	retorno.scores = valores;
+	retorno.restritos = restricao;
+
+
+	return retorno;
 }
 
 
 template<> inline
 Problem<bool>::Problem(){
-	funcao.insert(std::pair<std::string, std::function<std::vector<double>(vvb)> >("slide_max", slide_max));
-	funcao.insert(std::pair<std::string, std::function<std::vector<double>(vvb)> >("fabrica_radios", fabrica_radios));
+	funcao.insert(std::pair<std::string,std::function<Score_Restricao(vvb)> >("slide_max", slide_max));
+	funcao.insert(std::pair<std::string,std::function<Score_Restricao(vvb)> >("fabrica_radios", fabrica_radios));
 }
 
 template<> inline
 Problem<int>::Problem(){
-    funcao.insert(std::pair<std::string, std::function<std::vector<double>(vvi)> >("nqueens", nQueens));
+    funcao.insert(std::pair<std::string, std::function<Score_Restricao(vvi)> >("nqueens", nQueens));
 }
 
 template<> inline
@@ -122,7 +149,7 @@ Problem<double>::Problem(){
 }
 
 template<typename T>
-std::function<std::vector<double>(std::vector<std::vector<T> >)> Problem<T>::getFuncao(std::string nome){
+std::function<Score_Restricao(std::vector<std::vector<T> >)> Problem<T>::getFuncao(std::string nome){
     return funcao[nome];
 
 }

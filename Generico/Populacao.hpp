@@ -12,7 +12,7 @@ protected:
     std::string problem;
     std::string selection_method;
 
-    std::vector<double> scores;
+    Score_Restricao score_r;
 
     Populacao();
     ~Populacao();
@@ -23,8 +23,8 @@ public:
     virtual void print() = 0;
 
     // virtual std::vector<double> fitness();
-    virtual std::vector<double> fitness() = 0;
-
+    virtual Score_Restricao fitness() = 0;
+    virtual double GA() = 0; //Precisa pensar em um retorno genérico 
     // virtual std::vector<int> bestFit() = 0;
 
 };
@@ -33,7 +33,7 @@ class FactoryPopulacao{
 private:
     FactoryPopulacao();
 public:
-    static Populacao *build(int size, int n_vars, int tipo, std::string problem, std::variant<int, double> upper, std::variant<int, double> lower);
+    static Populacao *build(int size, int n_vars, int tipo, std::string problem, std::string select, std::variant<int, double> upper, std::variant<int, double> lower);
 };
 
 #endif

@@ -17,9 +17,11 @@ private:
     void gerar();
     void print();
 
-    std::vector<double> fitness();
+    double GA();
 
-    std::vector<vvi> selection();
+    Score_Restricao fitness();
+
+    vvi selection();
 
 public:
 

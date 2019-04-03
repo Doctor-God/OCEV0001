@@ -2,7 +2,6 @@
 #define CLASSE_CODPERMUTADA
 
 #include "Populacao.hpp"
-#include "Problem.hpp"
 
 
 class CodPermutada : public Populacao{
@@ -16,9 +15,10 @@ private:
     void gerar();
     void print();
 
-    std::vector<double> fitness();
+    double GA();
 
-    std::vector<double> fitness(std::function<std::vector<double>(vvi) > avalia);
+    Score_Restricao fitness();
+    vvi selection();
 
     // vector<int> bestFit();
 

@@ -1,6 +1,9 @@
 #include "CodBinaria.hpp"
 
 #include "util.hpp"
+#include "Problem.hpp"
+#include "Selection.hpp"
+
 
 #include <cmath>
 
@@ -20,15 +23,18 @@ void CodBinaria::gerar(){
 	mat = pop;
 }
 
+double CodBinaria::GA(){
 
-//Chamada de fora
-std::vector<double> CodBinaria::fitness(){
-	Problem<bool> prob;
-	return fitness(prob.getFuncao(this->problem));
 }
 
 
-//Execução interna
-std::vector<double> CodBinaria::fitness(std::function<std::vector<double>(vvb) > avalia){
-	return avalia(mat);
+//Chamada de fora
+Score_Restricao CodBinaria::fitness(){
+	Problem<bool> prob;
+	return prob.getFuncao(this->problem)(mat);
+}
+
+vvb CodBinaria::selection(){
+	Selection<bool> s;
+	return s.getFuncao(this->selection_method)(mat, score_r.scores);
 }

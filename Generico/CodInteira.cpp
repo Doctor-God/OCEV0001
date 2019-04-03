@@ -23,14 +23,18 @@ void CodInteira::gerar(){
 	mat = pop;
 }
 
-std::vector<double> CodInteira::fitness(){
-	Problem<int> prob;
-	return fitness(prob.getFuncao(this->problem));
+double CodInteira::GA(){
+	
 }
 
-std::vector<vvi> selection(){
+Score_Restricao CodInteira::fitness(){
+	Problem<int> prob;
+	return prob.getFuncao(this->problem)(mat);
+}
+
+vvi CodInteira::selection(){
 	Selection<int> s;
-	return s.getFuncao(this->selection_method)(popul, scores);
+	return s.getFuncao(this->selection_method)(mat, score_r.scores);
 }
 
 void CodInteira::setUpper(int u){

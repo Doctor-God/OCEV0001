@@ -2,6 +2,8 @@
 
 #include "util.hpp"
 #include "Problem.hpp"
+#include "Selection.hpp"
+
 
 CodReal::CodReal(){}
 
@@ -20,9 +22,18 @@ void CodReal::gerar(){
 	mat = pop;
 }
 
-std::vector<double> CodReal::fitness(){
+double CodReal::GA(){
+	
+}
+
+Score_Restricao CodReal::fitness(){
 	Problem<double> prob;
-	return fitness(prob.getFuncao(this->problem));
+	return prob.getFuncao(this->problem)(mat);
+}
+
+vvd CodReal::selection(){
+	Selection<double> s;
+	return s.getFuncao(this->selection_method)(mat, score_r.scores);
 }
 
 void CodReal::setUpper(double u){

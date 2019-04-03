@@ -7,6 +7,11 @@
 #include <numeric>
 #include <algorithm>
 
+typedef struct{
+    std::vector<double> scores;
+    std::vector<bool> restritos;
+}Score_Restricao;
+
 typedef std::vector<std::vector<int> > vvi;
 typedef std::vector<std::vector<bool> > vvb;
 typedef std::vector<std::vector<double> > vvd;
