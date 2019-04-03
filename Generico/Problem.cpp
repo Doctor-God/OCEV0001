@@ -32,7 +32,7 @@ Score_Restricao Problem<int>::nQueens(vvi popul){
 	double mais_colisoes = popul[0].size();
 
 	for(int i = 0; i < valores.size(); i++){
-		std::cout << i << "  " << valores[i] << "  " << mais_colisoes << std::endl;
+		// std::cout << i << "  " << valores[i] << "  " << mais_colisoes << std::endl;
 		valores[i] = 1.0 - valores[i]/mais_colisoes;
 
 	}

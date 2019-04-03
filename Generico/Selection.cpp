@@ -10,7 +10,7 @@ std::vector<std::vector<T> > Selection<T>::roleta(std::vector<std::vector<T> > p
 
 
     //Calcula o score total da popul (soma dos scores)
-    double score_total = 0;
+    double score_total = 0.0;
     for(int i = 0; i < popul.size(); i++){
         score_total += score[i];
     }
@@ -19,9 +19,17 @@ std::vector<std::vector<T> > Selection<T>::roleta(std::vector<std::vector<T> > p
         if(i == 0)
             score_relativo[i] = score[i]/score_total;
         else
-            score_relativo[i] = score[i]/score_total + score[i-1];
+            score_relativo[i] = score[i]/score_total + score_relativo[i-1];
     }
     score_relativo[popul.size()-1] = 1.0;
+
+    // std::cout << "Roleta\n"; 
+    // for(int i = 0; i < popul.size(); i++){
+    //     std::cout <<score_relativo[i] << std::endl;
+    // }
+    // std::cout << "\n"; 
+
+
 
     //Escolhem-se pares de indivíduos
     for(int i = 0; i < popul.size(); i += 2){
@@ -41,7 +49,7 @@ std::vector<std::vector<T> > Selection<T>::roleta(std::vector<std::vector<T> > p
         //Colocamos escolhido na populacao intermediaria
         popul_temp[i].assign(popul[escolhido].begin(), popul[escolhido].end());
         // popul_temp[i] = escolhido;
-        std::cout << escolhido << std::endl;
+        // std::cout << escolhido << std::endl;
 
         //A roleta ainda não está definida para a retirada deste indivíduo
         if(score_total_sem[escolhido] == -1){
@@ -55,9 +63,9 @@ std::vector<std::vector<T> > Selection<T>::roleta(std::vector<std::vector<T> > p
                     if(j == 0 or (escolhido == 0 and j == 1))
                         score_relativo_sem[escolhido][j] = score[j]/novo_total;
                     else if(j == escolhido+1)
-                        score_relativo_sem[escolhido][j] = score[j]/novo_total + score[j-2];
+                        score_relativo_sem[escolhido][j] = score[j]/novo_total + score_relativo_sem[escolhido][j-2];
                     else
-                        score_relativo_sem[escolhido][j] = score[j]/novo_total + score[j-1];
+                        score_relativo_sem[escolhido][j] = score[j]/novo_total + score_relativo_sem[escolhido][j-1];
                 }
             }
             if(escolhido == popul.size()-1)
@@ -68,6 +76,7 @@ std::vector<std::vector<T> > Selection<T>::roleta(std::vector<std::vector<T> > p
 
         }
 
+        //Procurar o segundo escolhido nesse par
         dice_roll = getRandDouble(0.0, 1.0);
         for(int j = 0; j < popul.size(); j++){
             // std::cout << dice_roll << "  " << score_relativo_sem[escolhido][j] << std::endl;
@@ -79,19 +88,33 @@ std::vector<std::vector<T> > Selection<T>::roleta(std::vector<std::vector<T> > p
 
         popul_temp[i+1].assign(popul[escolhido2].begin(), popul[escolhido2].end());
         // popul_temp[i+1] = escolhido2;
-        std::cout << escolhido2 << std::endl << std::endl;
+        // std::cout << escolhido2 << std::endl << std::endl;
 
     }
 
     return popul_temp;
 }
 
-
 template <typename T>
 std::vector<std::vector<T> > Selection<T>::ranking_uniform(std::vector<std::vector<T> > popul, std::vector<double> score){
-    std::vector<std::vector<T> > popul_temp(popul.size()*2, std::vector<T>(popul.size()));
-    return popul_temp;
+    std::vector<size_t> idx = sort_indexes(score);
+    std::vector<double> uniform_scores(popul.size());
+    // for(int i = 0; i < popul.size(); i++){
+    //     uniform_scores[i] = idx[i]+1;
+    //     std::cout << uniform_scores[i] << std::endl;
+    // }
+
+    double rank = 1.0;
+    for(auto i : idx){
+        
+        uniform_scores[i] = rank;
+        // std::cout << uniform_scores[i] << std::endl;        
+        rank+= 1.0;
+    }
+
+    return roleta(popul, uniform_scores);
 }
+
 
 template <typename T>
 std::vector<std::vector<T> > Selection<T>::torneio(std::vector<std::vector<T> > popul, std::vector<double> score){

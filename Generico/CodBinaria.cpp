@@ -24,6 +24,19 @@ void CodBinaria::gerar(){
 }
 
 double CodBinaria::GA(){
+	std::cout << "Indiv" << std::endl;
+	this->print();
+
+	this->score_r = this->fitness();
+	std::vector<double> temp_s = this->score_r.scores;
+	std::vector<size_t> idx = sort_indexes(temp_s);
+
+	std::cout << "Melhores" << std::endl;
+	for(auto i : idx){
+		std::cout << i << ": " << temp_s[i] << std::endl;
+	}
+
+	vvb popul_temp = this->selection();
 
 }
 

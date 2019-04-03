@@ -6,11 +6,22 @@
 #include <iomanip>
 #include <numeric>
 #include <algorithm>
+#include <variant>
 
 typedef struct{
     std::vector<double> scores;
     std::vector<bool> restritos;
 }Score_Restricao;
+
+typedef struct{
+  std::variant<int, double> lower;
+  std::variant<int, double> upper;
+  std::string problem;
+  std::string selection;
+  int k; //Número de indiv no torneio ou distancia no selecao local
+  double p; //Probabilidade no torneio
+}Parameters;
+
 
 typedef std::vector<std::vector<int> > vvi;
 typedef std::vector<std::vector<bool> > vvb;

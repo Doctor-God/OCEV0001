@@ -12,6 +12,9 @@ protected:
     std::string problem;
     std::string selection_method;
 
+    int k_unid;
+    double prob;
+
     Score_Restricao score_r;
 
     Populacao();
@@ -33,7 +36,7 @@ class FactoryPopulacao{
 private:
     FactoryPopulacao();
 public:
-    static Populacao *build(int size, int n_vars, int tipo, std::string problem, std::string select, std::variant<int, double> upper, std::variant<int, double> lower);
+    static Populacao *build(int size, int n_vars, int tipo, std::string problem, std::string select, Parameters p);
 };
 
 #endif
