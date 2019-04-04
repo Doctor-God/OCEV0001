@@ -21,7 +21,7 @@ int main(int argc, char const *argv[]){
 	
 	//Serve pra fazer parse de opção de command line, ajustar o código depois
 	int c ;
-	while( ( c = getopt (argc, (char**) argv, "u:l:h:k:p") ) != -1 ) 
+	while( ( c = getopt (argc, (char**) argv, "u:l:h:k:p:t") ) != -1 ) 
     {
         switch(c)
         {
@@ -50,6 +50,9 @@ int main(int argc, char const *argv[]){
 			
 			case 'p':
 				if(optarg) parat.p = stod(optarg);
+				break;
+			case 't':
+				if(optarg) parat.t = atoi(optarg);
 				break;
         }
     }

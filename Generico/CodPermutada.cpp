@@ -56,6 +56,11 @@ Score_Restricao CodPermutada::fitness(){
 }
 
 vvi CodPermutada::selection(){
+	Parameters p;
+	p.k = this->k_unid;
+	p.p = this->prob;
+	p.t = this->tipo_selecao_vizinhanca;
+	
 	Selection<int> s;
-	return s.getFuncao(this->selection_method)(mat, score_r.scores);
+	return s.getFuncao(this->selection_method)(p, this->mat, score_r.scores);
 }

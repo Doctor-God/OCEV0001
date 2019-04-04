@@ -20,6 +20,7 @@ typedef struct{
   std::string selection;
   int k; //Número de indiv no torneio ou distancia no selecao local
   double p; //Probabilidade no torneio
+  int t; //Tipo de seleacao dentro da vizinhanca
 }Parameters;
 
 
@@ -48,7 +49,25 @@ std::vector<size_t> sort_indexes(const std::vector<T> &v){
 }
 
 template <typename T>
-void print_matrix(std::vector<std::vector<T> > matrix){
+int maior_elemento(std::vector<T> &v){
+  int maior = 0;
+  for(int i = 0; i < v.size(); i++){
+    if(v[i] > v[maior]) maior = i;
+  }
+  return maior;
+}
+
+template <typename T>
+int menor_elemento(std::vector<T> &v){
+  int menor = 0;
+  for(int i = 0; i < v.size(); i++){
+    if(v[i] < v[menor]) menor = i;
+  }
+  return menor;
+}
+
+template <typename T>
+void print_matrix(std::vector<std::vector<T> > &matrix){
 	std::cout << std::fixed;
     std::cout << std::setprecision(4);
 

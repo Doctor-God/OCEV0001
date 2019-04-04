@@ -1,7 +1,7 @@
 template <typename T>
-std::vector<std::vector<T> > Selection<T>::roleta(std::vector<std::vector<T> > popul, std::vector<double> score){
+std::vector<std::vector<T> > Selection<T>::roleta(Parameters &p, std::vector<std::vector<T> > &popul, std::vector<double> &score){
     //Cria população intermediária
-    std::vector<std::vector<T> > popul_temp(popul.size(), std::vector<T>(popul.size()));
+    std::vector<std::vector<T> > popul_temp(popul.size(), std::vector<T>(popul[0].size()));
     // std::vector<int> popul_temp(popul.size()*2);
     
     std::vector<double> score_relativo(popul.size());
@@ -96,7 +96,8 @@ std::vector<std::vector<T> > Selection<T>::roleta(std::vector<std::vector<T> > p
 }
 
 template <typename T>
-std::vector<std::vector<T> > Selection<T>::ranking_uniform(std::vector<std::vector<T> > popul, std::vector<double> score){
+std::vector<std::vector<T> > Selection<T>::ranking_uniform(Parameters &p, std::vector<std::vector<T> > &popul, std::vector<double> &score){
+
     std::vector<size_t> idx = sort_indexes(score);
     std::vector<double> uniform_scores(popul.size());
     // for(int i = 0; i < popul.size(); i++){
@@ -112,25 +113,49 @@ std::vector<std::vector<T> > Selection<T>::ranking_uniform(std::vector<std::vect
         rank+= 1.0;
     }
 
-    return roleta(popul, uniform_scores);
+    return roleta(p, popul, uniform_scores);
 }
 
 
 template <typename T>
-std::vector<std::vector<T> > Selection<T>::torneio(std::vector<std::vector<T> > popul, std::vector<double> score){
-    std::vector<std::vector<T> > popul_temp(popul.size()*2, std::vector<T>(popul.size()));
+std::vector<std::vector<T> > Selection<T>::torneio(Parameters &p, std::vector<std::vector<T> > &popul, std::vector<double> &score){
+    std::vector<std::vector<T> > popul_temp(popul.size(), std::vector<T>(popul.size()));
+    //São feitos n torneios, onde n é o tamanho da população
+    for(int i = 0; i < popul.size() ; i++){
+        //Para cada torneio são escolhidos k indivíduos aleatoriamente, podendo haver repetição
+        std::vector<int> torneiristas(p.k);
+        std::vector<double> seus_scores(p.k);
+        for(int j = 0; j < p.k ; j++){
+            int who = getRandInt(0, popul.size()-1);
+            torneiristas[j] = who;
+            seus_scores[j] = score[who];
+        }
+        //Se dice_roll < que a chance p (ou kp), o melhor é escolhido, caso contrário o pior
+        double dice_roll = getRandDouble(0.0, 1.0);
+        int escolhido;
+        if(dice_roll < p.p){
+            escolhido = torneiristas[maior_elemento(seus_scores)];
+        }
+        else{
+            escolhido = torneiristas[menor_elemento(seus_scores)];
+        }
+        // std::cout << escolhido << std::endl;
+
+        //Colocamos o indiv escolhido na população temporária
+        popul_temp[i].assign(popul[escolhido].begin(), popul[escolhido].end());
+    }
     return popul_temp;
 }
 
 template <typename T>
-std::vector<std::vector<T> > Selection<T>::selecao_local(std::vector<std::vector<T> > popul, std::vector<double> score){
+std::vector<std::vector<T> > Selection<T>::vizinhanca(Parameters &p, std::vector<std::vector<T> > &popul, std::vector<double> &score){
     std::vector<std::vector<T> > popul_temp(popul.size()*2, std::vector<T>(popul.size()));
     return popul_temp;  
 }
 
 
 template <typename T>
-std::function<std::vector<std::vector<T> >(std::vector<std::vector<T> >, std::vector<double>) > Selection<T>::getFuncao(std::string name){
+std::function<std::vector<std::vector<T> >(Parameters&, std::vector<std::vector<T> >&, std::vector<double>&) > Selection<T>::getFuncao(std::string name){
     if(name == "roleta"){
         return roleta;
     }
@@ -140,8 +165,8 @@ std::function<std::vector<std::vector<T> >(std::vector<std::vector<T> >, std::ve
     else if(name == "torneio"){
         return torneio;
     }
-    else if(name == "local"){
-        return selecao_local;
+    else if(name == "vizinhanca"){
+        return vizinhanca;
     }
     else{
         return NULL;

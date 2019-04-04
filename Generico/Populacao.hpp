@@ -14,6 +14,7 @@ protected:
 
     int k_unid;
     double prob;
+    int tipo_selecao_vizinhanca;
 
     Score_Restricao score_r;
 
@@ -29,6 +30,12 @@ public:
     virtual Score_Restricao fitness() = 0;
     virtual double GA() = 0; //Precisa pensar em um retorno genérico 
     // virtual std::vector<int> bestFit() = 0;
+
+    // std::vector<double> getScores();
+
+    int getKUn();
+    int getProb();
+    int getTipoSelecViz();
 
 };
 

@@ -17,6 +17,7 @@ Populacao *FactoryPopulacao::build(int size, int n_vars, int tipo, std::string p
 		pop->selection_method = select;
 		pop->k_unid = par.k;
 		pop->prob = par.p;
+		pop->tipo_selecao_vizinhanca = par.t;
 		return pop;
 	}
 	else if(tipo == 1){
@@ -30,6 +31,7 @@ Populacao *FactoryPopulacao::build(int size, int n_vars, int tipo, std::string p
 		pop->setLower(std::get<int>(par.lower));
 		pop->k_unid = par.k;
 		pop->prob = par.p;
+		pop->tipo_selecao_vizinhanca = par.t;
 		return pop;
 	}
 	else if(tipo == 2){
@@ -41,6 +43,7 @@ Populacao *FactoryPopulacao::build(int size, int n_vars, int tipo, std::string p
 		pop->selection_method = select;
 		pop->k_unid = par.k;
 		pop->prob = par.p;
+		pop->tipo_selecao_vizinhanca = par.t;
 		return pop;
 	}
 	else if(tipo == 3){
@@ -54,11 +57,19 @@ Populacao *FactoryPopulacao::build(int size, int n_vars, int tipo, std::string p
 		pop->setLower(std::get<double>(par.lower));
 		pop->k_unid = par.k;
 		pop->prob = par.p;
+		pop->tipo_selecao_vizinhanca = par.t;
 		return pop;
 	}
 
 	return NULL;
 }
+
+// std::vector<double> getScores(){return score_r.scores;}
+
+
+int Populacao::getKUn(){return k_unid;}
+int Populacao::getProb(){return prob;}
+int Populacao::getTipoSelecViz(){return tipo_selecao_vizinhanca;}
 
 
 Populacao::Populacao(){}

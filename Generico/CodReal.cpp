@@ -32,8 +32,13 @@ Score_Restricao CodReal::fitness(){
 }
 
 vvd CodReal::selection(){
+	Parameters p;
+	p.k = this->k_unid;
+	p.p = this->prob;
+	p.t = this->tipo_selecao_vizinhanca;
+	
 	Selection<double> s;
-	return s.getFuncao(this->selection_method)(mat, score_r.scores);
+	return s.getFuncao(this->selection_method)(p, this->mat, score_r.scores);
 }
 
 void CodReal::setUpper(double u){
