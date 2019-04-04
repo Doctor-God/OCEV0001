@@ -149,7 +149,72 @@ std::vector<std::vector<T> > Selection<T>::torneio(Parameters &p, std::vector<st
 
 template <typename T>
 std::vector<std::vector<T> > Selection<T>::vizinhanca(Parameters &p, std::vector<std::vector<T> > &popul, std::vector<double> &score){
-    std::vector<std::vector<T> > popul_temp(popul.size()*2, std::vector<T>(popul.size()));
+    std::vector<std::vector<T> > popul_temp(popul.size(), std::vector<T>(popul.size()));
+      
+    //São escolhidos n/2 centros e 1 par para cada
+    for(int i = 0; i < popul.size(); i+=2){
+
+        int center = getRandInt(0, popul.size()-1);
+        // std::cout << center << std::endl;
+        popul_temp[i].assign(popul[center].begin(), popul[center].end());
+
+        std::vector<int> vizinhos(p.k*2);
+        std::vector<double> seus_scores(p.k*2);    
+        
+        //Criar a vizinhança circular
+        int offset = -(center-p.k);
+        for(int j = center-p.k; j < center; j++){
+            if(j < 0){
+                vizinhos[j+offset] = popul.size() + j;
+                seus_scores[j+offset] = score[vizinhos[j+offset]];
+            }
+            else{
+                vizinhos[j+offset] = j;
+                seus_scores[j+offset] = score[vizinhos[j+offset]];
+            }
+        }
+
+        for(int j = center+1; j < center+p.k+1; j++){
+            if(j > popul.size() - 1){
+                vizinhos[j+offset-1] = j - popul.size();
+                seus_scores[j+offset-1] = score[vizinhos[j+offset-1]];
+            }
+            else{
+                vizinhos[j+offset-1] = j;
+                seus_scores[j+offset-1] = score[vizinhos[j+offset-1]];
+            }
+        }
+
+        int escolhido = -1;
+        if(p.t == 0){ // Melhor fitness
+            escolhido = vizinhos[maior_elemento(seus_scores)];
+        }
+        else if(p.t == 1){ //Proporcional (Roleta)
+            double score_total = 0;
+            for(int j = 0; j < vizinhos.size(); j++){
+                score_total += seus_scores[i];
+            }
+            std::vector<double> score_relativo(vizinhos.size());
+            score_relativo[0] = seus_scores[0]/score_total;
+            for(int j = 1; j < vizinhos.size(); j++){
+                score_relativo[j] = seus_scores[j]/score_total + score_relativo[j-1];
+            }
+            double dice_roll = getRandDouble(0.0, 1.0);
+            for(int j = 1; j < vizinhos.size(); j++){
+                if(dice_roll < seus_scores[j]){
+                    int escolhido = vizinhos[j];
+                    break;
+                }
+            }
+        }
+        else if(p.t == 2){ //Aleatório
+            int escolhido = vizinhos[getRandInt(0, vizinhos.size()-1)];
+        }
+        popul_temp[i+1].assign(popul[escolhido].begin(), popul[escolhido].end());
+        // std::cout << escolhido << std::endl << std::endl;
+
+    }
+   
     return popul_temp;  
 }
 
