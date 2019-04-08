@@ -162,7 +162,7 @@ Score_Restricao Problem<bool>::fabrica_radios(vvb &popul, Config &config){
 
 		//Restrição (st + 2lx <= 40)
 		double h = std::max(0.0, (st + 2.0*lx - 40.0)/16.0);
-		if(h !=0)
+		if(h != 0)
 			restricao[i] = true; // Seta que o indivíduo violou restrição
 
 		//Função fitness (função objetivo/valor_máximo - restrição)

@@ -24,12 +24,6 @@ void shuffle(std::vector<int> &v){
 	}
 }
 
-// std::vector<double> extractScores(std::vector<Score_Restricao> sr){
-// 	std::vector<double> scores(sr.size());
-// 	for(int i = 0; i < sr.size(); i++){
-// 		scores[i] = 
-// 	}
-// }
 
 
 

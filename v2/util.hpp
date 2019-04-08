@@ -73,6 +73,7 @@ void print_matrix(std::vector<std::vector<T> > &matrix){
 		for(int j = 0; j < cols; j++){
 			std::cout << std::setw(10) << matrix[i][j];
 		}
+
 		std::cout << std::endl;
 	}
 	std::cout << std::endl;

@@ -49,10 +49,12 @@ void GeneticAlgorithm<T>::run(){
 
     std::vector<size_t> idx = sort_indexes(score_r.scores);
 
+
     std::cout << "Melhor indivíduo válido no final da otimização" << std::endl;
     for(auto i : idx){
         //indiv válido
         if(not score_r.restritos[i]){
+
             std::cout <<"Indivíduo " << i << std::endl << "\tfitness: " << score_r.scores[i] << std::endl; 
             std::cout << "\tCromossomo: ";
             for(int j = 0; j < config.getNumVars(); j++){
@@ -82,9 +84,14 @@ void CodInteira::run(){
         //Obter os melhores indivíduos e guardar
         std::vector<size_t> idx = sort_indexes(score_r.scores);
         std::vector<std::vector<int> > atual_elite = elite; //Salvar pra não perder o elite atual
+        Score_Restricao elite_sr_atual;
+            elite_sr_atual.scores = elite_score_r.scores;
+            elite_sr_atual.restritos = elite_score_r.restritos;
         //Copiar cada elite para o vector
         for(int i = 0; i < config.getNumElitistas(); i++){
             elite[i].assign(popul[idx[i]].begin(), popul[idx[i]].end());
+            elite_score_r.scores[i] = score_r.scores[i];
+            elite_score_r.restritos[i] = score_r.restritos[i];
         }
 
         //Substituir os piores pelos melhores da última geracao
@@ -92,6 +99,8 @@ void CodInteira::run(){
             int j = 0;
             for(int i = config.getPopSize()-1; i > config.getPopSize()-1-config.getNumElitistas(); i--){
                 popul[idx[i]].assign(atual_elite[j].begin(), atual_elite[j].end());
+                score_r.scores[idx[i]] = elite_sr_atual.scores[j];
+                score_r.restritos[idx[i]] = elite_sr_atual.restritos[j];
                 j++;
             }
         }
@@ -207,7 +216,7 @@ void GeneticAlgorithm<bool>::crossover(std::vector<std::vector<bool> > &popul){
     for(int i = 0; i < config.getPopSize(); i+=2){
         double will_it_happen = getRandDouble(0.0, 1.0);
         if(will_it_happen < config.getProbCrossover()){
-            if(config.getCrossoverType() == 1){
+            if(config.getCrossoverType() == 1){ //Um ponto
                 int ponto = getRandInt(0, config.getPopSize() - 2);
                 //Trocar informação dos indivíduos
                 for(int j = 0; j <= ponto; j++){
@@ -217,7 +226,7 @@ void GeneticAlgorithm<bool>::crossover(std::vector<std::vector<bool> > &popul){
                     popul[i+1][j] = temp;
                 }
             }
-            else if(config.getCrossoverType() == 2){
+            else if(config.getCrossoverType() == 2){ //Dois pontos
                 int ponto1 = getRandInt(0, config.getPopSize()-4);
                 int ponto2 = getRandInt(ponto1+2, config.getPopSize()-2);
                 
@@ -226,6 +235,17 @@ void GeneticAlgorithm<bool>::crossover(std::vector<std::vector<bool> > &popul){
                     temp = popul[i][j];
                     popul[i][j] = popul[i+1][j];
                     popul[i+1][j] = temp;
+                }
+            }
+            else if(config.getCrossoverType() == 0){ //Uniforme
+                for(int j = 0; j < config.getNumVars(); j++){
+                    double swap_or_no = getRandDouble(0.0, 1.0);
+                    if(will_it_happen < 0.5){
+                        bool temp;
+                        temp = popul[i][j];
+                        popul[i][j] = popul[i+1][j];
+                        popul[i+1][j] = temp;
+                    }
                 }
             }
         }
@@ -264,7 +284,52 @@ void CodInteira::crossover(std::vector<std::vector<int> > &popul){
 }
 
 void CodPermutada::crossover(std::vector<std::vector<int> > &popul){
-    //Implementar
+    for(int i = 0; i < config.getPopSize(); i+=2){
+        double will_it_happen = getRandDouble(0.0, 1.0);
+        if(will_it_happen < config.getProbCrossover()){
+            int ponto1 = getRandInt(0, config.getPopSize()-4);
+            int ponto2 = getRandInt(ponto1+2, config.getPopSize()-2);
+            std::map<int, int> section_first; //Mapeia o valor do indiv 1 no valor do indiv 2
+            std::map<int, int> section_second; //Mapeia o valor do indiv 2 no valor do indiv 1
+
+            //Dar swap na seção
+            for(int j = ponto1+1; j <= ponto2-1; j++){
+                section_first.insert(std::make_pair(popul[i][j], popul[i+1][j]));
+                section_second.insert(std::make_pair(popul[i+1][j], popul[i][j]));
+
+                bool temp;
+                temp = popul[i][j];
+                popul[i][j] = popul[i+1][j];
+                popul[i+1][j] = temp;
+            }
+
+            //Antes da seção
+            for(int j = 0; j <= ponto1; j++){
+                auto temp1 = section_first.find(popul[i+1][j]);
+                if(temp != section_first.end()){
+                    popul[i][j] = temp;
+                }
+
+                int temp2 = section_second.find(popul[i][j]);
+                if(temp2 != section_second.end()){
+                    popul[i+1][j] = temp2;
+                }
+            }
+
+            //Depois da seção  
+            for(int j = ponto2+1; j < config.getNumVars(); j++){
+                int temp1 = section_first.find(popul[i+1][j]);
+                if(temp != section_first.end()){
+                    popul[i][j] = temp;
+                }
+
+                int temp2 = section_second.find(popul[i][j]);
+                if(temp2 != section_second.end()){
+                    popul[i+1][j] = temp2;
+                }
+            }
+        }
+    }
 }
 
 
@@ -304,9 +369,24 @@ void CodInteira::mutacao(std::vector<std::vector<int> > &popul){
 }
 
 void CodPermutada::mutacao(std::vector<std::vector<int> > &popul){
-    //Implementar
+    for(int i = 0; i < config.getPopSize(); i++){
+        for(int j = 0; j < config.getNumVars(); j++){
+            double dice_roll = getRandDouble(0.0, 1.0);
+            if(dice_roll < config.getProbMutacao()){
+                int who = getRandInt(0, config.getNumVars());
+                while(who == j) who = getRandInt(0, config.getNumVars());
+                for(int k = 0; k < config.getNumVars(); k++){
+                    if(k == who){
+                        int temp = popul[i][j];
+                        popul[i][j] = popul[i][k];
+                        popul[i][k] = temp;
+                        break;
+                    }
+                }
+            }
+        }
+    }
 }
-
 
 template<> inline
 void GeneticAlgorithm<double>::mutacao(std::vector<std::vector<double> > &popul){

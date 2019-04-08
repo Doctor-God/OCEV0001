@@ -43,7 +43,7 @@ int main(int argc, char const *argv[]){
 	
 	//Serve pra fazer parse de opção de command line (flags)
 	int c ;
-	while( ( c = getopt (argc, (char**) argv, "u:l:k:p:t:s:z:g:e:d") ) != -1 ) 
+	while( ( c = getopt (argc, (char**) argv, "u:l:k:p:t:s:z:g:e:d:c:m") ) != -1 ) 
     {
         switch(c)
         {
@@ -88,6 +88,12 @@ int main(int argc, char const *argv[]){
 			case 'd':
 				if(optarg) config.setCrossoverType(atoi(optarg));
 				break;
+			case 'c':
+				if(optarg) config.setProbCrossover(stod(optarg));
+				break;
+			case 'm':
+				if(optarg) config.setProbMutacao(stod(optarg));
+				break;
 			
         }
     }
@@ -126,9 +132,9 @@ int main(int argc, char const *argv[]){
 	// 	exit(1);
 	// }
 
-	// pop->GA();
-	// cout << "Indivíduos" << endl;
-	// pop->print();
+	// pop->GA();Crossover
+	// cout << "ICrossoverendl;
+	// pop->printCrossover
 
 
 	// vector<double> temp = pop->fitness();

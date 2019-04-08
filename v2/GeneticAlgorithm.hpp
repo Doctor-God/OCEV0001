@@ -12,9 +12,10 @@ protected:
     Config config;
 
     std::vector<std::vector<T> > popul;
-    std::vector<std::vector<T> > elite;
-
     Score_Restricao score_r;
+
+    std::vector<std::vector<T> > elite;
+    Score_Restricao elite_score_r;
 
 
 public:
