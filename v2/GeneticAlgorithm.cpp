@@ -58,7 +58,7 @@ void GeneticAlgorithm<T>::run(){
             std::cout <<"Indivíduo " << i << std::endl << "\tfitness: " << score_r.scores[i] << std::endl; 
             std::cout << "\tCromossomo: ";
             for(int j = 0; j < config.getNumVars(); j++){
-                std::cout << std::setw(2) << popul[i][j];
+                std::cout << popul[i][j] << " ";
             }
             std::cout << std::endl;
             
@@ -126,7 +126,7 @@ void CodInteira::run(){
             std::cout <<"Indivíduo " << i << std::endl << "\tfitness: " << score_r.scores[i] << std::endl; 
             std::cout << "\tCromossomo: ";
             for(int j = 0; j < config.getNumVars(); j++){
-                std::cout << std::setw(2) << popul[i][j];
+                std::cout << popul[i][j] << " ";
             }
             std::cout << std::endl;
             
@@ -183,7 +183,7 @@ void CodPermutada::run(){
             std::cout <<"Indivíduo " << i << std::endl << "\tfitness: " << score_r.scores[i] << std::endl; 
             std::cout << "\tCromossomo: ";
             for(int j = 0; j < config.getNumVars(); j++){
-                std::cout << std::setw(2) << popul[i][j];
+                std::cout << popul[i][j]<< " ";
             }
             std::cout << std::endl;
             
@@ -284,6 +284,8 @@ void CodInteira::crossover(std::vector<std::vector<int> > &popul){
 }
 
 void CodPermutada::crossover(std::vector<std::vector<int> > &popul){
+    std::vector<std::vector<int> > popul_temp(config.getNumVars());  
+    popul_temp.assign(popul.begin(), popul.end());  
     for(int i = 0; i < config.getPopSize(); i+=2){
         double will_it_happen = getRandDouble(0.0, 1.0);
         if(will_it_happen < config.getProbCrossover()){
@@ -296,36 +298,33 @@ void CodPermutada::crossover(std::vector<std::vector<int> > &popul){
             for(int j = ponto1+1; j <= ponto2-1; j++){
                 section_first.insert(std::make_pair(popul[i][j], popul[i+1][j]));
                 section_second.insert(std::make_pair(popul[i+1][j], popul[i][j]));
-
-                bool temp;
-                temp = popul[i][j];
-                popul[i][j] = popul[i+1][j];
-                popul[i+1][j] = temp;
+                popul_temp[i][j] = popul[i+1][j];
+                popul_temp[i+1][j] = popul[i][j];
             }
 
             //Antes da seção
             for(int j = 0; j <= ponto1; j++){
                 auto temp1 = section_first.find(popul[i+1][j]);
-                if(temp != section_first.end()){
-                    popul[i][j] = temp;
+                if(temp1 != section_first.end()){
+                    popul_temp[i][j] = temp1->second;
                 }
 
-                int temp2 = section_second.find(popul[i][j]);
+                auto temp2 = section_second.find(popul[i][j]);
                 if(temp2 != section_second.end()){
-                    popul[i+1][j] = temp2;
+                    popul_temp[i+1][j] = temp2->second;
                 }
             }
 
             //Depois da seção  
             for(int j = ponto2+1; j < config.getNumVars(); j++){
-                int temp1 = section_first.find(popul[i+1][j]);
-                if(temp != section_first.end()){
-                    popul[i][j] = temp;
+                auto temp1 = section_first.find(popul[i+1][j]);
+                if(temp1 != section_first.end()){
+                    popul_temp[i][j] = temp1->second;
                 }
 
-                int temp2 = section_second.find(popul[i][j]);
+                auto temp2 = section_second.find(popul[i][j]);
                 if(temp2 != section_second.end()){
-                    popul[i+1][j] = temp2;
+                    popul_temp[i+1][j] = temp2->second;
                 }
             }
         }

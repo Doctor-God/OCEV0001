@@ -101,49 +101,6 @@ int main(int argc, char const *argv[]){
 	
 	runGeneticAlgorithm(config);
 
-
-	// selection_method = argv[5];
-
-
-	//pop_size n_vars tipo_cod
-	// if(argc < 6){
-	// 	cout << "./a.out pop_size n_vars tipo_cod problem selection_method [lim_inferior] [lim_superior]" << endl;
-	// 	exit(1);
-	// }
-
-
-
-	// if((tipo == 0 or tipo == 2) and argc > 6){
-	// 	cout << "Codificações Binária ou Inteira Permutada não necessitam de limites inferior e superior." << endl;
-	// 	exit(1);
-	// }
-	// else if((tipo != 0 and tipo != 2) and argc < 8){
-	// 	cout << "Codificações Inteira e Real necessitam de limites inferior e superior." << endl;
-	// 	exit(1);
-	// }
-
-
-	// Populacao *pop = FactoryPopulacao::build(tipo, config);
-	// if(pop){
-	// 	pop->gerar();
-	// }
-	// else{
-	// 	cout << "Erro na instaciação da população\n";
-	// 	exit(1);
-	// }
-
-	// pop->GA();Crossover
-	// cout << "ICrossoverendl;
-	// pop->printCrossover
-
-
-	// vector<double> temp = pop->fitness();
-	// vector<size_t> idx = sort_indexes(temp);
-	//
-	// cout << "Melhores" << endl;
-	// for(auto i : idx){
-	// 	cout << i << ": " << temp[i] << endl;
-	// }
 	return 0;
 }
 

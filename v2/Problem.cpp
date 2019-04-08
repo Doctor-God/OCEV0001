@@ -29,7 +29,7 @@ Score_Restricao Problem<int>::nQueens(vvi &popul, Config &config){
 	}
 
 	// double mais_colisoes = *std::max_element(valores.begin(), valores.end());
-	double mais_colisoes = popul[0].size();
+	double mais_colisoes = config.getNumVars();
 
 	for(int i = 0; i < valores.size(); i++){
 		// std::cout << i << "  " << valores[i] << "  " << mais_colisoes << std::endl;
