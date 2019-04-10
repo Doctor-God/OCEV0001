@@ -217,7 +217,7 @@ void GeneticAlgorithm<bool>::crossover(std::vector<std::vector<bool> > &popul){
         double will_it_happen = getRandDouble(0.0, 1.0);
         if(will_it_happen < config.getProbCrossover()){
             if(config.getCrossoverType() == 1){ //Um ponto
-                int ponto = getRandInt(0, config.getPopSize() - 2);
+                int ponto = getRandInt(0, config.getNumVars() - 2);
                 //Trocar informação dos indivíduos
                 for(int j = 0; j <= ponto; j++){
                     bool temp;
@@ -227,10 +227,10 @@ void GeneticAlgorithm<bool>::crossover(std::vector<std::vector<bool> > &popul){
                 }
             }
             else if(config.getCrossoverType() == 2){ //Dois pontos
-                int ponto1 = getRandInt(0, config.getPopSize()-4);
-                int ponto2 = getRandInt(ponto1+2, config.getPopSize()-2);
+                int ponto1 = getRandInt(0, config.getNumVars()-4);
+                int ponto2 = getRandInt(ponto1+2, config.getNumVars()-2);
                 
-                for(int j = ponto1+1; j <= ponto2-1; j++){
+                for(int j = ponto1+1; j <= ponto2; j++){
                     bool temp;
                     temp = popul[i][j];
                     popul[i][j] = popul[i+1][j];
@@ -258,7 +258,7 @@ void CodInteira::crossover(std::vector<std::vector<int> > &popul){
         double will_it_happen = getRandDouble(0.0, 1.0);
         if(will_it_happen < config.getProbCrossover()){
             if(config.getCrossoverType() == 1){
-                int ponto = getRandInt(0, config.getPopSize() - 2);
+                int ponto = getRandInt(0, config.getNumVars() - 2);
                 //Trocar informação dos indivíduos
                 for(int j = 0; j <= ponto; j++){
                     bool temp;
@@ -268,10 +268,10 @@ void CodInteira::crossover(std::vector<std::vector<int> > &popul){
                 }
             }
             else if(config.getCrossoverType() == 2){
-                int ponto1 = getRandInt(0, config.getPopSize()-4);
-                int ponto2 = getRandInt(ponto1+2, config.getPopSize()-2);
+                int ponto1 = getRandInt(0, config.getNumVars()-4);
+                int ponto2 = getRandInt(ponto1+2, config.getNumVars()-2);
                 
-                for(int j = ponto1+1; j <= ponto2-1; j++){
+                for(int j = ponto1+1; j <= ponto2; j++){
                     bool temp;
                     temp = popul[i][j];
                     popul[i][j] = popul[i+1][j];
@@ -284,18 +284,18 @@ void CodInteira::crossover(std::vector<std::vector<int> > &popul){
 }
 
 void CodPermutada::crossover(std::vector<std::vector<int> > &popul){
-    std::vector<std::vector<int> > popul_temp(config.getNumVars());  
+    std::vector<std::vector<int> > popul_temp(config.getPopSize(), std::vector<int>(config.getNumVars()));  
     popul_temp.assign(popul.begin(), popul.end());  
     for(int i = 0; i < config.getPopSize(); i+=2){
         double will_it_happen = getRandDouble(0.0, 1.0);
         if(will_it_happen < config.getProbCrossover()){
-            int ponto1 = getRandInt(0, config.getPopSize()-4);
-            int ponto2 = getRandInt(ponto1+2, config.getPopSize()-2);
+            int ponto1 = getRandInt(0, config.getNumVars()-4);
+            int ponto2 = getRandInt(ponto1+2, config.getNumVars()-2);
             std::map<int, int> section_first; //Mapeia o valor do indiv 1 no valor do indiv 2
             std::map<int, int> section_second; //Mapeia o valor do indiv 2 no valor do indiv 1
 
             //Dar swap na seção
-            for(int j = ponto1+1; j <= ponto2-1; j++){
+            for(int j = ponto1+1; j <= ponto2; j++){
                 section_first.insert(std::make_pair(popul[i][j], popul[i+1][j]));
                 section_second.insert(std::make_pair(popul[i+1][j], popul[i][j]));
                 popul_temp[i][j] = popul[i+1][j];
