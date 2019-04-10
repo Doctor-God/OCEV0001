@@ -47,4 +47,4 @@
     void Config::setCrossoverType(int tipo) {this->tipo_crossover = tipo;}
     void Config::setProbCrossover(double prob_crossover) {this->prob_crossover = prob_crossover;}
     void Config::setProbMutacao(double prob_mutacao) {this->prob_mutacao = prob_mutacao;}
-    void Config::setSaidaArquivo(bool flag) {std::cout << flag << std::endl;this->saida_arquivo = flag;}
+    void Config::setSaidaArquivo(bool flag) {this->saida_arquivo = flag;}
