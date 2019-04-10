@@ -23,6 +23,8 @@ void print_help(){
 	printf("[-c prob_crossover]\n");
 	printf("[-m prob_mutacao]\n");
 	printf("[-s metodo_selecao]\n");
+	printf("[-o saida_geracoes_arquivo");
+
 }
 
 void runGeneticAlgorithm(Config &c);
@@ -43,7 +45,7 @@ int main(int argc, char const *argv[]){
 	
 	//Serve pra fazer parse de opção de command line (flags)
 	int c ;
-	while( ( c = getopt (argc, (char**) argv, "u:l:k:p:t:s:z:g:e:d:c:m") ) != -1 ) 
+	while( ( c = getopt (argc, (char**) argv, "u:l:k:p:t:s:z:g:e:d:c:m:o") ) != -1 ) 
     {
         switch(c)
         {
@@ -94,9 +96,13 @@ int main(int argc, char const *argv[]){
 			case 'm':
 				if(optarg) config.setProbMutacao(stod(optarg));
 				break;
+			case 'o':
+				config.setSaidaArquivo(true);
+				break;
 			
         }
     }
+	// cout << config.getSaidaArquivo() << endl;
 
 	
 	runGeneticAlgorithm(config);

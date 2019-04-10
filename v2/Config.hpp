@@ -3,6 +3,7 @@
 
 #include <string>
 #include <variant>
+#include <iostream>
 
 class Config{
 private:
@@ -21,6 +22,7 @@ private:
     int tipo_crossover; //um ou dois pontos
     double prob_crossover;
     double prob_mutacao;
+    bool saida_arquivo;
 public:
     Config();
 
@@ -39,6 +41,8 @@ public:
     int getCrossoverType();
     double getProbCrossover();
     double getProbMutacao();
+    bool getSaidaArquivo();
+
 
     void setTipo(int tipo);
     void setPopSize(int pop_size);
@@ -55,6 +59,7 @@ public:
     void setCrossoverType(int tipo);
     void setProbCrossover(double prob_crossover);
     void setProbMutacao(double prob_mutacao);
+    void setSaidaArquivo(bool flag);
 };
 
 #endif

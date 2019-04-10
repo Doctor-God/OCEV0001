@@ -12,6 +12,7 @@
         tipo_crossover = 1;
         prob_crossover = 0.9;
         prob_mutacao = 0.05;
+        saida_arquivo = false;
     }
         
     int Config::getTipo(){return tipo;}
@@ -29,6 +30,7 @@
     int Config::getCrossoverType() {return tipo_crossover;}
     double Config::getProbCrossover() {return prob_crossover;}
     double Config::getProbMutacao() {return prob_mutacao;}
+    bool Config::getSaidaArquivo() {return saida_arquivo;}
 
     void Config::setTipo(int tipo) {this->tipo = tipo;}
     void Config::setPopSize(int pop_size) {this->pop_size = pop_size;}
@@ -45,3 +47,4 @@
     void Config::setCrossoverType(int tipo) {this->tipo_crossover = tipo;}
     void Config::setProbCrossover(double prob_crossover) {this->prob_crossover = prob_crossover;}
     void Config::setProbMutacao(double prob_mutacao) {this->prob_mutacao = prob_mutacao;}
+    void Config::setSaidaArquivo(bool flag) {std::cout << flag << std::endl;this->saida_arquivo = flag;}

@@ -12,6 +12,10 @@
 ////////////////////////////////////////////////////////////////////////////////////////
 template<typename T>
 void GeneticAlgorithm<T>::run(){
+    if(config.getSaidaArquivo()){
+        std::cout << config.getGenerations() << std::endl;
+    }
+
     //Gerar populacao inicial
     gerarPopulacao();
 
@@ -20,10 +24,27 @@ void GeneticAlgorithm<T>::run(){
         score_r = fitness();
         //Obter os melhores indivíduos e guardar
         std::vector<size_t> idx = sort_indexes(score_r.scores);
+        
+        if(config.getSaidaArquivo()){
+            std::cout << score_r.scores[idx[0]] << std::endl; //Melhor
+            std::cout << score_r.scores[idx[config.getPopSize()-1]] << std::endl; //Pior
+            double media = 0.0;
+            for(auto i : idx) media += score_r.scores[i];
+            media /= config.getPopSize();
+            std::cout << media << std::endl;
+        }
+
         std::vector<std::vector<T> > atual_elite = elite; //Salvar pra não perder o elite atual
+        Score_Restricao elite_sr_atual;
+            elite_sr_atual.scores = elite_score_r.scores;
+            elite_sr_atual.restritos = elite_score_r.restritos;
+
         //Copiar cada elite para o vector
         for(int i = 0; i < config.getNumElitistas(); i++){
             elite[i].assign(popul[idx[i]].begin(), popul[idx[i]].end());
+            elite_score_r.scores[i] = score_r.scores[idx[i]];
+            elite_score_r.restritos[i] = score_r.restritos[idx[i]];
+
         }
 
         //Substituir os piores pelos melhores da última geracao
@@ -31,6 +52,8 @@ void GeneticAlgorithm<T>::run(){
             int j = 0;
             for(int i = config.getPopSize()-1; i > config.getPopSize()-1-config.getNumElitistas(); i--){
                 popul[idx[i]].assign(atual_elite[j].begin(), atual_elite[j].end());
+                score_r.scores[i] = elite_sr_atual.scores[j];
+                score_r.restritos[i] = elite_sr_atual.restritos[j];
                 j++;
             }
         }
@@ -48,6 +71,16 @@ void GeneticAlgorithm<T>::run(){
     score_r = fitness();
 
     std::vector<size_t> idx = sort_indexes(score_r.scores);
+
+    if(config.getSaidaArquivo()){
+        std::cout << score_r.scores[idx[0]] << std::endl; //Melhor
+        std::cout << score_r.scores[idx[config.getPopSize()-1]] << std::endl; //Pior
+        double media = 0.0;
+        for(auto i : idx) media += score_r.scores[i];
+        media /= config.getPopSize();
+        std::cout << media << std::endl;
+        return;
+    }
 
 
     std::cout << "Melhor indivíduo válido no final da otimização" << std::endl;
@@ -75,6 +108,10 @@ template<> inline
 void GeneticAlgorithm<int>::run(){}
 
 void CodInteira::run(){
+    if(config.getSaidaArquivo()){
+        std::cout << config.getGenerations() << std::endl;
+    }
+
     //Gerar populacao inicial
     gerarPopulacao();
 
@@ -83,26 +120,26 @@ void CodInteira::run(){
         score_r = fitness();
         //Obter os melhores indivíduos e guardar
         std::vector<size_t> idx = sort_indexes(score_r.scores);
-        std::vector<std::vector<int> > atual_elite = elite; //Salvar pra não perder o elite atual
+        if(config.getSaidaArquivo()){
+            std::cout << score_r.scores[idx[0]] << std::endl; //Melhor
+            std::cout << score_r.scores[idx[config.getPopSize()-1]] << std::endl; //Pior
+            double media = 0.0;
+            for(auto i : idx) media += score_r.scores[i];
+            media /= config.getPopSize();
+            std::cout << media << std::endl;
+        }
+
+         std::vector<std::vector<int> > atual_elite = elite; //Salvar pra não perder o elite atual
         Score_Restricao elite_sr_atual;
             elite_sr_atual.scores = elite_score_r.scores;
             elite_sr_atual.restritos = elite_score_r.restritos;
+
         //Copiar cada elite para o vector
         for(int i = 0; i < config.getNumElitistas(); i++){
             elite[i].assign(popul[idx[i]].begin(), popul[idx[i]].end());
-            elite_score_r.scores[i] = score_r.scores[i];
-            elite_score_r.restritos[i] = score_r.restritos[i];
-        }
+            elite_score_r.scores[i] = score_r.scores[idx[i]];
+            elite_score_r.restritos[i] = score_r.restritos[idx[i]];
 
-        //Substituir os piores pelos melhores da última geracao
-        if(g != 0 and config.getNumElitistas() != 0){
-            int j = 0;
-            for(int i = config.getPopSize()-1; i > config.getPopSize()-1-config.getNumElitistas(); i--){
-                popul[idx[i]].assign(atual_elite[j].begin(), atual_elite[j].end());
-                score_r.scores[idx[i]] = elite_sr_atual.scores[j];
-                score_r.restritos[idx[i]] = elite_sr_atual.restritos[j];
-                j++;
-            }
         }
 
         //Obtem populacao para crossover e mutacao
@@ -118,6 +155,16 @@ void CodInteira::run(){
     score_r = fitness();
 
     std::vector<size_t> idx = sort_indexes(score_r.scores);
+
+    if(config.getSaidaArquivo()){
+        std::cout << score_r.scores[idx[0]] << std::endl; //Melhor
+        std::cout << score_r.scores[idx[config.getPopSize()-1]] << std::endl; //Pior
+        double media = 0.0;
+        for(auto i : idx) media += score_r.scores[i];
+        media /= config.getPopSize();
+        std::cout << media << std::endl;
+        return;
+    }
 
     std::cout << "Melhor indivíduo válido no final da otimização" << std::endl;
     for(auto i : idx){
@@ -139,6 +186,10 @@ void CodInteira::run(){
 }
 
 void CodPermutada::run(){
+    if(config.getSaidaArquivo()){
+        std::cout << config.getGenerations() << std::endl;
+    }
+
     //Gerar populacao inicial
     gerarPopulacao();
 
@@ -147,19 +198,26 @@ void CodPermutada::run(){
         score_r = fitness();
         //Obter os melhores indivíduos e guardar
         std::vector<size_t> idx = sort_indexes(score_r.scores);
+        if(config.getSaidaArquivo()){
+            std::cout << score_r.scores[idx[0]] << std::endl; //Melhor
+            std::cout << score_r.scores[idx[config.getPopSize()-1]] << std::endl; //Pior
+            double media = 0.0;
+            for(auto i : idx) media += score_r.scores[i];
+            media /= config.getPopSize();
+            std::cout << media << std::endl;
+        }
+       
         std::vector<std::vector<int> > atual_elite = elite; //Salvar pra não perder o elite atual
+        Score_Restricao elite_sr_atual;
+            elite_sr_atual.scores = elite_score_r.scores;
+            elite_sr_atual.restritos = elite_score_r.restritos;
+
         //Copiar cada elite para o vector
         for(int i = 0; i < config.getNumElitistas(); i++){
             elite[i].assign(popul[idx[i]].begin(), popul[idx[i]].end());
-        }
+            elite_score_r.scores[i] = score_r.scores[idx[i]];
+            elite_score_r.restritos[i] = score_r.restritos[idx[i]];
 
-        //Substituir os piores pelos melhores da última geracao
-        if(g != 0 and config.getNumElitistas() != 0){
-            int j = 0;
-            for(int i = config.getPopSize()-1; i > config.getPopSize()-1-config.getNumElitistas(); i--){
-                popul[idx[i]].assign(atual_elite[j].begin(), atual_elite[j].end());
-                j++;
-            }
         }
 
         //Obtem populacao para crossover e mutacao
@@ -175,6 +233,16 @@ void CodPermutada::run(){
     score_r = fitness();
 
     std::vector<size_t> idx = sort_indexes(score_r.scores);
+    
+    if(config.getSaidaArquivo()){
+        std::cout << score_r.scores[idx[0]] << std::endl; //Melhor
+        std::cout << score_r.scores[idx[config.getPopSize()-1]] << std::endl; //Pior
+        double media = 0.0;
+        for(auto i : idx) media += score_r.scores[i];
+        media /= config.getPopSize();
+        std::cout << media << std::endl;
+        return;
+    }
 
     std::cout << "Melhor indivíduo válido no final da otimização" << std::endl;
     for(auto i : idx){
@@ -452,6 +520,8 @@ template<typename T>
 GeneticAlgorithm<T>::GeneticAlgorithm(Config &c){
     this->config = c;
     elite = std::vector<std::vector<T> >(config.getNumElitistas(), std::vector<T>(config.getNumVars())); 
+    elite_score_r.scores = std::vector<double>(config.getNumElitistas());
+    elite_score_r.restritos = std::vector<bool>(config.getNumElitistas());
 }
 
 template<typename T>
@@ -464,9 +534,13 @@ GeneticAlgorithm<T>::~GeneticAlgorithm(){}
 CodInteira::CodInteira(Config &c){
     this->config = c;
     elite = std::vector<std::vector<int> >(config.getNumElitistas(), std::vector<int>(config.getNumVars()));    
+    elite_score_r.scores = std::vector<double>(config.getNumElitistas());
+    elite_score_r.restritos = std::vector<bool>(config.getNumElitistas());
 }
 
 CodPermutada::CodPermutada(Config &c){
     this->config = c;
-    elite = std::vector<std::vector<int> >(config.getNumElitistas(), std::vector<int>(config.getNumVars()));    
+    elite = std::vector<std::vector<int> >(config.getNumElitistas(), std::vector<int>(config.getNumVars()));
+    elite_score_r.scores = std::vector<double>(config.getNumElitistas());
+    elite_score_r.restritos = std::vector<bool>(config.getNumElitistas());
 }
