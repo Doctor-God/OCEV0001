@@ -24,16 +24,7 @@ void GeneticAlgorithm<T>::run(){
         score_r = fitness();
         //Obter os melhores indivíduos e guardar
         std::vector<size_t> idx = sort_indexes(score_r.scores);
-        
-        if(config.getSaidaArquivo()){
-            std::cout << score_r.scores[idx[0]] << std::endl; //Melhor
-            std::cout << score_r.scores[idx[config.getPopSize()-1]] << std::endl; //Pior
-            double media = 0.0;
-            for(auto i : idx) media += score_r.scores[i];
-            media /= config.getPopSize();
-            std::cout << media << std::endl;
-        }
-
+ 
         std::vector<std::vector<T> > atual_elite = elite; //Salvar pra não perder o elite atual
         Score_Restricao elite_sr_atual;
             elite_sr_atual.scores = elite_score_r.scores;
@@ -47,15 +38,31 @@ void GeneticAlgorithm<T>::run(){
 
         }
 
+        double pior_score = score_r.scores[idx[config.getPopSize()-1]];
+
         //Substituir os piores pelos melhores da última geracao
         if(g != 0 and config.getNumElitistas() != 0){
             int j = 0;
             for(int i = config.getPopSize()-1; i > config.getPopSize()-1-config.getNumElitistas(); i--){
                 popul[idx[i]].assign(atual_elite[j].begin(), atual_elite[j].end());
-                score_r.scores[i] = elite_sr_atual.scores[j];
-                score_r.restritos[i] = elite_sr_atual.restritos[j];
+                score_r.scores[idx[i]] = elite_sr_atual.scores[j];
+                score_r.restritos[idx[i]] = elite_sr_atual.restritos[j];
                 j++;
             }
+        }
+
+        if(config.getSaidaArquivo()){
+            if(config.getNumElitistas() != 0){
+                std::cout << std::max(score_r.scores[idx[0]], elite_sr_atual.scores[0]) << std::endl; //Melhor
+            }
+            else{
+                std::cout << score_r.scores[idx[0]] << std::endl;
+            }
+            std::cout << pior_score << std::endl; //Pior
+            double media = 0.0;
+            for(auto i : idx) media += score_r.scores[i];
+            media /= config.getPopSize();
+            std::cout << media << std::endl;
         }
 
         //Obtem populacao para crossover e mutacao
@@ -120,16 +127,8 @@ void CodInteira::run(){
         score_r = fitness();
         //Obter os melhores indivíduos e guardar
         std::vector<size_t> idx = sort_indexes(score_r.scores);
-        if(config.getSaidaArquivo()){
-            std::cout << score_r.scores[idx[0]] << std::endl; //Melhor
-            std::cout << score_r.scores[idx[config.getPopSize()-1]] << std::endl; //Pior
-            double media = 0.0;
-            for(auto i : idx) media += score_r.scores[i];
-            media /= config.getPopSize();
-            std::cout << media << std::endl;
-        }
 
-         std::vector<std::vector<int> > atual_elite = elite; //Salvar pra não perder o elite atual
+        std::vector<std::vector<int> > atual_elite = elite; //Salvar pra não perder o elite atual
         Score_Restricao elite_sr_atual;
             elite_sr_atual.scores = elite_score_r.scores;
             elite_sr_atual.restritos = elite_score_r.restritos;
@@ -141,6 +140,29 @@ void CodInteira::run(){
             elite_score_r.restritos[i] = score_r.restritos[idx[i]];
 
         }
+
+        double pior_score = score_r.scores[idx[config.getPopSize()-1]];
+
+        //Substituir os piores pelos melhores da última geracao
+        if(g != 0 and config.getNumElitistas() != 0){
+            int j = 0;
+            for(int i = config.getPopSize()-1; i > config.getPopSize()-1-config.getNumElitistas(); i--){
+                popul[idx[i]].assign(atual_elite[j].begin(), atual_elite[j].end());
+                score_r.scores[idx[i]] = elite_sr_atual.scores[j];
+                score_r.restritos[idx[i]] = elite_sr_atual.restritos[j];
+                j++;
+            }
+        }
+
+        if(config.getSaidaArquivo()){
+            std::cout << std::max(score_r.scores[idx[0]], elite_sr_atual.scores[0]) << std::endl; //Melhor
+            std::cout << pior_score << std::endl; //Pior
+            double media = 0.0;
+            for(auto i : idx) media += score_r.scores[i];
+            media /= config.getPopSize();
+            std::cout << media << std::endl;
+        }
+
 
         //Obtem populacao para crossover e mutacao
         std::vector<std::vector<int> > popul_temp = selection();
@@ -155,6 +177,10 @@ void CodInteira::run(){
     score_r = fitness();
 
     std::vector<size_t> idx = sort_indexes(score_r.scores);
+
+    Score_Restricao elite_sr_atual;
+        elite_sr_atual.scores = elite_score_r.scores;
+        elite_sr_atual.restritos = elite_score_r.restritos;
 
     if(config.getSaidaArquivo()){
         std::cout << score_r.scores[idx[0]] << std::endl; //Melhor
@@ -190,7 +216,7 @@ void CodPermutada::run(){
         std::cout << config.getGenerations() << std::endl;
     }
 
-    //Gerar populacao inicial
+    //Gerar populacao inicialscore_r.scores[idx[0]]
     gerarPopulacao();
 
     for(int g = 0; g < config.getGenerations(); g++){
@@ -198,14 +224,6 @@ void CodPermutada::run(){
         score_r = fitness();
         //Obter os melhores indivíduos e guardar
         std::vector<size_t> idx = sort_indexes(score_r.scores);
-        if(config.getSaidaArquivo()){
-            std::cout << score_r.scores[idx[0]] << std::endl; //Melhor
-            std::cout << score_r.scores[idx[config.getPopSize()-1]] << std::endl; //Pior
-            double media = 0.0;
-            for(auto i : idx) media += score_r.scores[i];
-            media /= config.getPopSize();
-            std::cout << media << std::endl;
-        }
        
         std::vector<std::vector<int> > atual_elite = elite; //Salvar pra não perder o elite atual
         Score_Restricao elite_sr_atual;
@@ -217,8 +235,31 @@ void CodPermutada::run(){
             elite[i].assign(popul[idx[i]].begin(), popul[idx[i]].end());
             elite_score_r.scores[i] = score_r.scores[idx[i]];
             elite_score_r.restritos[i] = score_r.restritos[idx[i]];
-
         }
+
+
+        double pior_score = score_r.scores[idx[config.getPopSize()-1]];
+
+        //Substituir os piores pelos melhores da última geracao
+         if(g != 0 and config.getNumElitistas() != 0){
+            int j = 0;
+            for(int i = config.getPopSize()-1; i > config.getPopSize()-1-config.getNumElitistas(); i--){
+                popul[idx[i]].assign(atual_elite[j].begin(), atual_elite[j].end());
+                score_r.scores[idx[i]] = elite_sr_atual.scores[j];
+                score_r.restritos[idx[i]] = elite_sr_atual.restritos[j];
+                j++;
+            }
+        }
+
+        if(config.getSaidaArquivo()){
+            std::cout << std::max(score_r.scores[idx[0]], elite_sr_atual.scores[0]) << std::endl; //Melhor
+            std::cout << pior_score << std::endl; //Pior
+            double media = 0.0;
+            for(auto i : idx) media += score_r.scores[i];
+            media /= config.getPopSize();
+            std::cout << media << std::endl;
+        }
+
 
         //Obtem populacao para crossover e mutacao
         std::vector<std::vector<int> > popul_temp = selection();
@@ -233,6 +274,7 @@ void CodPermutada::run(){
     score_r = fitness();
 
     std::vector<size_t> idx = sort_indexes(score_r.scores);
+    
     
     if(config.getSaidaArquivo()){
         std::cout << score_r.scores[idx[0]] << std::endl; //Melhor

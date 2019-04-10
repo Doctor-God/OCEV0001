@@ -53,11 +53,11 @@ def main(argv):
     plt.plot(medias, color = 'yellow')
     plt.plot(menores, color = 'blue')
 
-    plt.rc('text', usetex=True)
-    plt.rc('font', family='serif')
+    # plt.rc('text', usetex=True)
+    # plt.rc('font', family='serif')
 
-    plt.xlabel(r'Gera\c{c}\~{a}o')
-    plt.ylabel(r'Fitness')
+    # plt.xlabel(r'Gera\c{c}\~{a}o')
+    # plt.ylabel(r'Fitness')
 
     plt.show()
 
