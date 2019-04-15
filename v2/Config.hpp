@@ -22,7 +22,12 @@ private:
     int tipo_crossover; //um ou dois pontos
     double prob_crossover;
     double prob_mutacao;
+    double alpha;
+    double b;
     bool saida_arquivo;
+    std::string arquivo_destino;
+    int relatorio;
+    int execucao;
 public:
     Config();
 
@@ -41,7 +46,13 @@ public:
     int getCrossoverType();
     double getProbCrossover();
     double getProbMutacao();
+    double getAlpha();
+    double getB();
     bool getSaidaArquivo();
+    std::string getArquivoDestino();
+    int getTipoRelatorio();
+    int getExecucao();
+
 
 
     void setTipo(int tipo);
@@ -59,7 +70,13 @@ public:
     void setCrossoverType(int tipo);
     void setProbCrossover(double prob_crossover);
     void setProbMutacao(double prob_mutacao);
+    void setAlpha(double a);
+    void setB(double b);
     void setSaidaArquivo(bool flag);
+    void setArquivoDestino(std::string nome);
+    void setTipoRelatorio(int relatorio);
+    void setExecucao(int num);
+
 };
 
 #endif

@@ -11,6 +11,8 @@ class GeneticAlgorithm{
 protected:
     Config config;
 
+    int geracao_atual;
+
     std::vector<std::vector<T> > popul;
     Score_Restricao score_r;
 
@@ -35,30 +37,6 @@ public:
     void crossover(std::vector<std::vector<T> > &popul);
     void mutacao(std::vector<std::vector<T> > &popul);
 
-};
-
-class CodInteira : public GeneticAlgorithm<int>{
-public:
-    CodInteira(Config &c);
-
-    void run();
-
-    void gerarPopulacao();
-
-    void crossover(std::vector<std::vector<int> > &popul);
-    void mutacao(std::vector<std::vector<int> > &popul);
-};
-
-class CodPermutada : public GeneticAlgorithm<int>{
-public:
-    CodPermutada(Config &c);
-   
-    void run();
-
-    void gerarPopulacao();
-
-    void crossover(std::vector<std::vector<int> > &popul);
-    void mutacao(std::vector<std::vector<int> > &popul);
 };
 
 #include "GeneticAlgorithm.cpp"

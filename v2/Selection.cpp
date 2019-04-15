@@ -1,3 +1,6 @@
+#include <vector>
+#include "Selection.hpp"
+
 template <typename T>
 std::vector<std::vector<T> > Selection<T>::roleta(std::vector<std::vector<T> > &popul, std::vector<double> &score, Config &config){
     //Cria população intermediária

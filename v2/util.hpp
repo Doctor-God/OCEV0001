@@ -18,6 +18,46 @@ typedef struct{
     std::vector<bool> restritos;
 }Score_Restricao;
 
+typedef struct permut{
+  int value;
+  friend std::ostream& operator<<(std::ostream& target, const permut& source);
+
+  permut(int value);
+  permut();
+
+  void operator=(const int num);
+
+  permut operator+(const permut &a);
+  permut operator-(const permut &a);
+  permut operator*(const permut &a);
+  permut operator/(const permut &a);
+
+  void operator++();
+  void operator--();
+
+  void operator+=(const int &num);
+  void operator-=(const int &num);
+  void operator*=(const int &num);
+  void operator/=(const int &num);
+
+  bool operator>(const int &num);
+  bool operator<(const int &num);
+  bool operator==(const int &num);
+  bool operator!=(const int &num);
+  
+  bool operator>(const permut &a); 
+  bool operator<(const permut &a); 
+  bool operator==(const permut &a);
+  bool operator!=(const permut &a); 
+
+  operator float() const;
+
+
+} int_permut_t;
+
+double abs(const int_permut_t &a);
+
+std::ostream& operator<<(std::ostream& target, const int_permut_t &source);
 
 
 typedef std::vector<std::vector<int> > vvi;
@@ -28,7 +68,7 @@ int getRandInt(int a, int b);
 
 double getRandDouble(double a, double b);
 
-void shuffle(std::vector<int> &v);
+void shuffle(std::vector<int_permut_t> &v);
 
 template <typename T>
 std::vector<size_t> sort_indexes(const std::vector<T> &v){

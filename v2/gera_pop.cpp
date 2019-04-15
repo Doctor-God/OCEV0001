@@ -1,16 +1,15 @@
 #include <bits/stdc++.h>
 #include <unistd.h>
 #include <stdio.h>
-// #include "Populacao.hpp"
+
 #include "GeneticAlgorithm.hpp"
 #include "Config.hpp"
 #include "util.hpp"
-// #include <boost/variant.hpp>
 
 using namespace std;
 
 void print_help(){
-	printf("./a.out nro_variaveis tipo_cod problema\n");
+	printf("./a.out nro_variaveis tipo_cod problema arquivo_destino\n");
 	printf("[-z population_size]\n");	
 	printf("[-g generations]\n");
 	printf("[-l lower_bound]\n");
@@ -23,7 +22,10 @@ void print_help(){
 	printf("[-c prob_crossover]\n");
 	printf("[-m prob_mutacao]\n");
 	printf("[-s metodo_selecao]\n");
-	printf("[-o saida_geracoes_arquivo");
+	printf("[-a alpha_blx]\n");
+	printf("[-b tunelamento_michalewicz]\n");
+	printf("[-o saida_geracoes_arquivo]\n");
+	printf("[-r tipo_relatorio]\n");
 
 }
 
@@ -32,7 +34,7 @@ void runGeneticAlgorithm(Config &c);
 int main(int argc, char const *argv[]){
     
 	Config config;
-	int tipo;
+	int tipo, execucoes = 1;
 	
 	if(argc == 1){
 		print_help();
@@ -42,10 +44,11 @@ int main(int argc, char const *argv[]){
 	config.setNumVars(stoi(argv[1]));
 	config.setTipo(stoi(argv[2])); //bin = 0   int = 1   int_permut = 2    real = 3
 	config.setProblem(argv[3]);
+	config.setArquivoDestino(argv[4]);
 	
 	//Serve pra fazer parse de opção de command line (flags)
 	int c ;
-	while( ( c = getopt (argc, (char**) argv, "u:l:k:p:t:s:z:g:e:d:c:m:o") ) != -1 ) 
+	while( ( c = getopt (argc, (char**) argv, "u:l:k:p:t:s:z:g:e:d:c:m:o:a:b:r:E:") ) != -1 ) 
     {
         switch(c)
         {
@@ -96,16 +99,45 @@ int main(int argc, char const *argv[]){
 			case 'm':
 				if(optarg) config.setProbMutacao(stod(optarg));
 				break;
-			case 'o':
-				config.setSaidaArquivo(true);
+			// case 'o':
+			// 	if(optarg) config.setArquivoDestino(optarg);
+			// 	config.setSaidaArquivo(true);
+			// 	break;
+			case 'a':
+				if(optarg) config.setAlpha(stod(optarg));
 				break;
-			
+			case 'b':
+				if(optarg) config.setB(stod(optarg));
+				break;
+			case 'r':
+				if(optarg) config.setTipoRelatorio(atoi(optarg));
+				break;
+			case 'E':
+				if(optarg) execucoes = atoi(optarg);
+				break;
+
         }
     }
-	// cout << config.getSaidaArquivo() << endl;
 
-	
-	runGeneticAlgorithm(config);
+	//Limpar o arquivo
+	ofstream temp;
+	temp.open("./testes/" + config.getArquivoDestino() + "-resultados", std::ifstream::out | std::ifstream::trunc);
+	temp.close();
+
+	for(int i = 0; i < execucoes; i++){
+		config.setExecucao(i);
+		runGeneticAlgorithm(config);
+	}
+
+    cout << "Resultados das execuções em ./testes/" + config.getArquivoDestino() + "-resultados" << std::endl;
+
+	if(config.getTipoRelatorio() != 0){
+		string grafico = "python grafico.py " + config.getArquivoDestino() + " " + to_string(execucoes); 
+		system(grafico.c_str());
+
+		cout << "Para gerar o gráfico manualmente: python grafico.py " + config.getArquivoDestino() + " " << execucoes << endl;
+	}
+
 
 	return 0;
 }
@@ -118,12 +150,12 @@ void runGeneticAlgorithm(Config &c){
 		delete ga;
 	}
 	else if(c.getTipo() == INTEIRA){
-		GeneticAlgorithm<int> *ga = new CodInteira(c);
+		GeneticAlgorithm<int> *ga = new GeneticAlgorithm<int>(c);
 		ga->run();
 		delete ga;
 	}
 	else if(c.getTipo() == PERMUTADA){
-		GeneticAlgorithm<int> *ga = new CodPermutada(c);
+		GeneticAlgorithm<int_permut_t> *ga = new GeneticAlgorithm<int_permut_t>(c);
 		ga->run();
 		delete ga;	
 	}

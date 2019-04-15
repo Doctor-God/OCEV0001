@@ -45,6 +45,7 @@ def main(argv):
     maiores = np.insert(maiores, 0, 0, axis=0)
     medias = np.insert(medias, 0, 0, axis=0)
     menores = np.insert(menores, 0, 0, axis=0)
+    # print(maiores)
 
     # plt.ylim(0.0, 1.0)
 

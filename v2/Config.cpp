@@ -13,6 +13,9 @@
         prob_crossover = 0.9;
         prob_mutacao = 0.05;
         saida_arquivo = false;
+        alpha = 0.5;
+        b = 5.0;
+        relatorio = 0;
     }
         
     int Config::getTipo(){return tipo;}
@@ -30,7 +33,13 @@
     int Config::getCrossoverType() {return tipo_crossover;}
     double Config::getProbCrossover() {return prob_crossover;}
     double Config::getProbMutacao() {return prob_mutacao;}
+    double Config::getAlpha() {return alpha;}
+    double Config::getB() {return b;}
     bool Config::getSaidaArquivo() {return saida_arquivo;}
+    std::string Config::getArquivoDestino(){return arquivo_destino;}
+    int Config::getTipoRelatorio() {return relatorio;}
+    int Config::getExecucao() {return execucao;}
+
 
     void Config::setTipo(int tipo) {this->tipo = tipo;}
     void Config::setPopSize(int pop_size) {this->pop_size = pop_size;}
@@ -47,4 +56,12 @@
     void Config::setCrossoverType(int tipo) {this->tipo_crossover = tipo;}
     void Config::setProbCrossover(double prob_crossover) {this->prob_crossover = prob_crossover;}
     void Config::setProbMutacao(double prob_mutacao) {this->prob_mutacao = prob_mutacao;}
+    void Config::setAlpha(double a) {this->alpha = a;}
+    void Config::setB(double b) {this->b = b;}
     void Config::setSaidaArquivo(bool flag) {this->saida_arquivo = flag;}
+    void Config::setArquivoDestino(std::string nome){this->arquivo_destino = nome;}
+    void Config::setTipoRelatorio(int relatorio) {this->relatorio = relatorio;}
+    void Config::setExecucao(int num) {this->execucao = num;}
+
+
+
