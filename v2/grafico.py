@@ -9,28 +9,30 @@ import matplotlib.pyplot as plt
 # rc('text', usetex=True)
 
 def main(argv):
-    nro_testes = int(argv[2])
     nome_arq = argv[1]
+    arq = open("testes/" + nome_arq + "-geracoes")
+    arq = arq.read().split("\n")
+    nro_testes = int(arq[0])
+    generations = int(arq[1])+1
+    del arq[0]
+    del arq[0]
+
     testes = [None]*nro_testes
-    generations = 0
     for i in range(0,nro_testes):
-        arq = open("testes/" + nome_arq + "-" + str(i))
-        arq = arq.read().split("\n")
-        generations = int(arq[0])+1
-        del arq[0]
-        del arq[-1]
         # arq = [float(i) for i in arq]
-        testes[i] = np.array(arq, dtype=np.float64)
+        testes[i] = np.array(arq[i*generations*3:i*generations*3 + (generations)*3], dtype=np.float64)
+
 
     maiores = np.empty([generations], dtype=np.float64)
     menores = np.empty([generations], dtype=np.float64)
     medias = np.empty([generations], dtype=np.float64)
 
+
     for i in range(0,generations):
         maior = 0.0
         menor = 0.0
         media = 0.0
-        for j in range(nro_testes):
+        for j in range(0, nro_testes):
             maior += testes[j][i*3]
             menor += testes[j][i*3 + 1]
             media += testes[j][i*3 + 2]
@@ -41,6 +43,7 @@ def main(argv):
         maiores[i] = maior
         menores[i] = menor
         medias[i] = media
+
 
     maiores = np.insert(maiores, 0, 0, axis=0)
     medias = np.insert(medias, 0, 0, axis=0)
@@ -60,7 +63,20 @@ def main(argv):
     # plt.xlabel(r'Gera\c{c}\~{a}o')
     # plt.ylabel(r'Fitness')
 
-    plt.show()
+    plt.savefig("testes/" + nome_arq + "_conv.png")
+
+    plt.close()
+
+    res_finais = np.empty([nro_testes], dtype=np.float64)
+
+    for j in range(nro_testes):
+        res_finais = testes[j][(generations-1)*3]
+
+    plt.boxplot(res_finais)
+
+    plt.savefig("testes/" + nome_arq + "_boxplot.png")
+
+
 
 
 if __name__ == "__main__":

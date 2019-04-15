@@ -16,6 +16,7 @@
         alpha = 0.5;
         b = 5.0;
         relatorio = 0;
+        execucoes = 1;
     }
         
     int Config::getTipo(){return tipo;}
@@ -38,6 +39,7 @@
     bool Config::getSaidaArquivo() {return saida_arquivo;}
     std::string Config::getArquivoDestino(){return arquivo_destino;}
     int Config::getTipoRelatorio() {return relatorio;}
+    int Config::getNumExecucoes() {return execucoes;}
     int Config::getExecucao() {return execucao;}
 
 
@@ -61,6 +63,7 @@
     void Config::setSaidaArquivo(bool flag) {this->saida_arquivo = flag;}
     void Config::setArquivoDestino(std::string nome){this->arquivo_destino = nome;}
     void Config::setTipoRelatorio(int relatorio) {this->relatorio = relatorio;}
+    void Config::setNumExecucoes(int num) {this->execucoes = num;}
     void Config::setExecucao(int num) {this->execucao = num;}
 
 

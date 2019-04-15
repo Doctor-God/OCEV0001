@@ -22,8 +22,7 @@ void GeneticAlgorithm<T>::run(){
     resultados.open("./testes/" + config.getArquivoDestino() + "-resultados", std::ofstream::out | std::ofstream::app);
 
     if(config.getTipoRelatorio() != 0){
-        geracoes.open("./testes/" + config.getArquivoDestino() + "-" + std::to_string(config.getExecucao()), std::ofstream::out | std::ofstream::trunc);
-        geracoes << config.getGenerations() << std::endl;
+        geracoes.open("./testes/" + config.getArquivoDestino() + "-geracoes", std::ofstream::out | std::ofstream::app);
     }
 
 

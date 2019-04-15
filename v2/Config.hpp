@@ -27,6 +27,7 @@ private:
     bool saida_arquivo;
     std::string arquivo_destino;
     int relatorio;
+    int execucoes;
     int execucao;
 public:
     Config();
@@ -51,6 +52,7 @@ public:
     bool getSaidaArquivo();
     std::string getArquivoDestino();
     int getTipoRelatorio();
+    int getNumExecucoes();
     int getExecucao();
 
 
@@ -75,6 +77,7 @@ public:
     void setSaidaArquivo(bool flag);
     void setArquivoDestino(std::string nome);
     void setTipoRelatorio(int relatorio);
+    void setNumExecucoes(int num);
     void setExecucao(int num);
 
 };

@@ -34,7 +34,7 @@ void runGeneticAlgorithm(Config &c);
 int main(int argc, char const *argv[]){
     
 	Config config;
-	int tipo, execucoes = 1;
+	int tipo;
 	
 	if(argc == 1){
 		print_help();
@@ -113,7 +113,7 @@ int main(int argc, char const *argv[]){
 				if(optarg) config.setTipoRelatorio(atoi(optarg));
 				break;
 			case 'E':
-				if(optarg) execucoes = atoi(optarg);
+				if(optarg) config.setNumExecucoes(atoi(optarg));
 				break;
 
         }
@@ -124,7 +124,12 @@ int main(int argc, char const *argv[]){
 	temp.open("./testes/" + config.getArquivoDestino() + "-resultados", std::ifstream::out | std::ifstream::trunc);
 	temp.close();
 
-	for(int i = 0; i < execucoes; i++){
+	temp.open("./testes/" + config.getArquivoDestino() + "-geracoes", std::ifstream::out | std::ifstream::trunc);
+	temp << config.getNumExecucoes() << std::endl;
+	temp << config.getGenerations() << std::endl;
+	temp.close();
+
+	for(int i = 0; i < config.getNumExecucoes(); i++){
 		config.setExecucao(i);
 		runGeneticAlgorithm(config);
 	}
@@ -132,10 +137,10 @@ int main(int argc, char const *argv[]){
     cout << "Resultados das execuções em ./testes/" + config.getArquivoDestino() + "-resultados" << std::endl;
 
 	if(config.getTipoRelatorio() != 0){
-		string grafico = "python grafico.py " + config.getArquivoDestino() + " " + to_string(execucoes); 
+		string grafico = "python3 grafico.py " + config.getArquivoDestino() + " " + to_string(config.getNumExecucoes()); 
 		system(grafico.c_str());
 
-		cout << "Para gerar o gráfico manualmente: python grafico.py " + config.getArquivoDestino() + " " << execucoes << endl;
+		cout << "Para gerar o gráfico manualmente: python3 grafico.py " + config.getArquivoDestino() + " " << config.getNumExecucoes() << endl;
 	}
 
 
