@@ -19,7 +19,7 @@ Score_Restricao Problem<int_permut_t>::nQueens(std::vector<std::vector<int_permu
 	double mais_colisoes = config.getNumVars();
 
 
-	// #pragma omp parallel for shared(valores)
+	#pragma omp parallel for shared(valores)
 	for(int k = 0; k < config.getPopSize(); k++){
 		std::vector<bool> colided(config.getNumVars(), false);	
 		int colisoes = 0;
@@ -76,6 +76,110 @@ void Problem<int_permut_t>::nQueens_decoder(std::vector<int_permut_t> &indiv, Co
 
 	resultados << std::endl;
 
+
+	resultados.close();
+}
+
+template<> inline
+Score_Restricao Problem<int_permut_t>::nQueens_weight(std::vector<std::vector<int_permut_t>> &popul, Config &config){
+	std::vector<double> valores(config.getPopSize());
+	std::vector<double> valor_colisoes(config.getPopSize());
+	std::vector<double> valor_peso(config.getPopSize());
+	std::vector<bool> restricao(config.getPopSize(), false);
+
+	// double mais_colisoes = config.getNumVars()+2*config.getNumVars()*(config.getNumVars()-1);
+	double mais_colisoes = config.getNumVars();
+	double maior_peso = 0.0;
+	if(config.getNumVars() % 2 == 0){
+		for (int j = 0; j < config.getNumVars(); j++){
+			maior_peso += std::sqrt((config.getNumVars()-1)*config.getNumVars() + (j+1));
+		}
+	}
+	else{
+		for (int j = 0; j < config.getNumVars(); j++){
+			maior_peso += std::sqrt((config.getNumVars()-2) * config.getNumVars() + (j + 1));
+		}
+	}
+
+#pragma omp parallel for shared(valor_colisoes, valor_peso, valores)
+	for (int k = 0; k < config.getPopSize(); k++)
+	{
+		std::vector<bool> colided(config.getNumVars(), false);
+		int colisoes = 0;
+		for (int i = 0; i < config.getNumVars() - 1; i++)
+		{
+			for (int j = i + 1; j < config.getNumVars(); j++)
+			{
+				if (std::abs(i - j) == std::abs(popul[k][i] - popul[k][j]) and not colided[j])
+				{
+					colisoes++;
+					colided[j] = true;
+				}
+				// else if(std::abs(i - j) == std::abs(popul[k][i] - popul[k][j])){
+				// 	colisoes+=2;
+				// }
+			}
+		}
+		valor_colisoes[k] = 1.0 - colisoes / mais_colisoes;
+
+		double valor = 0.0;
+		for(int i = 0; i < config.getNumVars(); i++){
+			if(i % 2 == 0){ //sqrt
+				valor += std::sqrt(i * config.getNumVars() + (popul[k][i] + 1));
+			}
+			else{ //log10
+				valor += std::log10(i * config.getNumVars() + (popul[k][i] + 1));
+			}
+		}
+		valor_peso[k] = valor/maior_peso;
+
+		valores[k] = (valor_colisoes[k] + valor_peso[k])/2;
+	}
+
+
+	// double mais_colisoes = *std::max_element(valores.begin(), valores.end());
+	// for(auto i : valores)
+	// 	std::cout << i << std::endl;
+
+	Score_Restricao retorno;
+	retorno.scores = valores;
+	retorno.restritos = restricao;
+
+	return retorno;
+}
+
+template<> inline
+void Problem<int_permut_t>::nQueens_weight_decoder(std::vector<int_permut_t> &indiv, Config &config){
+	std::ofstream resultados;
+	resultados.open("./testes/" + config.getArquivoDestino() + "-resultados", std::ofstream::out | std::ofstream::app);
+
+	resultados << "Posições escolhidas:  ";
+	for (int i = 0; i < config.getNumVars(); i++)
+	{
+		// printf("(%d, %d)  ", i, indiv[i].value);
+		resultados << "(" << i << ", " << indiv[i].value << ") ";
+	}
+	resultados << std::endl
+			   << std::endl;
+
+	if (config.getNumVars() <= 20)
+	{
+		resultados << "Tabuleiro (1 = rainhas, 0 = vazio)" << std::endl;
+		for (int i = 0; i < config.getNumVars(); i++)
+		{
+			for (int j = 0; j < config.getNumVars(); j++)
+			{
+				if (j == indiv[i])
+					resultados << std::setw(2) << "1";
+				else
+					resultados << std::setw(2) << "0";
+			}
+			resultados << std::endl;
+		}
+		resultados << std::endl;
+	}
+
+	resultados << std::endl;
 
 	resultados.close();
 }
@@ -231,6 +335,9 @@ template<> inline
 Problem<int_permut_t>::Problem(){
     funcao.insert(std::pair<std::string, std::function<Score_Restricao(std::vector<std::vector<int_permut_t> >&, Config&)> >("nqueens", nQueens));
 	decoder.insert(std::pair<std::string, std::function<void(std::vector<int_permut_t>&, Config&)> >("nqueens", nQueens_decoder));
+
+	funcao.insert(std::pair<std::string, std::function<Score_Restricao(std::vector<std::vector<int_permut_t>> &, Config &)>>("nqueens_w", nQueens_weight));
+	decoder.insert(std::pair<std::string, std::function<void(std::vector<int_permut_t> &, Config &)>>("nqueens_w", nQueens_weight_decoder));
 }
 
 template<> inline

@@ -32,6 +32,11 @@ typedef struct permut{
   permut operator*(const permut &a);
   permut operator/(const permut &a);
 
+  int operator+(const int &a);
+  int operator-(const int &a);
+  int operator*(const int &a);
+  int operator/(const int &a);
+
   void operator++();
   void operator--();
 

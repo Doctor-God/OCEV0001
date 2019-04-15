@@ -16,7 +16,10 @@ private:
    
     static Score_Restricao nQueens(std::vector<std::vector<int_permut_t> > &popul, Config &config);
     static void nQueens_decoder(std::vector<int_permut_t> &indiv, Config &config);
-	
+
+    static Score_Restricao nQueens_weight(std::vector<std::vector<int_permut_t>> &popul, Config &config);
+    static void nQueens_weight_decoder(std::vector<int_permut_t> &indiv, Config &config);
+
     static Score_Restricao slide_max(vvb &popul, Config &config);
     static void slide_max_decoder(std::vector<bool> &indiv, Config &config);
     

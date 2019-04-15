@@ -34,6 +34,11 @@ int_permut_t permut::operator-(const int_permut_t &a) {return int_permut_t(this-
 int_permut_t permut::operator*(const int_permut_t &a) {return int_permut_t(this->value*a.value);}
 int_permut_t permut::operator/(const int_permut_t &a) {return int_permut_t(this->value/a.value);}
 
+int permut::operator+(const int &a) { return this->value + a; }
+int permut::operator-(const int &a) { return this->value - a; }
+int permut::operator*(const int &a) { return this->value * a; }
+int permut::operator/(const int &a) { return this->value / a; }
+
 void permut::operator++() {value++;}
 void permut::operator--() {value--;}
 
