@@ -1,4 +1,4 @@
-CXXFLAGS = -std=c++17 -fopenmp
+CXXFLAGS = -std=c++17 -fopenmp -O3
 
 all: trab
 

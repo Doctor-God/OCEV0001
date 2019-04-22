@@ -108,12 +108,12 @@ std::vector<std::vector<T> > Selection<T>::ranking_uniform(std::vector<std::vect
     //     std::cout << uniform_scores[i] << std::endl;
     // }
 
-    double rank = 1.0;
+    double rank = config.getPopSize();
     for(auto i : idx){
         
         uniform_scores[i] = rank;
         // std::cout << uniform_scores[i] << std::endl;        
-        rank+= 1.0;
+        rank -= 1.0;
     }
 
     return roleta(popul, uniform_scores, config);

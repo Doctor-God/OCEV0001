@@ -81,7 +81,7 @@ void Problem<int_permut_t>::nQueens_decoder(std::vector<int_permut_t> &indiv, Co
 }
 
 template<> inline
-Score_Restricao Problem<int_permut_t>::nQueens_weight(std::vector<std::vector<int_permut_t>> &popul, Config &config){
+Score_Restricao Problem<int_permut_t>::nQueens_weight(std::vector<std::vector<int_permut_t>> &popul, Config &config){	
 	std::vector<double> valores(config.getPopSize());
 	std::vector<double> valor_colisoes(config.getPopSize());
 	std::vector<double> valor_peso(config.getPopSize());
@@ -101,7 +101,7 @@ Score_Restricao Problem<int_permut_t>::nQueens_weight(std::vector<std::vector<in
 		}
 	}
 
-#pragma omp parallel for shared(valor_colisoes, valor_peso, valores)
+	#pragma omp parallel for shared(valor_colisoes, valor_peso, valores)
 	for (int k = 0; k < config.getPopSize(); k++)
 	{
 		std::vector<bool> colided(config.getNumVars(), false);
@@ -133,6 +133,7 @@ Score_Restricao Problem<int_permut_t>::nQueens_weight(std::vector<std::vector<in
 		}
 		valor_peso[k] = valor/maior_peso;
 
+		
 		valores[k] = (valor_colisoes[k] + valor_peso[k])/2;
 	}
 
@@ -152,6 +153,60 @@ template<> inline
 void Problem<int_permut_t>::nQueens_weight_decoder(std::vector<int_permut_t> &indiv, Config &config){
 	std::ofstream resultados;
 	resultados.open("./testes/" + config.getArquivoDestino() + "-resultados", std::ofstream::out | std::ofstream::app);
+
+	double valor_colisoes;
+	double valor_peso;
+	
+	std::vector<bool> restricao(config.getPopSize(), false);
+
+
+	double mais_colisoes = config.getNumVars();
+	double maior_peso = 0.0;
+	if(config.getNumVars() % 2 == 0){
+		for (int j = 0; j < config.getNumVars(); j++){
+			maior_peso += std::sqrt((config.getNumVars()-1)*config.getNumVars() + (j+1));
+		}
+	}
+	else{
+		for (int j = 0; j < config.getNumVars(); j++){
+			maior_peso += std::sqrt((config.getNumVars()-2) * config.getNumVars() + (j + 1));
+		}
+	}
+
+
+	std::vector<bool> colided(config.getNumVars(), false);
+	int colisoes = 0;
+	for (int i = 0; i < config.getNumVars() - 1; i++)
+	{
+		for (int j = i + 1; j < config.getNumVars(); j++)
+		{
+			if (std::abs(i - j) == std::abs(indiv[i] - indiv[j]) and not colided[j])
+			{
+				colisoes++;
+				colided[j] = true;
+			}
+			// else if(std::abs(i - j) == std::abs(indiv[i] - indiv[j])){
+			// 	colisoes+=2;
+			// }
+		}
+	}
+	valor_colisoes = 1.0 - colisoes / mais_colisoes;
+
+	double valor = 0.0;
+	for(int i = 0; i < config.getNumVars(); i++){
+		if(i % 2 == 0){ //sqrt
+			valor += std::sqrt(i * config.getNumVars() + (indiv[i] + 1));
+		}
+		else{ //log10
+			valor += std::log10(i * config.getNumVars() + (indiv[i] + 1));
+		}
+	}
+	resultados << "Valor: " << valor << std::endl;
+	valor_peso = valor/maior_peso;
+
+	resultados << "Colisoes: " << colisoes << std::endl;
+
+
 
 	resultados << "Posições escolhidas:  ";
 	for (int i = 0; i < config.getNumVars(); i++)
