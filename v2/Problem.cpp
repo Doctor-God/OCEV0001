@@ -120,7 +120,8 @@ Score_Restricao Problem<int_permut_t>::nQueens_weight(std::vector<std::vector<in
 				// }
 			}
 		}
-		valor_colisoes[k] = 1.0 - colisoes / mais_colisoes;
+		// valor_colisoes[k] = 1.0 - colisoes / mais_colisoes;
+		valor_colisoes[k] = colisoes / mais_colisoes;
 
 		double valor = 0.0;
 		for(int i = 0; i < config.getNumVars(); i++){
@@ -133,8 +134,14 @@ Score_Restricao Problem<int_permut_t>::nQueens_weight(std::vector<std::vector<in
 		}
 		valor_peso[k] = valor/maior_peso;
 
+		double h = std::max(0.0, valor_colisoes[k]*valor_peso[k]); //Perda proporcional ao número de colisões
+		if(h != 0)
+			restricao[k] = true; // Seta que o indivíduo violou restrição
+
 		
-		valores[k] = (valor_colisoes[k] + valor_peso[k])/2;
+		// valores[k] = (valor_colisoes[k] + valor_peso[k])/2;
+		valores[k] = valor_peso[k] - h;
+		
 	}
 
 

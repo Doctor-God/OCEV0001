@@ -12,6 +12,7 @@ void print_help(){
 	printf("./a.out nro_variaveis tipo_cod problema arquivo_destino\n");
 	printf("[-z population_size]\n");	
 	printf("[-g generations]\n");
+	printf("[-E num_execucoes]\n");
 	printf("[-l lower_bound]\n");
 	printf("[-u upper_bound]\n");
 	printf("[-e num_elitistas]\n");
@@ -24,7 +25,6 @@ void print_help(){
 	printf("[-s metodo_selecao]\n");
 	printf("[-a alpha_blx]\n");
 	printf("[-b tunelamento_michalewicz]\n");
-	printf("[-o saida_geracoes_arquivo]\n");
 	printf("[-r tipo_relatorio]\n");
 
 }
@@ -138,7 +138,7 @@ int main(int argc, char const *argv[]){
 
 	if(config.getTipoRelatorio() != 0){
 		string grafico = "python3 grafico.py " + config.getArquivoDestino() + " " + to_string(config.getNumExecucoes()); 
-		system(grafico.c_str());
+		int a = system(grafico.c_str());
 
 		cout << "Para gerar o gráfico manualmente: python3 grafico.py " + config.getArquivoDestino() + " " << config.getNumExecucoes() << endl;
 	}
