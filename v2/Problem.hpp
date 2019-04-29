@@ -26,6 +26,9 @@ private:
     static Score_Restricao fabrica_radios(vvb &popul, Config &config);
     static void fabrica_radios_decoder(std::vector<bool> &indiv, Config &config);
 
+    static Score_Restricao cartas_prova(vvb &popul, Config &config);
+    static void cartas_prova_decoder(std::vector<bool> &indiv, Config &config);
+
 
 
 public:

@@ -212,6 +212,7 @@ void Problem<int_permut_t>::nQueens_weight_decoder(std::vector<int_permut_t> &in
 	valor_peso = valor/maior_peso;
 
 	resultados << "Colisoes: " << colisoes << std::endl;
+	resultados << std::endl;
 
 
 
@@ -378,6 +379,55 @@ void Problem<bool>::fabrica_radios_decoder(std::vector<bool> &indiv, Config &con
 	resultados.close();
 }
 
+template<> inline
+Score_Restricao Problem<bool>::cartas_prova(vvb &popul, Config &config){
+	std::vector<double> valores(config.getPopSize(), 0); //Depois do tamanho da pop, tem 1.0 se o indivíduo violou alguma restrição
+	std::vector<bool> restricao(config.getPopSize(), false);
+
+	#pragma omp parallel for shared(valores, restricao)
+	for(int i = 0; i < config.getPopSize(); i++){
+		long int soma=0, mult=1;
+		for(int j = 0; j < config.getNumVars(); j++){
+			if(!popul[i][j]){ //Soma
+				soma += j;
+			}
+			else{ //Multiplicação
+				mult*=j;
+			}
+		}
+		valores[i] = 1.0/(std::abs(soma - 36.0) + std::abs(mult - 360.0) + 1.0);
+	}
+
+	Score_Restricao retorno;
+	retorno.scores = valores;
+	retorno.restritos = restricao;
+
+
+	return retorno;
+}
+
+template<> inline
+void Problem<bool>::cartas_prova_decoder(std::vector<bool> &indiv, Config &config){
+    std::ofstream resultados;
+	resultados.open("./testes/" + config.getArquivoDestino() + "-resultados", std::ofstream::out | std::ofstream::app);
+
+	long int soma=0, mult=1;
+	for(int j = 0; j < config.getNumVars(); j++){
+		if(!indiv[j]){ //Soma
+			soma += j;
+		}
+		else{ //Multiplicação
+			mult*=j;
+		}
+	}
+
+	resultados << "Soma = " << soma << std::endl;
+	resultados << "Multiplicação = " << mult << std::endl;
+	resultados << std::endl;
+
+	resultados.close();
+}
+
 
 template<> inline
 Problem<bool>::Problem(){
@@ -386,6 +436,9 @@ Problem<bool>::Problem(){
 
 	funcao.insert(std::pair<std::string, std::function<Score_Restricao(vvb&, Config&)> >("fabrica_radios", fabrica_radios));
 	decoder.insert(std::pair<std::string, std::function<void(std::vector<bool>&, Config&)> >("fabrica_radios", fabrica_radios_decoder));
+
+	funcao.insert(std::pair<std::string, std::function<Score_Restricao(vvb&, Config&)> >("cartas_prova", cartas_prova));
+	decoder.insert(std::pair<std::string, std::function<void(std::vector<bool>&, Config&)> >("cartas_prova", cartas_prova_decoder));
 }
 
 template<> inline

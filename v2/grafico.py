@@ -52,10 +52,26 @@ def main(argv):
 
     # plt.ylim(0.0, 1.0)
 
+    final = len(maiores)-1
+    fig, ax = plt.subplots();
 
     plt.plot(maiores, color = 'red')
     plt.plot(medias, color = 'yellow')
     plt.plot(menores, color = 'blue')
+
+
+    plt.yticks(list(plt.yticks()[0]) + [maiores[final]])
+    # ticks = ax.get_yticks()
+
+    # ax2 = ax.twinx()
+    
+    # ax2.set_yticks(maiores[final])
+
+    # yticks = ax2.yaxis.get_major_ticks()
+    # for tick in yticks:
+    #     ticks.label1.set_visible(False)
+
+    # yticks = list(yticks)[0] + [maiors[final]]
 
     # plt.rc('text', usetex=True)
     # plt.rc('font', family='serif')
@@ -70,7 +86,18 @@ def main(argv):
     res_finais = np.empty([nro_testes], dtype=np.float64)
 
     for j in range(nro_testes):
-        res_finais = testes[j][(generations-1)*3]
+        res_finais[j] = testes[j][(generations-1)*3]
+
+    mu = res_finais.mean()
+    sigma = res_finais.std()
+    textstr = '\n'.join((
+    r'$\mu=%.4f$' % (mu, ),
+    r'$\sigma=%.4f$' % (sigma, )))
+
+    fig, ax = plt.subplots();
+
+    ax.text(0.05, 0.95, textstr, transform=ax.transAxes, fontsize=14,
+        verticalalignment='top')
 
     plt.boxplot(res_finais)
 
