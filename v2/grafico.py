@@ -53,14 +53,44 @@ def main(argv):
     # plt.ylim(0.0, 1.0)
 
     final = len(maiores)-1
-    fig, ax = plt.subplots();
+    fig, ax = plt.subplots()
+    ax.set_xlim(left=0, right=generations+1)
 
-    plt.plot(maiores, color = 'red')
-    plt.plot(medias, color = 'yellow')
-    plt.plot(menores, color = 'blue')
+    plt.plot(maiores, color = 'red', label="Melhor")
+    plt.plot(medias, color = 'green', label="Média")
+    plt.plot(menores, color = 'blue', label = "Pior")
 
 
-    plt.yticks(list(plt.yticks()[0]) + [maiores[final]])
+    ax2 = ax.twinx()
+    ax2.set_yticks(list(ax.get_yticks()) + [maiores[final]])
+    fig.canvas.draw()
+    temp_ticks = ax2.get_yticklabels()
+    for tick in temp_ticks:
+        if(tick.get_position()[1] != maiores[final]):
+            tick.set_visible(False)
+        else:
+            tick.set_color("red")
+
+    # for i in xrange(5):
+    #     line, = ax.plot(x, i * x, label='$y = %ix$'%i)
+
+    box = ax.get_position()
+    ax.set_position([box.x0, box.y0 + box.height * 0.1, box.width, box.height * 0.9])
+    box = ax2.get_position()
+    ax2.set_position([box.x0, box.y0 + box.height * 0.1, box.width, box.height * 0.9])
+
+
+    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05),
+                fancybox=True, shadow=True, ncol=3)
+
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+
+    ax2.spines['top'].set_visible(False)
+    ax2.spines['right'].set_visible(False)
+
+
+    # plt.yticks(list(plt.yticks()[0]) + [maiores[final]])
     # ticks = ax.get_yticks()
 
     # ax2 = ax.twinx()

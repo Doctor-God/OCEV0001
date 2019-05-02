@@ -19,14 +19,33 @@ Score_Restricao Problem<int_permut_t>::nQueens(std::vector<std::vector<int_permu
 	double mais_colisoes = config.getNumVars();
 
 
+	// #pragma omp parallel for shared(valores)
+	// for(int k = 0; k < config.getPopSize(); k++){
+	// 	std::vector<bool> colided(config.getNumVars(), false);	
+	// 	int colisoes = 0;
+	// 	for(int i = 0; i < config.getNumVars()-1; i++){
+	// 		for(int j = i + 1; j < config.getNumVars(); j++){
+	// 			if(std::abs(i - j) == std::abs(popul[k][i] - popul[k][j]) and not colided[j]){
+	// 				colisoes++;
+	// 				colided[j] = true;
+	// 			}
+	// 			// else if(std::abs(i - j) == std::abs(popul[k][i] - popul[k][j])){
+	// 			// 	colisoes+=2;
+	// 			// }
+	// 		}
+	// 	}
+	// 	valores[k] = 1.0 - colisoes/mais_colisoes;
+
+	// }
+
 	#pragma omp parallel for shared(valores)
 	for(int k = 0; k < config.getPopSize(); k++){
-		std::vector<bool> colided(config.getNumVars(), false);	
-		int colisoes = 0;
+		std::vector<bool> colided(config.getNumVars(), false);
 		for(int i = 0; i < config.getNumVars()-1; i++){
 			for(int j = i + 1; j < config.getNumVars(); j++){
-				if(std::abs(i - j) == std::abs(popul[k][i] - popul[k][j]) and not colided[j]){
-					colisoes++;
+				if(std::abs(i - j) == std::abs(popul[k][i] - popul[k][j])){
+					// colisoes++;
+					colided[i] = true;
 					colided[j] = true;
 				}
 				// else if(std::abs(i - j) == std::abs(popul[k][i] - popul[k][j])){
@@ -34,8 +53,12 @@ Score_Restricao Problem<int_permut_t>::nQueens(std::vector<std::vector<int_permu
 				// }
 			}
 		}
-		valores[k] = 1.0 - colisoes/mais_colisoes;
-
+		int nao_colidiu = 0;
+		for(int i = 0; i < config.getNumVars(); i++){
+			if(!colided[i]) nao_colidiu++;
+		}
+		valores[k] = ((double)nao_colidiu)/config.getNumVars();
+	
 	}
 
 	// double mais_colisoes = *std::max_element(valores.begin(), valores.end());

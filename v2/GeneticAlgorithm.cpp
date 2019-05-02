@@ -195,7 +195,7 @@ void GeneticAlgorithm<bool>::crossover(std::vector<std::vector<bool> > &popul){
             else if(config.getCrossoverType() == 0){ //Uniforme
                 for(int j = 0; j < config.getNumVars(); j++){
                     double swap_or_no = getRandDouble(0.0, 1.0);
-                    if(will_it_happen < 0.5){
+                    if(swap_or_no < 0.5){
                         bool temp;
                         temp = popul[i][j];
                         popul[i][j] = popul[i+1][j];
@@ -261,26 +261,26 @@ void GeneticAlgorithm<int_permut_t>::crossover(std::vector<std::vector<int_permu
 
             //Antes da seção
             for(int j = 0; j <= ponto1; j++){
-                auto temp1 = section_first.find(popul[i+1][j]);
-                if(temp1 != section_first.end()){
+                auto temp1 = section_second.find(popul[i][j]);
+                if(temp1 != section_second.end()){
                     popul_temp[i][j] = temp1->second;
                 }
 
-                auto temp2 = section_second.find(popul[i][j]);
-                if(temp2 != section_second.end()){
+                auto temp2 = section_first.find(popul[i+1][j]);
+                if(temp2 != section_first.end()){
                     popul_temp[i+1][j] = temp2->second;
                 }
             }
 
             //Depois da seção  
             for(int j = ponto2+1; j < config.getNumVars(); j++){
-                auto temp1 = section_first.find(popul[i+1][j]);
-                if(temp1 != section_first.end()){
+                auto temp1 = section_second.find(popul[i][j]);
+                if(temp1 != section_second.end()){
                     popul_temp[i][j] = temp1->second;
                 }
 
-                auto temp2 = section_second.find(popul[i][j]);
-                if(temp2 != section_second.end()){
+                auto temp2 = section_first.find(popul[i+1][j]);
+                if(temp2 != section_first.end()){
                     popul_temp[i+1][j] = temp2->second;
                 }
             }
