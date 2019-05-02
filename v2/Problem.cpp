@@ -124,18 +124,14 @@ Score_Restricao Problem<int_permut_t>::nQueens_weight(std::vector<std::vector<in
 		}
 	}
 
-	#pragma omp parallel for shared(valor_colisoes, valor_peso, valores)
-	for (int k = 0; k < config.getPopSize(); k++)
-	{
+	#pragma omp parallel for shared(valores)
+	for(int k = 0; k < config.getPopSize(); k++){
 		std::vector<bool> colided(config.getNumVars(), false);
-		int colisoes = 0;
-		for (int i = 0; i < config.getNumVars() - 1; i++)
-		{
-			for (int j = i + 1; j < config.getNumVars(); j++)
-			{
-				if (std::abs(i - j) == std::abs(popul[k][i] - popul[k][j]) and not colided[j])
-				{
-					colisoes++;
+		for(int i = 0; i < config.getNumVars()-1; i++){
+			for(int j = i + 1; j < config.getNumVars(); j++){
+				if(std::abs(i - j) == std::abs(popul[k][i] - popul[k][j])){
+					// colisoes++;
+					colided[i] = true;
 					colided[j] = true;
 				}
 				// else if(std::abs(i - j) == std::abs(popul[k][i] - popul[k][j])){
@@ -143,8 +139,12 @@ Score_Restricao Problem<int_permut_t>::nQueens_weight(std::vector<std::vector<in
 				// }
 			}
 		}
+		int colisoes = 0;
+		for(int i = 0; i < config.getNumVars(); i++){
+			if(colided[i]) colisoes++;
+		}
 		// valor_colisoes[k] = 1.0 - colisoes / mais_colisoes;
-		valor_colisoes[k] = colisoes / mais_colisoes;
+		valor_colisoes[k] = ((double)colisoes) / mais_colisoes;
 
 		double valor = 0.0;
 		for(int i = 0; i < config.getNumVars(); i++){
@@ -167,6 +167,12 @@ Score_Restricao Problem<int_permut_t>::nQueens_weight(std::vector<std::vector<in
 		
 	}
 
+	// for(int i = 0; i < config.getPopSize(); i++){
+	// 	for(int j = 0; j < config.getNumVars(); j++){
+	// 		std::cout << popul[i][j] << " ";
+	// 	}
+	// 	std::cout <<std::endl;
+	// }
 
 	// double mais_colisoes = *std::max_element(valores.begin(), valores.end());
 	// for(auto i : valores)
@@ -205,14 +211,11 @@ void Problem<int_permut_t>::nQueens_weight_decoder(std::vector<int_permut_t> &in
 
 
 	std::vector<bool> colided(config.getNumVars(), false);
-	int colisoes = 0;
-	for (int i = 0; i < config.getNumVars() - 1; i++)
-	{
-		for (int j = i + 1; j < config.getNumVars(); j++)
-		{
-			if (std::abs(i - j) == std::abs(indiv[i] - indiv[j]) and not colided[j])
-			{
-				colisoes++;
+	for(int i = 0; i < config.getNumVars()-1; i++){
+		for(int j = i + 1; j < config.getNumVars(); j++){
+			if(std::abs(i - j) == std::abs(indiv[i] - indiv[j])){
+				// colisoes++;
+				colided[i] = true;
 				colided[j] = true;
 			}
 			// else if(std::abs(i - j) == std::abs(indiv[i] - indiv[j])){
@@ -220,7 +223,11 @@ void Problem<int_permut_t>::nQueens_weight_decoder(std::vector<int_permut_t> &in
 			// }
 		}
 	}
-	valor_colisoes = 1.0 - colisoes / mais_colisoes;
+	int colisoes = 0;
+	for(int i = 0; i < config.getNumVars(); i++){
+		if(colided[i]) colisoes++;
+	}
+	// valor_colisoes = 1.0 - colisoes / mais_colisoes;
 
 	double valor = 0.0;
 	for(int i = 0; i < config.getNumVars(); i++){
@@ -232,7 +239,7 @@ void Problem<int_permut_t>::nQueens_weight_decoder(std::vector<int_permut_t> &in
 		}
 	}
 	resultados << "Valor: " << valor << std::endl;
-	valor_peso = valor/maior_peso;
+	// valor_peso = valor/maior_peso;
 
 	resultados << "Colisoes: " << colisoes << std::endl;
 	resultados << std::endl;

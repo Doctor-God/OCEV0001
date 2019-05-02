@@ -369,16 +369,12 @@ void GeneticAlgorithm<int_permut_t>::mutacao(std::vector<std::vector<int_permut_
         for(int j = 0; j < config.getNumVars(); j++){
             double dice_roll = getRandDouble(0.0, 1.0);
             if(dice_roll < config.getProbMutacao()){
-                int who = getRandInt(0, config.getNumVars());
-                while(who == j) who = getRandInt(0, config.getNumVars());
-                for(int k = 0; k < config.getNumVars(); k++){
-                    if(k == who){
-                        int temp = popul[i][j];
-                        popul[i][j] = popul[i][k];
-                        popul[i][k] = temp;
-                        break;
-                    }
-                }
+                int who = getRandInt(0, config.getNumVars()-1);
+                while(who == j) who = getRandInt(0, config.getNumVars()-1);
+                int temp = popul[i][j];
+                popul[i][j] = popul[i][who];
+                popul[i][who] = temp;
+                break;
             }
         }
     }

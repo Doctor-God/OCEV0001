@@ -63,7 +63,9 @@ def main(argv):
 
     ax2 = ax.twinx()
     ax2.set_yticks(list(ax.get_yticks()) + [maiores[final]])
+    ax2.set_ylim(ax.get_ylim())
     fig.canvas.draw()
+    
     temp_ticks = ax2.get_yticklabels()
     for tick in temp_ticks:
         if(tick.get_position()[1] != maiores[final]):
@@ -129,7 +131,10 @@ def main(argv):
     ax.text(0.05, 0.95, textstr, transform=ax.transAxes, fontsize=14,
         verticalalignment='top')
 
-    plt.boxplot(res_finais)
+    bp = ax.boxplot(res_finais)
+
+    for flier in bp['fliers']:
+        flier.set(marker='.')
 
     plt.savefig("testes/" + nome_arq + "_boxplot.png")
 
