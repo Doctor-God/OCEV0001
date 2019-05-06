@@ -61,6 +61,9 @@ def main(argv):
     plt.plot(menores, color = 'blue', label = "Pior")
 
 
+    plt.xlabel("Geração")
+    plt.ylabel("Fitness")
+
     ax2 = ax.twinx()
     ax2.set_yticks(list(ax.get_yticks()) + [maiores[final]])
     ax2.set_ylim(ax.get_ylim())
@@ -82,7 +85,7 @@ def main(argv):
     ax2.set_position([box.x0, box.y0 + box.height * 0.1, box.width, box.height * 0.9])
 
 
-    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05),
+    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1),
                 fancybox=True, shadow=True, ncol=3)
 
     ax.spines['top'].set_visible(False)
@@ -90,7 +93,6 @@ def main(argv):
 
     ax2.spines['top'].set_visible(False)
     ax2.spines['right'].set_visible(False)
-
 
     # plt.yticks(list(plt.yticks()[0]) + [maiores[final]])
     # ticks = ax.get_yticks()
@@ -130,6 +132,8 @@ def main(argv):
 
     ax.text(0.05, 0.95, textstr, transform=ax.transAxes, fontsize=14,
         verticalalignment='top')
+
+    ax.ticklabel_format(useOffset=False)
 
     bp = ax.boxplot(res_finais)
 

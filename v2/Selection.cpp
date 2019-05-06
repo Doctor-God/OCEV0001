@@ -214,9 +214,43 @@ std::vector<std::vector<T> > Selection<T>::vizinhanca(std::vector<std::vector<T>
             }
 
         }
-        else if(config.getTipoSelec() == 2){ //Aleatório
+        else if(config.getTipoSelec() == 2){ //Proporcional (Ranking)
+            std::vector<size_t> idx = sort_indexes(seus_scores);
+            std::vector<double> uniform_scores(config.getK()*2);
+
+            double rank = config.getK()*2;
+            for(auto i : idx){
+                
+                seus_scores[i] = rank;
+                // std::cout << uniform_scores[i] << std::endl;        
+                rank -= 1.0;
+            }
+            
+            double score_total = 0.0;
+            for(int j = 0; j < vizinhos.size(); j++){
+                score_total += seus_scores[j];
+            }
+
+            std::vector<double> score_relativo(vizinhos.size());
+            score_relativo[0] = seus_scores[0]/score_total;
+            for(int j = 1; j < vizinhos.size(); j++){
+                score_relativo[j] = seus_scores[j]/score_total + score_relativo[j-1];
+            }
+
+
+            double dice_roll = getRandDouble(0.0, 1.0);
+            for(int j = 1; j < vizinhos.size(); j++){
+                if(dice_roll < score_relativo[j]){
+                    escolhido = vizinhos[j];
+                    break;
+                }
+            }
+
+        }
+        else if(config.getTipoSelec() == 3){ //Aleatório (não faz sentido lol)
             escolhido = vizinhos[getRandInt(0, vizinhos.size()-1)];
         }
+
         popul_temp[i+1].assign(popul[escolhido].begin(), popul[escolhido].end());
 
         // std::cout << escolhido << std::endl << std::endl;

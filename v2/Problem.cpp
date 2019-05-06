@@ -106,12 +106,9 @@ void Problem<int_permut_t>::nQueens_decoder(std::vector<int_permut_t> &indiv, Co
 template<> inline
 Score_Restricao Problem<int_permut_t>::nQueens_weight(std::vector<std::vector<int_permut_t>> &popul, Config &config){	
 	std::vector<double> valores(config.getPopSize());
-	std::vector<double> valor_colisoes(config.getPopSize());
-	std::vector<double> valor_peso(config.getPopSize());
 	std::vector<bool> restricao(config.getPopSize(), false);
 
 	// double mais_colisoes = config.getNumVars()+2*config.getNumVars()*(config.getNumVars()-1);
-	double mais_colisoes = config.getNumVars();
 	double maior_peso = 0.0;
 	if(config.getNumVars() % 2 == 0){
 		for (int j = 0; j < config.getNumVars(); j++){
@@ -126,6 +123,7 @@ Score_Restricao Problem<int_permut_t>::nQueens_weight(std::vector<std::vector<in
 
 	#pragma omp parallel for shared(valores)
 	for(int k = 0; k < config.getPopSize(); k++){
+		double valor_colisoes, valor_peso;
 		std::vector<bool> colided(config.getNumVars(), false);
 		for(int i = 0; i < config.getNumVars()-1; i++){
 			for(int j = i + 1; j < config.getNumVars(); j++){
@@ -143,8 +141,8 @@ Score_Restricao Problem<int_permut_t>::nQueens_weight(std::vector<std::vector<in
 		for(int i = 0; i < config.getNumVars(); i++){
 			if(colided[i]) colisoes++;
 		}
-		// valor_colisoes[k] = 1.0 - colisoes / mais_colisoes;
-		valor_colisoes[k] = ((double)colisoes) / mais_colisoes;
+		// valor_colisoes = 1.0 - ((double)colisoes) / config.getNumVars();
+		valor_colisoes = ((double)colisoes) / config.getNumVars();
 
 		double valor = 0.0;
 		for(int i = 0; i < config.getNumVars(); i++){
@@ -155,15 +153,15 @@ Score_Restricao Problem<int_permut_t>::nQueens_weight(std::vector<std::vector<in
 				valor += std::log10(i * config.getNumVars() + (popul[k][i] + 1));
 			}
 		}
-		valor_peso[k] = valor/maior_peso;
+		valor_peso = valor/maior_peso;
 
-		double h = std::max(0.0, valor_colisoes[k]*valor_peso[k]); //Perda proporcional ao número de colisões
-		if(h != 0)
+		double h = valor_colisoes*valor_peso; //Perda proporcional ao número de colisões
+		if(colisoes != 0)
 			restricao[k] = true; // Seta que o indivíduo violou restrição
 
 		
-		// valores[k] = (valor_colisoes[k] + valor_peso[k])/2;
-		valores[k] = valor_peso[k] - h;
+		// valores[k] = valor_colisoes*0.5 + 0.5*valor_peso;
+		valores[k] = valor_peso - h;
 		
 	}
 
