@@ -35,7 +35,7 @@ void GeneticAlgorithm<T>::run(){
         score_r = fitness();
         //Ordenar os indivíduos de melhor para pior
         std::vector<size_t> idx = sort_indexes(score_r.scores);
- 
+
         //Substituir os piores pelos melhores da última geracao
         if(geracao_atual != 0 and config.getNumElitistas() != 0){
             int j = 0;
@@ -69,7 +69,7 @@ void GeneticAlgorithm<T>::run(){
 
         //Obtem populacao temporária para crossover e mutacao
         std::vector<std::vector<T> > popul_temp = selection();
-        crossover(popul_temp);        
+        crossover(popul_temp);
         mutacao(popul_temp);
 
         //Atualiza a populacao para a próxima geração
@@ -107,7 +107,7 @@ void GeneticAlgorithm<T>::run(){
 
 
     resultados << "Execução " << config.getExecucao() << ":" << std::endl;
-    
+
     int i = idx[0];
     if(score_r.restritos[i]) resultados << "Indivíduo infringiu restrição!" << std::endl;
     else resultados << "Indivíduo válido." << std::endl;
@@ -123,7 +123,7 @@ void GeneticAlgorithm<T>::run(){
         p.getDecoder(config.getProblem())(popul[i], config);
     }
     else if(config.getTipoRelatorio() == 2){ //Completo
-        resultados <<"Indivíduo " << i << std::endl << "\tfitness: " << score_r.scores[i] << std::endl; 
+        resultados <<"Indivíduo " << i << std::endl << "\tfitness: " << score_r.scores[i] << std::endl;
         resultados << "\tCromossomo: ";
         for(int j = 0; j < config.getNumVars(); j++){
             resultados << popul[i][j] << " ";
@@ -136,13 +136,13 @@ void GeneticAlgorithm<T>::run(){
     // int i = idx[0];
     // if(score_r.restritos[i]) std::cout << "Infringiu restrição!" << std::endl;
     // else std::cout << "Indivíduo válido." << std::endl;
-    // std::cout <<"Indivíduo " << i << std::endl << "\tfitness: " << score_r.scores[i] << std::endl; 
+    // std::cout <<"Indivíduo " << i << std::endl << "\tfitness: " << score_r.scores[i] << std::endl;
     // std::cout << "\tCromossomo: ";
     // for(int j = 0; j < config.getNumVars(); j++){
     //     std::cout << popul[i][j] << " ";
     // }
     // std::cout << std::endl;
-    
+
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -186,7 +186,7 @@ void GeneticAlgorithm<bool>::crossover(std::vector<std::vector<bool> > &popul){
             else if(config.getCrossoverType() == 2){ //Dois pontos
                 int ponto1 = getRandInt(0, config.getNumVars()-4);
                 int ponto2 = getRandInt(ponto1+2, config.getNumVars()-2);
-                
+
                 for(int j = ponto1+1; j <= ponto2; j++){
                     bool temp;
                     temp = popul[i][j];
@@ -228,7 +228,7 @@ void GeneticAlgorithm<int>::crossover(std::vector<std::vector<int> > &popul){
             else if(config.getCrossoverType() == 2){
                 int ponto1 = getRandInt(0, config.getNumVars()-4);
                 int ponto2 = getRandInt(ponto1+2, config.getNumVars()-2);
-                
+
                 for(int j = ponto1+1; j <= ponto2; j++){
                     bool temp;
                     temp = popul[i][j];
@@ -243,8 +243,8 @@ void GeneticAlgorithm<int>::crossover(std::vector<std::vector<int> > &popul){
 
 template<> inline
 void GeneticAlgorithm<int_permut_t>::crossover(std::vector<std::vector<int_permut_t> > &popul){
-    std::vector<std::vector<int_permut_t> > popul_temp(config.getPopSize(), std::vector<int_permut_t>(config.getNumVars()));  
-    popul_temp.assign(popul.begin(), popul.end());  
+    std::vector<std::vector<int_permut_t> > popul_temp(config.getPopSize(), std::vector<int_permut_t>(config.getNumVars()));
+    popul_temp.assign(popul.begin(), popul.end());
     for(int i = 0; i < config.getPopSize(); i+=2){
         double will_it_happen = getRandDouble(0.0, 1.0);
         if(will_it_happen < config.getProbCrossover()){
@@ -274,7 +274,7 @@ void GeneticAlgorithm<int_permut_t>::crossover(std::vector<std::vector<int_permu
                 }
             }
 
-            //Depois da seção  
+            //Depois da seção
             for(int j = ponto2+1; j < config.getNumVars(); j++){
                 auto temp1 = section_second.find(popul[i][j]);
                 if(temp1 != section_second.end()){
@@ -301,7 +301,7 @@ void GeneticAlgorithm<double>::crossover(std::vector<std::vector<double> > &popu
                     double max_i = std::max(popul[i][j], popul[i+1][j]);
                     double min_i = std::min(popul[i][j], popul[i+1][j]);
                     double d_i = max_i - min_i;
-                    
+
                     //Intervalo para geração do número aleatório
                     double sec_lower = min_i - d_i*config.getAlpha();
                     double sec_upper = max_i + d_i*config.getAlpha();
@@ -311,14 +311,14 @@ void GeneticAlgorithm<double>::crossover(std::vector<std::vector<double> > &popu
 
                     double filho1 = getRandDouble(sec_lower, sec_upper);
                     double filho2 = getRandDouble(sec_lower, sec_upper);
-                    
+
                     //Ajustar para o intervalo válido
                     filho1 = (filho1 - sec_lower)*(upper-lower)/(sec_upper-sec_lower) + lower;
                     filho2 = (filho2 - sec_lower)*(upper-lower)/(sec_upper-sec_lower) + lower;
 
                     popul[i][j] = filho1;
                     popul[i+1][j] = filho2;
-                }            
+                }
             }
             else if(config.getCrossoverType() == 2){ //Aritmético
                 double a = getRandDouble(0.0, 1.0);
@@ -359,7 +359,7 @@ void GeneticAlgorithm<int>::mutacao(std::vector<std::vector<int> > &popul){
             double dice_roll = getRandDouble(0.0, 1.0);
             if(dice_roll < config.getProbMutacao()){
                 //Substitui a variável por um valor aleatório no domínio
-                popul[i][j] = getRandInt(std::get<int>(config.getLowerBound()), std::get<int>(config.getUpperBound())); 
+                popul[i][j] = getRandInt(std::get<int>(config.getLowerBound()), std::get<int>(config.getUpperBound()));
             }
         }
     }
@@ -500,7 +500,7 @@ void GeneticAlgorithm<T>::printPopulacao(){
 template<typename T>
 GeneticAlgorithm<T>::GeneticAlgorithm(Config &c){
     this->config = c;
-    elite = std::vector<std::vector<T> >(config.getNumElitistas(), std::vector<T>(config.getNumVars())); 
+    elite = std::vector<std::vector<T> >(config.getNumElitistas(), std::vector<T>(config.getNumVars()));
     elite_score_r.scores = std::vector<double>(config.getNumElitistas());
     elite_score_r.restritos = std::vector<bool>(config.getNumElitistas());
 }
@@ -510,5 +510,3 @@ GeneticAlgorithm<T>::GeneticAlgorithm(){}
 
 template<typename T>
 GeneticAlgorithm<T>::~GeneticAlgorithm(){}
-
-

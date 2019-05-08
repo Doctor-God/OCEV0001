@@ -26,7 +26,7 @@ def main(argv):
     for i in range(0,nro_testes):
         # arq = [float(i) for i in arq]
         testes[i] = np.array(arq[i*generations*3:i*generations*3 + (generations)*3], dtype=np.float64)
-        testes_div[i] = np.array(arq[i*generations:i*generations+generations], dtype=np.float64)
+        testes_div[i] = np.array(arq_div[i*generations:i*generations+generations], dtype=np.float64)
 
 
     maiores = np.empty([generations], dtype=np.float64)
@@ -49,7 +49,7 @@ def main(argv):
         maior /= nro_testes
         menor /= nro_testes
         media /= nro_testes
-        
+
         maiores[i] = maior
         menores[i] = menor
         medias[i] = media
@@ -59,7 +59,7 @@ def main(argv):
     maiores = np.insert(maiores, 0, 0, axis=0)
     medias = np.insert(medias, 0, 0, axis=0)
     menores = np.insert(menores, 0, 0, axis=0)
-    diversidade = np.insert(menores, 0, 0, axis=0)
+    # diversidade = np.insert(diversidade, 0, 0, axis=0)
     # print(maiores)
 
     # plt.ylim(0.0, 1.0)
@@ -80,7 +80,7 @@ def main(argv):
     ax2.set_yticks(list(ax.get_yticks()) + [maiores[final]])
     ax2.set_ylim(ax.get_ylim())
     fig.canvas.draw()
-    
+
     temp_ticks = ax2.get_yticklabels()
     for tick in temp_ticks:
         if(tick.get_position()[1] != maiores[final]):
@@ -110,7 +110,7 @@ def main(argv):
     # ticks = ax.get_yticks()
 
     # ax2 = ax.twinx()
-    
+
     # ax2.set_yticks(maiores[final])
 
     # yticks = ax2.yaxis.get_major_ticks()
