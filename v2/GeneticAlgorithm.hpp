@@ -37,6 +37,7 @@ public:
     void crossover(std::vector<std::vector<T> > &popul);
     void mutacao(std::vector<std::vector<T> > &popul);
 
+    void diversityMeasure();
 };
 
 #include "GeneticAlgorithm.cpp"

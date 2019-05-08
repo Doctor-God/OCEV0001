@@ -64,6 +64,7 @@ void GeneticAlgorithm<T>::run(){
             for(auto i : idx) media += score_r.scores[i];
             media /= config.getPopSize();
             geracoes << media << std::endl;
+            diversityMeasure();
         }
 
         //Obtem populacao temporária para crossover e mutacao
@@ -101,6 +102,7 @@ void GeneticAlgorithm<T>::run(){
         media /= config.getPopSize();
         geracoes << media << std::endl;
         geracoes.close();
+        diversityMeasure();
     }
 
 
@@ -402,6 +404,42 @@ void GeneticAlgorithm<double>::mutacao(std::vector<std::vector<double> > &popul)
     }
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////
+//                            Diversidade
+////////////////////////////////////////////////////////////////////////////////////////
+template<> inline
+void GeneticAlgorithm<bool>::diversityMeasure(){}
+
+template<> inline
+void GeneticAlgorithm<int>::diversityMeasure(){}
+
+template<> inline
+void GeneticAlgorithm<int_permut_t>::diversityMeasure(){
+    std::ofstream diversidades;
+    diversidades.open("./testes/" + config.getArquivoDestino() + "-diversidades", std::ofstream::out | std::ofstream::app);
+    std::vector<int> centroide(config.getNumVars());
+    for(int v = 0; v < config.getNumVars(); v++){
+        double variavel = 0.0;
+        for(int k = 0; k < config.getPopSize(); k++){
+            variavel += popul[k][v];
+        }
+        centroide[v] = std::round(variavel/config.getPopSize());
+    }
+
+    double distancia_total = 0.0;
+    for(int k = 0; k < config.getPopSize(); k++){
+        for(int v = 0; v < config.getNumVars(); v++){
+            distancia_total += std::abs(popul[k][v] - centroide[v]);
+        }
+    }
+    distancia_total /= config.getPopSize();
+    diversidades << distancia_total << std::endl;
+    diversidades.close();
+}
+
+
+template<> inline
+void GeneticAlgorithm<double>::diversityMeasure(){}
 
 
 /////////////////////////////////////////////////////////////////////////////////////////

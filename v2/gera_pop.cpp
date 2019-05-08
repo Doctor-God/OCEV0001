@@ -123,8 +123,14 @@ int main(int argc, char const *argv[]){
 	ofstream temp;
 	temp.open("./testes/" + config.getArquivoDestino() + "-resultados", std::ifstream::out | std::ifstream::trunc);
 	temp.close();
+	
 
 	temp.open("./testes/" + config.getArquivoDestino() + "-geracoes", std::ifstream::out | std::ifstream::trunc);
+	temp << config.getNumExecucoes() << std::endl;
+	temp << config.getGenerations() << std::endl;
+	temp.close();
+
+	temp.open("./testes/" + config.getArquivoDestino() + "-diversidades", std::ifstream::out | std::ifstream::trunc);
 	temp << config.getNumExecucoes() << std::endl;
 	temp << config.getGenerations() << std::endl;
 	temp.close();
