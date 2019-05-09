@@ -15,6 +15,8 @@ template<typename T>
 void GeneticAlgorithm<T>::run(){
     std::ofstream geracoes;
     std::ofstream resultados;
+    std::ofstream diversidades;
+
     // if(config.getSaidaArquivo()){
     //     saida = std::ofstream(config.getArquivoDestino());
     // }
@@ -23,6 +25,7 @@ void GeneticAlgorithm<T>::run(){
 
     if(config.getTipoRelatorio() != 0){
         geracoes.open("./testes/" + config.getArquivoDestino() + "-geracoes", std::ofstream::out | std::ofstream::app);
+        diversidades.open("./testes/" + config.getArquivoDestino() + "-diversidades", std::ofstream::out | std::ofstream::app);
     }
 
 
@@ -64,7 +67,7 @@ void GeneticAlgorithm<T>::run(){
             for(auto i : idx) media += score_r.scores[i];
             media /= config.getPopSize();
             geracoes << media << std::endl;
-            diversityMeasure();
+            diversidades << diversityMeasure() << std::endl;
         }
 
         //Obtem populacao temporária para crossover e mutacao
@@ -102,7 +105,8 @@ void GeneticAlgorithm<T>::run(){
         media /= config.getPopSize();
         geracoes << media << std::endl;
         geracoes.close();
-        diversityMeasure();
+        diversidades << diversityMeasure() << std::endl;
+        diversidades.close();
     }
 
 
@@ -408,38 +412,90 @@ void GeneticAlgorithm<double>::mutacao(std::vector<std::vector<double> > &popul)
 //                            Diversidade
 ////////////////////////////////////////////////////////////////////////////////////////
 template<> inline
-void GeneticAlgorithm<bool>::diversityMeasure(){}
-
-template<> inline
-void GeneticAlgorithm<int>::diversityMeasure(){}
-
-template<> inline
-void GeneticAlgorithm<int_permut_t>::diversityMeasure(){
-    std::ofstream diversidades;
-    diversidades.open("./testes/" + config.getArquivoDestino() + "-diversidades", std::ofstream::out | std::ofstream::app);
-    std::vector<int> centroide(config.getNumVars());
+double GeneticAlgorithm<bool>::diversityMeasure(){
+    std::vector<double> centroide(config.getNumVars());
     for(int v = 0; v < config.getNumVars(); v++){
         double variavel = 0.0;
         for(int k = 0; k < config.getPopSize(); k++){
             variavel += popul[k][v];
         }
-        centroide[v] = std::round(variavel/config.getPopSize());
+        centroide[v] = variavel/config.getPopSize();
     }
 
-    double distancia_total = 0.0;
-    for(int k = 0; k < config.getPopSize(); k++){
-        for(int v = 0; v < config.getNumVars(); v++){
-            distancia_total += std::abs(popul[k][v] - centroide[v]);
+    double inercia = 0.0;
+    for(int v = 0; v < config.getNumVars(); v++){
+        for(int k = 0; k < config.getPopSize(); k++){
+            double diff = popul[k][v] - centroide[v];
+            inercia += diff * diff;            
         }
     }
-    distancia_total /= config.getPopSize();
-    diversidades << distancia_total << std::endl;
-    diversidades.close();
+
+    return inercia;
+}
+
+template<> inline
+double GeneticAlgorithm<int>::diversityMeasure(){
+    //Hamming Distance
+    double distancia_total = 0.0;
+    for(int i = 0; i < config.getPopSize(); i++){
+        for(int j = 0; j < config.getPopSize(); j++){
+            if(i == j) continue;
+            for(int v = 0; v < config.getNumVars(); v++){
+                distancia_total += std::abs(popul[i][v] - popul[j][v]);
+            }
+        }
+    }
+    // distancia_total /= config.getPopSize();
+    return distancia_total;
+}
+
+template<> inline
+double GeneticAlgorithm<int_permut_t>::diversityMeasure(){
+    // std::vector<int> centroide(config.getNumVars());
+    // for(int v = 0; v < config.getNumVars(); v++){
+    //     double variavel = 0.0;
+    //     for(int k = 0; k < config.getPopSize(); k++){
+    //         variavel += popul[k][v];
+    //     }
+    //     centroide[v] = std::round(variavel/config.getPopSize());
+    // }
+    
+    //Hamming Distance
+    double distancia_total = 0.0;
+    for(int i = 0; i < config.getPopSize(); i++){
+        for(int j = 0; j < config.getPopSize(); j++){
+            if(i == j) continue;
+            for(int v = 0; v < config.getNumVars(); v++){
+                distancia_total += std::abs(popul[i][v] - popul[j][v]);
+            }
+        }
+    }
+    // distancia_total /= config.getPopSize();
+    return distancia_total;
 }
 
 
 template<> inline
-void GeneticAlgorithm<double>::diversityMeasure(){}
+double GeneticAlgorithm<double>::diversityMeasure(){
+        std::vector<double> centroide(config.getNumVars());
+    for(int v = 0; v < config.getNumVars(); v++){
+        double variavel = 0.0;
+        for(int k = 0; k < config.getPopSize(); k++){
+            variavel += popul[k][v];
+        }
+        centroide[v] = variavel/config.getPopSize();
+    }
+
+    double inercia = 0.0;
+    for(int v = 0; v < config.getNumVars(); v++){
+        for(int k = 0; k < config.getPopSize(); k++){
+            double diff = popul[k][v] - centroide[v];
+            inercia += diff * diff;            
+        }
+    }
+
+    return inercia;
+}
 
 
 /////////////////////////////////////////////////////////////////////////////////////////

@@ -56,9 +56,9 @@ def main(argv):
         diversidade[i] = divers
 
 
-    maiores = np.insert(maiores, 0, 0, axis=0)
-    medias = np.insert(medias, 0, 0, axis=0)
-    menores = np.insert(menores, 0, 0, axis=0)
+    # maiores = np.insert(maiores, 0, 0, axis=0)
+    # medias = np.insert(medias, 0, 0, axis=0)
+    # menores = np.insert(menores, 0, 0, axis=0)
     # diversidade = np.insert(diversidade, 0, 0, axis=0)
     # print(maiores)
 
@@ -131,6 +131,10 @@ def main(argv):
 
 
     plt.plot(diversidade, color = 'red')
+    
+    plt.xlabel("Geração")
+    plt.ylabel("Diversidade")
+    
     plt.savefig("testes/" + nome_arq + "_diversidade.png")
     plt.close()
 
