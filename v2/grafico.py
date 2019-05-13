@@ -132,6 +132,8 @@ def main(argv):
 
     plt.plot(diversidade, color = 'red')
     
+    plt.ylim(bottom=0)
+
     plt.xlabel("Geração")
     plt.ylabel("Diversidade")
     

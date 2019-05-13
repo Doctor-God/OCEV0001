@@ -26,6 +26,8 @@ void GeneticAlgorithm<T>::run(){
     if(config.getTipoRelatorio() != 0){
         geracoes.open("./testes/" + config.getArquivoDestino() + "-geracoes", std::ofstream::out | std::ofstream::app);
         diversidades.open("./testes/" + config.getArquivoDestino() + "-diversidades", std::ofstream::out | std::ofstream::app);
+
+        //Setar highest_diversity aqui
     }
 
 
@@ -435,7 +437,7 @@ double GeneticAlgorithm<bool>::diversityMeasure(){
 
 template<> inline
 double GeneticAlgorithm<int>::diversityMeasure(){
-    //Hamming Distance
+    //Manhattan Distance
     double distancia_total = 0.0;
     for(int i = 0; i < config.getPopSize(); i++){
         for(int j = 0; j < config.getPopSize(); j++){
@@ -451,16 +453,7 @@ double GeneticAlgorithm<int>::diversityMeasure(){
 
 template<> inline
 double GeneticAlgorithm<int_permut_t>::diversityMeasure(){
-    // std::vector<int> centroide(config.getNumVars());
-    // for(int v = 0; v < config.getNumVars(); v++){
-    //     double variavel = 0.0;
-    //     for(int k = 0; k < config.getPopSize(); k++){
-    //         variavel += popul[k][v];
-    //     }
-    //     centroide[v] = std::round(variavel/config.getPopSize());
-    // }
-    
-    //Hamming Distance
+    //Manhattan Distance
     double distancia_total = 0.0;
     for(int i = 0; i < config.getPopSize(); i++){
         for(int j = 0; j < config.getPopSize(); j++){
