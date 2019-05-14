@@ -29,6 +29,7 @@ private:
     int relatorio;
     int execucoes;
     int execucao;
+    double C;
 public:
     Config();
 
@@ -54,6 +55,7 @@ public:
     int getTipoRelatorio();
     int getNumExecucoes();
     int getExecucao();
+    double getConstC();
 
 
 
@@ -79,6 +81,7 @@ public:
     void setTipoRelatorio(int relatorio);
     void setNumExecucoes(int num);
     void setExecucao(int num);
+    void setConstC(double num);
 
 };
 

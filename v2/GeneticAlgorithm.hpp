@@ -39,7 +39,10 @@ public:
     void crossover(std::vector<std::vector<T> > &popul);
     void mutacao(std::vector<std::vector<T> > &popul);
 
+    double highestDiversity();
     double diversityMeasure();
+
+    void escalonamentoLinear();
 };
 
 #include "GeneticAlgorithm.cpp"

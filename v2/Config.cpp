@@ -17,6 +17,7 @@
         b = 5.0;
         relatorio = 0;
         execucoes = 1;
+        C = 0;
     }
         
     int Config::getTipo(){return tipo;}
@@ -41,6 +42,7 @@
     int Config::getTipoRelatorio() {return relatorio;}
     int Config::getNumExecucoes() {return execucoes;}
     int Config::getExecucao() {return execucao;}
+    double Config::getConstC() {return C;}
 
 
     void Config::setTipo(int tipo) {this->tipo = tipo;}
@@ -65,6 +67,7 @@
     void Config::setTipoRelatorio(int relatorio) {this->relatorio = relatorio;}
     void Config::setNumExecucoes(int num) {this->execucoes = num;}
     void Config::setExecucao(int num) {this->execucao = num;}
+    void Config::setConstC(double num) {this->C = num;}
 
 
 

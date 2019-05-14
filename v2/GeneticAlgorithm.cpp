@@ -27,10 +27,8 @@ void GeneticAlgorithm<T>::run(){
         geracoes.open("./testes/" + config.getArquivoDestino() + "-geracoes", std::ofstream::out | std::ofstream::app);
         diversidades.open("./testes/" + config.getArquivoDestino() + "-diversidades", std::ofstream::out | std::ofstream::app);
 
-        //Setar highest_diversity aqui
+        highest_diversity = highestDiversity();
     }
-
-
 
     //Gerar populacao inicial
     gerarPopulacao();
@@ -62,6 +60,7 @@ void GeneticAlgorithm<T>::run(){
 
         }
 
+
         if(config.getTipoRelatorio() != 0){
             geracoes << score_r.scores[idx[0]] << std::endl; //Melhor
             geracoes << score_r.scores[idx[config.getPopSize()-1]] << std::endl; //Pior
@@ -72,8 +71,16 @@ void GeneticAlgorithm<T>::run(){
             diversidades << diversityMeasure() << std::endl;
         }
 
+        std::vector<double> backup_scores = score_r.scores;
+
+        //Faz o ajuste do Fitness
+        if(config.getConstC() > 0){
+            escalonamentoLinear();
+        }
+
         //Obtem populacao temporária para crossover e mutacao
         std::vector<std::vector<T> > popul_temp = selection();
+        score_r.scores = backup_scores;
         crossover(popul_temp);
         mutacao(popul_temp);
 
@@ -413,6 +420,33 @@ void GeneticAlgorithm<double>::mutacao(std::vector<std::vector<double> > &popul)
 /////////////////////////////////////////////////////////////////////////////////////////
 //                            Diversidade
 ////////////////////////////////////////////////////////////////////////////////////////
+
+template<> inline
+double GeneticAlgorithm<bool>::highestDiversity(){}
+
+
+template<> inline
+double GeneticAlgorithm<int>::highestDiversity(){}
+
+template<> inline
+double GeneticAlgorithm<int_permut_t>::highestDiversity(){
+    int aContar = config.getNumVars()/2;
+    int dist = config.getNumVars();
+    int sum = 0;
+    for(int i = 0 ; i < aContar; i++){
+        sum += dist;
+        dist -= 2;
+    }
+    sum *= 2;
+
+    sum *= config.getPopSize()/2;
+
+    return (double) sum;
+}
+
+template<> inline
+double GeneticAlgorithm<double>::highestDiversity(){}
+
 template<> inline
 double GeneticAlgorithm<bool>::diversityMeasure(){
     std::vector<double> centroide(config.getNumVars());
@@ -463,6 +497,7 @@ double GeneticAlgorithm<int_permut_t>::diversityMeasure(){
             }
         }
     }
+    distancia_total /= 2;
     // distancia_total /= config.getPopSize();
     return distancia_total;
 }
@@ -488,6 +523,34 @@ double GeneticAlgorithm<double>::diversityMeasure(){
     }
 
     return inercia;
+}
+
+
+template<typename T> 
+void GeneticAlgorithm<T>::escalonamentoLinear(){
+
+    double media;
+    for(auto s : score_r.scores) media += s;
+    media /= config.getPopSize(); 
+    double maior = score_r.scores[maior_elemento(score_r.scores)];
+    double menor = score_r.scores[menor_elemento(score_r.scores)];
+
+    double C = config.getConstC();
+    double a, b;
+
+    if(menor > (C*media - maior)/C - 1){
+        a = media*(C-1)/(maior-media);
+        b = media*(maior-C*media)/(maior-media);
+    }
+    else{
+        a = media/(media - menor);
+        b = (-menor*media)/(media-menor);
+    }
+
+    for(auto &s : score_r.scores){
+        s = a*s + b;
+    }
+
 }
 
 
