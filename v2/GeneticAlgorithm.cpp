@@ -36,6 +36,7 @@ void GeneticAlgorithm<T>::run(){
     for(geracao_atual = 0; geracao_atual < config.getGenerations(); geracao_atual++){
         //Avaliar populacao
         score_r = fitness();
+        // std::cout << score_r.scores[0];
         //Ordenar os indivíduos de melhor para pior
         std::vector<size_t> idx = sort_indexes(score_r.scores);
 
@@ -59,6 +60,7 @@ void GeneticAlgorithm<T>::run(){
             elite_score_r.restritos[i] = score_r.restritos[idx[i]];
 
         }
+
 
 
         if(config.getTipoRelatorio() != 0){
@@ -426,7 +428,13 @@ double GeneticAlgorithm<bool>::highestDiversity(){}
 
 
 template<> inline
-double GeneticAlgorithm<int>::highestDiversity(){}
+double GeneticAlgorithm<int>::highestDiversity(){
+    double dist = std::get<int>(config.getUpperBound()) - std::get<int>(config.getLowerBound());
+    dist *= config.getNumVars();
+    dist *= (config.getPopSize()/2)*(config.getPopSize()/2);
+
+    return dist;
+}
 
 template<> inline
 double GeneticAlgorithm<int_permut_t>::highestDiversity(){

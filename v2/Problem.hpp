@@ -29,6 +29,9 @@ private:
     static Score_Restricao cartas_prova(vvb &popul, Config &config);
     static void cartas_prova_decoder(std::vector<bool> &indiv, Config &config);
 
+    static Score_Restricao labirinto(std::vector<std::vector<int> > &popul, Config &config);
+    static void labirinto_decoder(std::vector<int> &indiv, Config &config);
+
 
 
 public:

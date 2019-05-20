@@ -456,6 +456,179 @@ void Problem<bool>::cartas_prova_decoder(std::vector<bool> &indiv, Config &confi
 	resultados.close();
 }
 
+template<> inline
+Score_Restricao Problem<int>::labirinto(std::vector<std::vector<int> > &popul, Config &config){
+	std::vector<double> valores(config.getPopSize(), 0); //Depois do tamanho da pop, tem 1.0 se o indivíduo violou alguma restrição
+	std::vector<bool> restricao(config.getPopSize(), false);
+
+	std::vector<std::vector<int> > lab(30, std::vector<int>(25));
+	
+	lab = {
+		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+		{0,0,1,1,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,0,3,1,1,0,0},
+		{0,1,1,1,1,1,1,1,1,0,1,0,1,0,1,0,0,0,0,0,0,0,1,1,0},
+		{0,1,0,0,0,0,0,0,1,0,1,0,1,0,1,0,0,0,0,0,0,0,1,0,0},
+		{0,1,1,1,1,1,1,0,1,0,1,0,1,0,1,0,1,1,1,0,1,1,1,1,0},
+		{0,1,0,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,0,0,0,0,0,1,0},
+		{0,1,0,0,0,0,1,0,1,1,1,1,1,1,1,0,1,1,1,1,1,0,1,1,0},
+		{0,1,0,0,0,0,1,0,0,0,0,0,0,0,1,0,1,0,1,0,1,0,0,1,0},
+		{0,1,1,1,1,1,1,1,0,1,1,0,1,1,1,0,1,0,1,0,1,0,1,1,0},
+		{0,0,0,0,0,0,1,1,0,1,1,0,1,1,1,0,1,0,1,0,1,0,0,1,0},
+		{0,2,1,1,1,0,1,0,0,1,1,0,1,0,0,0,1,0,1,0,1,0,1,1,0},
+		{0,1,0,0,1,0,1,0,0,1,1,0,1,0,0,0,1,0,1,0,1,1,1,1,0},
+		{0,1,0,0,1,0,1,0,0,1,0,0,1,0,0,0,1,0,1,0,0,0,0,1,0},
+		{0,1,0,0,1,0,1,1,0,1,0,1,1,1,1,1,1,0,1,0,1,1,1,1,0},
+		{0,1,0,0,1,0,1,1,0,1,0,0,0,0,0,0,0,0,1,0,1,0,0,1,0},
+		{0,1,1,0,1,0,0,1,1,1,0,0,0,0,0,1,1,1,1,0,1,0,0,1,0},
+		{0,1,1,0,1,0,0,1,1,1,1,1,1,1,1,1,0,0,0,0,1,0,1,1,0},
+		{0,0,1,0,1,0,1,1,0,0,0,0,0,0,0,1,1,1,1,0,1,0,1,0,0},
+		{0,1,1,0,0,0,1,1,0,1,1,1,1,0,0,0,0,0,1,0,1,1,1,1,0},
+		{0,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,0,1,0,0,1,0},
+		{0,0,0,0,1,0,0,0,0,1,1,0,1,1,1,0,1,0,1,0,1,1,0,1,0},
+		{0,1,1,1,1,0,1,1,1,1,1,0,1,0,1,0,1,0,1,0,0,1,0,1,0},
+		{0,1,1,0,1,0,1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,1,0,1,0},
+		{0,1,1,0,1,0,1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,0,1,0},
+		{0,1,1,0,1,0,1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,1,0,1,0},
+		{0,1,1,0,1,0,1,0,0,0,1,0,1,0,1,0,1,0,0,0,0,1,0,1,0},
+		{0,0,0,0,1,0,1,1,1,1,1,1,1,1,1,0,1,0,0,1,1,1,1,1,0},
+		{0,1,1,1,1,0,1,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,1,0,0},
+		{0,1,1,0,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0},
+		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+	};
+
+
+	int x_final = 20, y_final = 1;
+	double maior_distancia = 142;
+	for(int k = 0; k < config.getPopSize(); k++){
+		int x_atual = 1, y_atual = 10;
+		int movimentos = 0;
+		for(int v = 0; v < config.getNumVars(); v++){
+			switch(popul[k][v]){
+				inicio:
+				case 0: //cima
+					if(lab[x_atual][y_atual-1] != 0){
+						y_atual--;
+						break;
+					}
+				case 1: //direita
+					if(lab[x_atual+1][y_atual] != 0){
+						x_atual++;
+						break;
+					}
+				case 2: //baixo
+					if(lab[x_atual][y_atual+1] != 0){
+						y_atual++;
+						break;
+					}
+				case 3: //esquerda
+					if(lab[x_atual-1][y_atual] != 0){
+						x_atual--;
+						break;
+					}
+					goto inicio;
+			}
+			movimentos ++;
+			if(x_atual == x_final and y_atual == y_final){
+				break;
+			}			
+		}
+
+		double dist_manhattan = std::abs(x_final - x_atual) + std::abs(y_final - y_atual);
+
+
+
+		valores[k] = 1.0 - (movimentos + dist_manhattan)/maior_distancia;
+	}
+
+
+	Score_Restricao retorno;
+	retorno.scores = valores;
+	retorno.restritos = restricao;
+
+	return retorno;
+}
+
+template<> inline
+void Problem<int>::labirinto_decoder(std::vector<int> &indiv, Config &config){
+	std::ofstream resultados;
+	resultados.open("./testes/" + config.getArquivoDestino() + "-resultados", std::ofstream::out | std::ofstream::app);
+
+	std::vector<std::vector<int> > lab(30, std::vector<int>(25));
+	
+	lab = {
+		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+		{0,0,1,1,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,0,3,1,1,0,0},
+		{0,1,1,1,1,1,1,1,1,0,1,0,1,0,1,0,0,0,0,0,0,0,1,1,0},
+		{0,1,0,0,0,0,0,0,1,0,1,0,1,0,1,0,0,0,0,0,0,0,1,0,0},
+		{0,1,1,1,1,1,1,0,1,0,1,0,1,0,1,0,1,1,1,0,1,1,1,1,0},
+		{0,1,0,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,0,0,0,0,0,1,0},
+		{0,1,0,0,0,0,1,0,1,1,1,1,1,1,1,0,1,1,1,1,1,0,1,1,0},
+		{0,1,0,0,0,0,1,0,0,0,0,0,0,0,1,0,1,0,1,0,1,0,0,1,0},
+		{0,1,1,1,1,1,1,1,0,1,1,0,1,1,1,0,1,0,1,0,1,0,1,1,0},
+		{0,0,0,0,0,0,1,1,0,1,1,0,1,1,1,0,1,0,1,0,1,0,0,1,0},
+		{0,2,1,1,1,0,1,0,0,1,1,0,1,0,0,0,1,0,1,0,1,0,1,1,0},
+		{0,1,0,0,1,0,1,0,0,1,1,0,1,0,0,0,1,0,1,0,1,1,1,1,0},
+		{0,1,0,0,1,0,1,0,0,1,0,0,1,0,0,0,1,0,1,0,0,0,0,1,0},
+		{0,1,0,0,1,0,1,1,0,1,0,1,1,1,1,1,1,0,1,0,1,1,1,1,0},
+		{0,1,0,0,1,0,1,1,0,1,0,0,0,0,0,0,0,0,1,0,1,0,0,1,0},
+		{0,1,1,0,1,0,0,1,1,1,0,0,0,0,0,1,1,1,1,0,1,0,0,1,0},
+		{0,1,1,0,1,0,0,1,1,1,1,1,1,1,1,1,0,0,0,0,1,0,1,1,0},
+		{0,0,1,0,1,0,1,1,0,0,0,0,0,0,0,1,1,1,1,0,1,0,1,0,0},
+		{0,1,1,0,0,0,1,1,0,1,1,1,1,0,0,0,0,0,1,0,1,1,1,1,0},
+		{0,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,0,1,0,0,1,0},
+		{0,0,0,0,1,0,0,0,0,1,1,0,1,1,1,0,1,0,1,0,1,1,0,1,0},
+		{0,1,1,1,1,0,1,1,1,1,1,0,1,0,1,0,1,0,1,0,0,1,0,1,0},
+		{0,1,1,0,1,0,1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,1,0,1,0},
+		{0,1,1,0,1,0,1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,0,1,0},
+		{0,1,1,0,1,0,1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,1,0,1,0},
+		{0,1,1,0,1,0,1,0,0,0,1,0,1,0,1,0,1,0,0,0,0,1,0,1,0},
+		{0,0,0,0,1,0,1,1,1,1,1,1,1,1,1,0,1,0,0,1,1,1,1,1,0},
+		{0,1,1,1,1,0,1,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,1,0,0},
+		{0,1,1,0,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0},
+		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+	};
+
+
+	int x_final = 20, y_final = 1;
+
+	int x_atual = 1, y_atual = 10;
+	int movimentos = 0;
+	for(int v = 0; v < config.getNumVars(); v++){
+		switch(indiv[v]){
+			inicio:
+			case 0: //cima
+				if(lab[x_atual][y_atual-1] != 0){
+					y_atual--;
+					break;
+				}
+			case 1: //direita
+				if(lab[x_atual+1][y_atual] != 0){
+					x_atual++;
+					break;
+				}
+			case 2: //baixo
+				if(lab[x_atual][y_atual+1] != 0){
+					y_atual++;
+					break;
+				}
+			case 3: //esquerda
+				if(lab[x_atual-1][y_atual] != 0){
+					x_atual--;
+					break;
+				}
+				goto inicio;
+		}
+		movimentos ++;
+		if(x_atual == x_final and y_atual == y_final){
+			break;
+		}			
+	}
+
+	resultados << "Posição final: (" << x_atual << ", " << y_atual << ")\n";
+	resultados << "Movimentos: " << movimentos << std::endl;
+
+	resultados.close();
+}
 
 template<> inline
 Problem<bool>::Problem(){
@@ -471,7 +644,8 @@ Problem<bool>::Problem(){
 
 template<> inline
 Problem<int>::Problem(){
-
+	funcao.insert(std::pair<std::string, std::function<Score_Restricao(std::vector<std::vector<int>> &, Config &)>>("labirinto", labirinto));
+	decoder.insert(std::pair<std::string, std::function<void(std::vector<int> &, Config &)>>("labirinto", labirinto_decoder));
 }
 
 template<> inline
