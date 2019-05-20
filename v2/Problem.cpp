@@ -496,33 +496,33 @@ Score_Restricao Problem<int>::labirinto(std::vector<std::vector<int> > &popul, C
 		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 	};
 
-
-	int x_final = 20, y_final = 1;
-	double maior_distancia = 142;
+	//x = linhas, y = colunas
+	int x_final = 1, y_final = 20;
+	// double maior_distancia = 142;
 	for(int k = 0; k < config.getPopSize(); k++){
-		int x_atual = 1, y_atual = 10;
+		int x_atual = 10, y_atual = 1;
 		int movimentos = 0;
 		for(int v = 0; v < config.getNumVars(); v++){
 			switch(popul[k][v]){
 				inicio:
 				case 0: //cima
-					if(lab[x_atual][y_atual-1] != 0){
-						y_atual--;
+					if(lab[x_atual-1][y_atual] != 0){
+						x_atual--;
 						break;
 					}
 				case 1: //direita
-					if(lab[x_atual+1][y_atual] != 0){
-						x_atual++;
-						break;
-					}
-				case 2: //baixo
 					if(lab[x_atual][y_atual+1] != 0){
 						y_atual++;
 						break;
 					}
+				case 2: //baixo
+					if(lab[x_atual+1][y_atual] != 0){
+						x_atual++;
+						break;
+					}
 				case 3: //esquerda
-					if(lab[x_atual-1][y_atual] != 0){
-						x_atual--;
+					if(lab[x_atual][y_atual-1] != 0){
+						y_atual--;
 						break;
 					}
 					goto inicio;
@@ -537,7 +537,7 @@ Score_Restricao Problem<int>::labirinto(std::vector<std::vector<int> > &popul, C
 
 
 
-		valores[k] = 1.0 - (movimentos + dist_manhattan)/maior_distancia;
+		valores[k] = 1.0 - (movimentos/100.0)*0.75 + 0.25*(dist_manhattan/47.0);
 	}
 
 
