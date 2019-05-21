@@ -564,7 +564,7 @@ Score_Restricao Problem<int>::labirinto(std::vector<std::vector<int> > &popul, C
 		dist_manhattan = 1.0- dist_manhattan/47.0;
 
 		// valores[k] = dist_manhattan - 0.5*dist_manhattan*(colisoes/100.0) - 0.5*dist_manhattan*(repeticoes/100.0);
-		valores[k] = 0.01*dist_manhattan + 0.99*(1.0-repeticoes/100.0);
+		valores[k] = 0.25*dist_manhattan + 0.75*(1.0-repeticoes/100.0);
 	}
 
 
