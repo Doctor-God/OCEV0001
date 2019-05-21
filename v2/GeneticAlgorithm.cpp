@@ -230,7 +230,7 @@ void GeneticAlgorithm<int>::crossover(std::vector<std::vector<int> > &popul){
     for(int i = 0; i < config.getPopSize(); i+=2){
         double will_it_happen = getRandDouble(0.0, 1.0);
         if(will_it_happen < config.getProbCrossover()){
-            if(config.getCrossoverType() == 1){
+            if(config.getCrossoverType() == 1){ //1 ponto
                 int ponto = getRandInt(0, config.getNumVars() - 2);
                 //Trocar informação dos indivíduos
                 for(int j = 0; j <= ponto; j++){
@@ -240,7 +240,7 @@ void GeneticAlgorithm<int>::crossover(std::vector<std::vector<int> > &popul){
                     popul[i+1][j] = temp;
                 }
             }
-            else if(config.getCrossoverType() == 2){
+            else if(config.getCrossoverType() == 2){ //2 pontos
                 int ponto1 = getRandInt(0, config.getNumVars()-4);
                 int ponto2 = getRandInt(ponto1+2, config.getNumVars()-2);
 
@@ -489,7 +489,7 @@ double GeneticAlgorithm<int>::diversityMeasure(){
             }
         }
     }
-    // distancia_total /= config.getPopSize();
+    distancia_total /= highest_diversity;
     return distancia_total;
 }
 
