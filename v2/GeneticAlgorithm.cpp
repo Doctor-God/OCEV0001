@@ -76,7 +76,7 @@ void GeneticAlgorithm<T>::run(){
         std::vector<double> backup_scores = score_r.scores;
 
         //Faz o ajuste do Fitness
-        if(config.getConstC() > 0){
+        if(config.getConstC() != 0){
             escalonamentoLinear();
         }
 
@@ -227,6 +227,9 @@ void GeneticAlgorithm<bool>::crossover(std::vector<std::vector<bool> > &popul){
 template<> inline
 void GeneticAlgorithm<int>::crossover(std::vector<std::vector<int> > &popul){
     //Faz crossover entre os pares
+
+    vvi popul_temp;
+    popul_temp.assign(popul.begin(), popul.end());
     for(int i = 0; i < config.getPopSize(); i+=2){
         double will_it_happen = getRandDouble(0.0, 1.0);
         if(will_it_happen < config.getProbCrossover()){
@@ -250,6 +253,19 @@ void GeneticAlgorithm<int>::crossover(std::vector<std::vector<int> > &popul){
                     popul[i][j] = popul[i+1][j];
                     popul[i+1][j] = temp;
                 }
+            }
+            else if(config.getCrossoverType() == 3){ //Adição/subtração + modulo (artigo 'A-Mazer with Genetic Algorithm')
+                int mod = (std::get<int>(config.getUpperBound()) - std::get<int>(config.getLowerBound()))+1;
+
+                for(int j= 0; j < config.getNumVars(); j++){
+                    //Child 1 = add
+                    popul_temp[i][j] = std::abs(popul[i][j] + popul[i+1][j]) % mod;
+
+                    //Child 2 = sub
+                    popul_temp[i+1][j] = std::abs(popul[i][j] - popul[i+1][j]) % mod;
+                }
+
+                popul.assign(popul_temp.begin(), popul_temp.end());
             }
         }
     }
@@ -537,13 +553,14 @@ double GeneticAlgorithm<double>::diversityMeasure(){
 template<typename T> 
 void GeneticAlgorithm<T>::escalonamentoLinear(){
 
+    double C = 1.2 + geracao_atual*(0.8/config.getGenerations()); //C é atualizado linearmente em relação ao número da geração
+
     double media;
     for(auto s : score_r.scores) media += s;
     media /= config.getPopSize(); 
     double maior = score_r.scores[maior_elemento(score_r.scores)];
     double menor = score_r.scores[menor_elemento(score_r.scores)];
 
-    double C = config.getConstC();
     double a, b;
 
     if(menor > (C*media - maior)/C - 1){

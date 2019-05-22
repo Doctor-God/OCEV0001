@@ -123,9 +123,29 @@ int main(int argc, char const *argv[]){
         }
     }
 
+
 	//Limpar o arquivo
 	ofstream temp;
 	temp.open("./testes/" + config.getArquivoDestino() + "-resultados", std::ifstream::out | std::ifstream::trunc);
+	temp << "Configuração:\n";
+	temp << "tam_pop = " << config.getPopSize() << std::endl; 
+	temp << "num_geracoes = " << config.getGenerations() << std::endl; 
+	temp << "num_elitistas = " << config.getNumElitistas() << std::endl; 
+	temp << "prob_crossover = " << config.getProbCrossover() << std::endl; 
+	temp << "prob_mutacao = " << config.getProbMutacao() << std::endl; 
+	temp << "metodo_selecao = " << config.getSelectionMethod() << std::endl; 
+	temp << "tipo_crossover = " << config.getCrossoverType() << std::endl; 
+	temp << "tam_torneio/vizinhanca = " << config.getK() << std::endl; 
+	temp << "tipo_selecao_vizinhanca = " << config.getTipoSelec() << std::endl; 
+	temp << "prob_melhor_torneio = " << config.getProb() << std::endl; 
+	temp << "tam_pop = " << config.getPopSize() << std::endl; 
+	temp << "diversidade = " << config.getConstC() << std::endl; 
+	temp << "alpha_blx = " << config.getAlpha() << std::endl; 
+	temp << "tam_pop = " << config.getPopSize() << std::endl; 
+	temp << "tunelamento_michalewicz = " << config.getB() << std::endl;
+	temp << std::endl << std::endl; 
+
+	
 	temp.close();
 	
 
