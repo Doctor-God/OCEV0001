@@ -86,6 +86,16 @@ void GeneticAlgorithm<T>::run(){
         crossover(popul_temp);
         mutacao(popul_temp);
 
+
+        //Passa uma porcentagem da população desta geração para próxima
+        if(config.getGenerationGap() < 1.0){
+            int quantos = std::round((1.0 - config.getGenerationGap())*config.getPopSize());
+            for(int i =0; i < quantos; i++){
+                int who = getRandInt(0, config.getPopSize()-1);
+                popul_temp[i].assign(popul[who].begin(), popul[who].end());
+            }
+        }
+
         //Atualiza a populacao para a próxima geração
         popul.assign(popul_temp.begin(), popul_temp.end());
 
