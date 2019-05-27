@@ -553,7 +553,14 @@ double GeneticAlgorithm<double>::diversityMeasure(){
 template<typename T> 
 void GeneticAlgorithm<T>::escalonamentoLinear(){
 
-    double C = 1.2 + geracao_atual*(0.8/config.getGenerations()); //C é atualizado linearmente em relação ao número da geração
+    double C;
+    if(config.getConstC() == 1){ //Linear
+
+        C = 1.2 + geracao_atual*(0.8/config.getGenerations()); //C é atualizado linearmente em relação ao número da geração
+    }
+    else if(config.getConstC() == 2){ //Additiva trigonométrica
+        C = 2.0 - 0.4*(1 + std::cos(geracao_atual*M_PI/config.getGenerations()));
+    }
 
     double media;
     for(auto s : score_r.scores) media += s;

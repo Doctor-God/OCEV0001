@@ -502,118 +502,71 @@ Score_Restricao Problem<int>::labirinto(std::vector<std::vector<int> > &popul, C
 	std::pair<int, int> destino(1, 20);
 	std::pair<int, int> inicio(10, 1);
 	// double maior_distancia = 142;
-	#pragma omp parallel for shared(valores)
+	#pragma omp parallel for shared(valores) schedule(dynamic)
 	for(int k = 0; k < config.getPopSize(); k++){
 		std::set<std::pair<int, int> > ja_foi;
 		// int x_atual = 10, y_atual = 1;
 		std::pair<int, int> atual(10, 1);
 		int movimentos = 0;
-		int colisoes = 0;
+		int movimentos_bons = 0;
 		int repeticoes = 0; //passou pela mesma posição
 		for(int v = 0; v < config.getNumVars(); v++){
 			ja_foi.insert(atual);
 			switch(popul[k][v]){
-				inicio:
 				case 0: //cima
-					if(lab[atual.first-1][atual.second] != 0 and ja_foi.find(std::make_pair(atual.first-1, atual.second)) != ja_foi.end()){
+					if(lab[atual.first-1][atual.second] != 0){
 						atual.first--;
 						if(ja_foi.find(atual) != ja_foi.end()) repeticoes++;
+						else movimentos_bons++;
 						break;
 					}
-					colisoes++;
+					repeticoes++;
+					break;					
 				case 1: //direita
-					if(lab[atual.first][atual.second+1] != 0 and ja_foi.find(std::make_pair(atual.first, atual.second+1)) != ja_foi.end()){
+					if(lab[atual.first][atual.second+1] != 0){
 						atual.second++;
 						if(ja_foi.find(atual) != ja_foi.end()) repeticoes++;
+						else movimentos_bons++;
 						break;
 					}
-					colisoes++;
+					repeticoes++;
+					break;
 				case 2: //baixo
-					if(lab[atual.first+1][atual.second] != 0 and ja_foi.find(std::make_pair(atual.first+1, atual.second)) != ja_foi.end()){
+					if(lab[atual.first+1][atual.second] != 0){
 						atual.first++;
 						if(ja_foi.find(atual) != ja_foi.end()) repeticoes++;
+						else movimentos_bons++;						
 						break;
 					}
-					colisoes++;
+					repeticoes++;
+					break;
 				case 3: //esquerda
-					if(lab[atual.first][atual.second-1] != 0 and ja_foi.find(std::make_pair(atual.first, atual.second-1)) != ja_foi.end()){
+					if(lab[atual.first][atual.second-1] != 0){
 						atual.second--;
 						if(ja_foi.find(atual) != ja_foi.end()) repeticoes++;
+						else movimentos_bons++;
 						break;
 					}
-					colisoes++;
-					goto inicio;
+					repeticoes++;
+					break;
 			}
+
+			movimentos ++;
+			if(atual.first == destino.first and atual.second == destino.second){
+				break;
+			}	
 		}
-		// 	std::vector<bool> movimento(4, false); //Movimentos possíveis (0 cima, 1 direita, 2 baixo, 3 esquerda)
-		// 	int possibilidades = 0;
-		// 	if(lab[atual.first-1][atual.second] != 0){
-		// 		movimento[0] = true;
-		// 		possibilidades++;
-		// 	}
-		// 	if(lab[atual.first][atual.second+1] != 0){
-		// 		movimento[1] = true;
-		// 		possibilidades++;
-		// 	}
-		// 	if(lab[atual.first+1][atual.second] != 0){
-		// 		movimento[2] = true;
-		// 		possibilidades++;
-		// 	}
-		// 	if(lab[atual.first][atual.second-1] != 0){
-		// 		movimento[3] = true;
-		// 		possibilidades++;
-		// 	}
-
-		// 	int escolha = popul[k][v]%possibilidades;
-
-		// 	int i =0;
-		// 	for(int j = 0; j < 4; j++){
-		// 		if(movimento[j]){
-		// 			if(i == escolha){
-		// 				switch(j){
-		// 					case 0:
-		// 						atual.first--;
-		// 						if(ja_foi.find(atual) != ja_foi.end()) repeticoes++;
-		// 						break;
-		// 					case 1:
-		// 						atual.second++;
-		// 						if(ja_foi.find(atual) != ja_foi.end()) repeticoes++;
-		// 						break;
-		// 					case 2:
-		// 						atual.first++;
-		// 						if(ja_foi.find(atual) != ja_foi.end()) repeticoes++;
-		// 						break;
-		// 					case 3:
-		// 						atual.second--;
-		// 						if(ja_foi.find(atual) != ja_foi.end()) repeticoes++;
-		// 						break;
-		// 				}
-		// 				break;
-		// 			}
-		// 			i++;
-		// 		}
-		// 	}
-
-		// 	movimentos ++;
-		// 	if(atual.first == destino.first and atual.second == destino.second){
-		// 		break;
-		// 	}	
-		// }
 
 		double dist_manhattan = std::abs(destino.first - atual.first) + std::abs(destino.second - atual.second);
-		// double dist_manhattan_destino = std::abs(destino.first - atual.first) + std::abs(destino.second - atual.second);
 
-		// double dist_manhattan_inicio = std::abs(atual.first - inicio.first) + std::abs(atual.second - inicio.second);
+		valores[k] = 0.90*(movimentos_bons/(double)movimentos) + 0.10*(1.0 - std::pow(dist_manhattan/55.0, 2));
 
-		dist_manhattan = 1.0- dist_manhattan/47.0;
 
-		// valores[k] = dist_manhattan - 0.5*dist_manhattan*(colisoes/100.0) - 0.5*dist_manhattan*(repeticoes/100.0);
-		// valores[k] = 0.25*dist_manhattan + 0.75*(1.0-(repeticoes/100.0)*(repeticoes/100.0));
-		valores[k] = 0.20*dist_manhattan + 0.40*(1.0-repeticoes/(double)config.getNumVars()) + 0.40*(1.0 - colisoes/(3.0*config.getNumVars()));
-		// valores[k] = dist_manhattan_inicio/dist_manhattan_destino;
-		// valores[k] = 0.25*dist_manhattan + 0.75*(1.0-repeticoes/(config.getNumVars()/2.0));
-		// int movimentos_bons = movimentos - repeticoes;
-		// valores[k] = dist_manhattan +  (movimentos_bons/50.0 + repeticoes/99)*2;
+
+		if(dist_manhattan == 0){
+			std::cout << "Cheguei!\n";
+			// valores[k] *= 2;
+		}
 	}
 
 
@@ -671,103 +624,63 @@ void Problem<int>::labirinto_decoder(std::vector<int> &indiv, Config &config){
 	// int x_atual = 10, y_atual = 1;
 	std::pair<int, int> atual(10, 1);
 	int movimentos = 0;
-	int colisoes = 0; //em uma parede
+	int movimentos_bons = 0;
 	int repeticoes = 0; //passou pela mesma posição
 	for(int v = 0; v < config.getNumVars(); v++){
 		ja_foi.insert(atual);
 		switch(indiv[v]){
-			inicio:
 			case 0: //cima
-				if(lab[atual.first-1][atual.second] != 0 and ja_foi.find(std::make_pair(atual.first-1, atual.second)) != ja_foi.end()){
+				if(lab[atual.first-1][atual.second] != 0){
 					atual.first--;
 					if(ja_foi.find(atual) != ja_foi.end()) repeticoes++;
+					else movimentos_bons++;
 					break;
 				}
-				colisoes++;
+				repeticoes++;
+				break;					
 			case 1: //direita
-				if(lab[atual.first][atual.second+1] != 0 and ja_foi.find(std::make_pair(atual.first, atual.second+1)) != ja_foi.end()){
+				if(lab[atual.first][atual.second+1] != 0){
 					atual.second++;
 					if(ja_foi.find(atual) != ja_foi.end()) repeticoes++;
+					else movimentos_bons++;
 					break;
 				}
-				colisoes++;
+				repeticoes++;
+				break;
 			case 2: //baixo
-				if(lab[atual.first+1][atual.second] != 0 and ja_foi.find(std::make_pair(atual.first+1, atual.second)) != ja_foi.end()){
+				if(lab[atual.first+1][atual.second] != 0){
 					atual.first++;
 					if(ja_foi.find(atual) != ja_foi.end()) repeticoes++;
+					else movimentos_bons++;
 					break;
 				}
-				colisoes++;
+				repeticoes++;
+				break;
 			case 3: //esquerda
-				if(lab[atual.first][atual.second-1] != 0 and ja_foi.find(std::make_pair(atual.first, atual.second-1)) != ja_foi.end()){
+				if(lab[atual.first][atual.second-1] != 0){
 					atual.second--;
 					if(ja_foi.find(atual) != ja_foi.end()) repeticoes++;
+					else movimentos_bons++;
 					break;
 				}
-				colisoes++;
-				goto inicio;
+				repeticoes++;
+				break;
 		}
-
-		// std::vector<bool> movimento(4, false); //Movimentos possíveis (0 cima, 1 direita, 2 baixo, 3 esquerda)
-		// int possibilidades = 0;
-		// if(lab[atual.first-1][atual.second] != 0){
-		// 	movimento[0] = true;
-		// 	possibilidades++;
-		// }
-		// if(lab[atual.first][atual.second+1] != 0){
-		// 	movimento[1] = true;
-		// 	possibilidades++;
-		// }
-		// if(lab[atual.first+1][atual.second] != 0){
-		// 	movimento[2] = true;
-		// 	possibilidades++;
-		// }
-		// if(lab[atual.first][atual.second-1] != 0){
-		// 	movimento[3] = true;
-		// 	possibilidades++;
-		// }
-
-		// int escolha = indiv[v]%possibilidades;
-
-		// int i =0;
-		// for(int j = 0; j< 4; j++){
-		// 	if(movimento[j]){
-		// 		if(i == escolha){
-		// 			switch(j){
-		// 				case 0:
-		// 					atual.first--;
-		// 					if(ja_foi.find(atual) != ja_foi.end()) repeticoes++;
-		// 					break;
-		// 				case 1:
-		// 					atual.second++;
-		// 					if(ja_foi.find(atual) != ja_foi.end()) repeticoes++;
-		// 					break;
-		// 				case 2:
-		// 					atual.first++;
-		// 					if(ja_foi.find(atual) != ja_foi.end()) repeticoes++;
-		// 					break;
-		// 				case 3:
-		// 					atual.second--;
-		// 					if(ja_foi.find(atual) != ja_foi.end()) repeticoes++;
-		// 					break;
-		// 			}
-		// 			break;
-		// 		}
-		// 		i++;
-		// 	}
-		// }
-
 
 		movimentos ++;
 		if(atual.first == destino.first and atual.second == destino.second){
 			break;
-		}		
-	}	
+		}	
+	}
+
+	double dist_manhattan = std::abs(destino.first - atual.first) + std::abs(destino.second - atual.second);
+
 
 	resultados << "Posição final: (" << atual.first << ", " << atual.second << ")\n";
 	resultados << "Movimentos: " << movimentos << std::endl;
 	resultados << "Repeticoes: " << repeticoes << std::endl;
-	resultados << "Colisoes: " << colisoes << std::endl;
+	resultados << "Movimentos Bons: " << movimentos_bons << std::endl;
+	resultados << "Distância Manhattan: " << dist_manhattan << std::endl;
 	resultados << std::endl;
 
 	resultados.close();
