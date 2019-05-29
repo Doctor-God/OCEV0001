@@ -49,7 +49,7 @@ int main(int argc, char const *argv[]){
 	
 	//Serve pra fazer parse de opção de command line (flags)
 	int c ;
-	while( ( c = getopt (argc, (char**) argv, "u:l:k:p:t:s:z:g:e:d:c:m:o:a:b:r:E:C:") ) != -1 ) 
+	while( ( c = getopt (argc, (char**) argv, "u:l:k:p:t:s:z:g:e:d:c:m:o:a:b:r:E:C:G:") ) != -1 ) 
     {
         switch(c)
         {
@@ -119,6 +119,9 @@ int main(int argc, char const *argv[]){
 			case 'C':
 				if(optarg) config.setConstC(stod(optarg));
 				break;
+			case 'G':
+				if(optarg) config.setGenerationGap(stod(optarg));
+					break;
 
         }
     }

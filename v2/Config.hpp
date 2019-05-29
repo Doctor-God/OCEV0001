@@ -30,6 +30,7 @@ private:
     int execucoes;
     int execucao;
     double C;
+    double generation_gap;
 public:
     Config();
 
@@ -56,6 +57,7 @@ public:
     int getNumExecucoes();
     int getExecucao();
     double getConstC();
+    double getGenerationGap();
 
 
 
@@ -82,6 +84,7 @@ public:
     void setNumExecucoes(int num);
     void setExecucao(int num);
     void setConstC(double num);
+    void setGenerationGap(double num);
 
 };
 

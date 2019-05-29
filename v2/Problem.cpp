@@ -510,46 +510,85 @@ Score_Restricao Problem<int>::labirinto(std::vector<std::vector<int> > &popul, C
 		int movimentos = 0;
 		int movimentos_bons = 0;
 		int repeticoes = 0; //passou pela mesma posição
+		int dist_total = 0.0;
 		for(int v = 0; v < config.getNumVars(); v++){
 			ja_foi.insert(atual);
 			switch(popul[k][v]){
+				// case 0: //cima
+				// 	if(lab[atual.first-1][atual.second] != 0){
+				// 		atual.first--;
+				// 		if(ja_foi.find(atual) != ja_foi.end()) repeticoes++;
+				// 		else movimentos_bons++;
+				// 		break;
+				// 	}
+				// 	repeticoes++;
+				// 	break;					
+				// case 1: //direita
+				// 	if(lab[atual.first][atual.second+1] != 0){
+				// 		atual.second++;
+				// 		if(ja_foi.find(atual) != ja_foi.end()) repeticoes++;
+				// 		else movimentos_bons++;
+				// 		break;
+				// 	}
+				// 	repeticoes++;
+				// 	break;
+				// case 2: //baixo
+				// 	if(lab[atual.first+1][atual.second] != 0){
+				// 		atual.first++;
+				// 		if(ja_foi.find(atual) != ja_foi.end()) repeticoes++;
+				// 		else movimentos_bons++;						
+				// 		break;
+				// 	}
+				// 	repeticoes++;
+				// 	break;
+				// case 3: //esquerda
+				// 	if(lab[atual.first][atual.second-1] != 0){
+				// 		atual.second--;
+				// 		if(ja_foi.find(atual) != ja_foi.end()) repeticoes++;
+				// 		else movimentos_bons++;
+				// 		break;
+				// 	}
+				// 	repeticoes++;
+				// 	break;
 				case 0: //cima
-					if(lab[atual.first-1][atual.second] != 0 and ja_foi.find(std::make_pair(atual.first-1, atual.second))){
+					if(atual.first-1 >= 0){
 						atual.first--;
-						if(ja_foi.find(atual) != ja_foi.end()) repeticoes++;
+						if(ja_foi.find(atual) != ja_foi.end() or lab[atual.first][atual.second] == 0) repeticoes++;
 						else movimentos_bons++;
 						break;
 					}
 					repeticoes++;
 					break;					
 				case 1: //direita
-					if(lab[atual.first][atual.second+1] != 0 and ja_foi.find(std::make_pair(atual.first, atual.second+1))){
+					if(atual.second+1 < 25){
 						atual.second++;
-						if(ja_foi.find(atual) != ja_foi.end()) repeticoes++;
+						if(ja_foi.find(atual) != ja_foi.end() or lab[atual.first][atual.second] == 0) repeticoes++;
 						else movimentos_bons++;
 						break;
 					}
 					repeticoes++;
 					break;
 				case 2: //baixo
-					if(lab[atual.first+1][atual.second] != 0 and ja_foi.find(std::make_pair(atual.first+1, atual.second))){
+					if(atual.first+1 < 30){
 						atual.first++;
-						if(ja_foi.find(atual) != ja_foi.end()) repeticoes++;
+						if(ja_foi.find(atual) != ja_foi.end() or lab[atual.first][atual.second] == 0) repeticoes++;
 						else movimentos_bons++;						
 						break;
 					}
 					repeticoes++;
 					break;
 				case 3: //esquerda
-					if(lab[atual.first][atual.second-1] != 0 and ja_foi.find(std::make_pair(atual.first, atual.second-1))){
+					if(atual.second-1 >= 0){
 						atual.second--;
-						if(ja_foi.find(atual) != ja_foi.end()) repeticoes++;
+						if(ja_foi.find(atual) != ja_foi.end() or lab[atual.first][atual.second] == 0) repeticoes++;
 						else movimentos_bons++;
 						break;
 					}
 					repeticoes++;
 					break;
 			}
+			double dist_manhattan = std::abs(destino.first - atual.first) + std::abs(destino.second - atual.second);
+			dist_total += dist_manhattan;
 
 			movimentos ++;
 			if(atual.first == destino.first and atual.second == destino.second){
@@ -557,16 +596,17 @@ Score_Restricao Problem<int>::labirinto(std::vector<std::vector<int> > &popul, C
 			}	
 		}
 
-		double dist_manhattan = std::abs(destino.first - atual.first) + std::abs(destino.second - atual.second);
+		double temp = 1.0 - dist_total/(config.getNumVars()*55.0);
 
-		valores[k] = 0.90*(std::pow((movimentos_bons/(double)movimentos), 2)) + 0.10*(1.0 - std::pow(dist_manhattan/55.0, 2));
+		// valores[k] = 0.90*((movimentos_bons/(double)movimentos)) + 0.10*(1.0 - dist_total/(config.getNumVars()*55.0));
+		valores[k] = temp - temp*(std::cbrt(repeticoes/(double)movimentos));
+		// valores[k] = (config.getNumVars()*55.0) - dist_total;
 
 
-
-		if(dist_manhattan == 0){
-			std::cout << "Cheguei!\n";
-			// valores[k] *= 2;
-		}
+		// if(dist_manhattan == 0){
+		// 	std::cout << "Cheguei!\n";
+		// 	// valores[k] *= 2;
+		// }
 	}
 
 
@@ -626,47 +666,87 @@ void Problem<int>::labirinto_decoder(std::vector<int> &indiv, Config &config){
 	int movimentos = 0;
 	int movimentos_bons = 0;
 	int repeticoes = 0; //passou pela mesma posição
+	int dist_total = 0.0;
 	for(int v = 0; v < config.getNumVars(); v++){
 		ja_foi.insert(atual);
 		switch(indiv[v]){
+			// case 0: //cima
+			// 	if(lab[atual.first-1][atual.second] != 0){
+			// 		atual.first--;
+			// 		if(ja_foi.find(atual) != ja_foi.end()) repeticoes++;
+			// 		else movimentos_bons++;
+			// 		break;
+			// 	}
+			// 	repeticoes++;
+			// 	break;					
+			// case 1: //direita
+			// 	if(lab[atual.first][atual.second+1] != 0){
+			// 		atual.second++;
+			// 		if(ja_foi.find(atual) != ja_foi.end()) repeticoes++;
+			// 		else movimentos_bons++;
+			// 		break;
+			// 	}
+			// 	repeticoes++;
+			// 	break;
+			// case 2: //baixo
+			// 	if(lab[atual.first+1][atual.second] != 0){
+			// 		atual.first++;
+			// 		if(ja_foi.find(atual) != ja_foi.end()) repeticoes++;
+			// 		else movimentos_bons++;						
+			// 		break;
+			// 	}
+			// 	repeticoes++;
+			// 	break;
+			// case 3: //esquerda
+			// 	if(lab[atual.first][atual.second-1] != 0){
+			// 		atual.second--;
+			// 		if(ja_foi.find(atual) != ja_foi.end()) repeticoes++;
+			// 		else movimentos_bons++;
+			// 		break;
+			// 	}
+			// 	repeticoes++;
+			// 	break;
+
 			case 0: //cima
-				if(lab[atual.first-1][atual.second] != 0 and ja_foi.find(std::make_pair(atual.first-1, atual.second))){
+				if(atual.first-1 >= 0){
 					atual.first--;
-					if(ja_foi.find(atual) != ja_foi.end()) repeticoes++;
+					if(ja_foi.find(atual) != ja_foi.end() or lab[atual.first][atual.second] == 0) repeticoes++;
 					else movimentos_bons++;
 					break;
 				}
 				repeticoes++;
 				break;					
 			case 1: //direita
-				if(lab[atual.first][atual.second+1] != 0 and ja_foi.find(std::make_pair(atual.first, atual.second+1))){
+				if(atual.second+1 < 25){
 					atual.second++;
-					if(ja_foi.find(atual) != ja_foi.end()) repeticoes++;
+					if(ja_foi.find(atual) != ja_foi.end() or lab[atual.first][atual.second] == 0) repeticoes++;
 					else movimentos_bons++;
 					break;
 				}
 				repeticoes++;
 				break;
 			case 2: //baixo
-				if(lab[atual.first+1][atual.second] != 0 and ja_foi.find(std::make_pair(atual.first+1, atual.second))){
+				if(atual.first+1 < 30){
 					atual.first++;
-					if(ja_foi.find(atual) != ja_foi.end()) repeticoes++;
+					if(ja_foi.find(atual) != ja_foi.end() or lab[atual.first][atual.second] == 0) repeticoes++;
 					else movimentos_bons++;						
 					break;
 				}
 				repeticoes++;
 				break;
 			case 3: //esquerda
-				if(lab[atual.first][atual.second-1] != 0 and ja_foi.find(std::make_pair(atual.first, atual.second-1))){
+				if(atual.second-1 >= 0){
 					atual.second--;
-					if(ja_foi.find(atual) != ja_foi.end()) repeticoes++;
+					if(ja_foi.find(atual) != ja_foi.end() or lab[atual.first][atual.second] == 0) repeticoes++;
 					else movimentos_bons++;
 					break;
 				}
 				repeticoes++;
 				break;
 		}
+		double dist_manhattan = std::abs(destino.first - atual.first) + std::abs(destino.second - atual.second);
 
+		dist_total += dist_manhattan;
 		movimentos ++;
 		if(atual.first == destino.first and atual.second == destino.second){
 			break;
@@ -681,6 +761,7 @@ void Problem<int>::labirinto_decoder(std::vector<int> &indiv, Config &config){
 	resultados << "Repeticoes: " << repeticoes << std::endl;
 	resultados << "Movimentos Bons: " << movimentos_bons << std::endl;
 	resultados << "Distância Manhattan: " << dist_manhattan << std::endl;
+	resultados << "Distância Total:" << dist_total << std::endl;
 	resultados << std::endl;
 
 	resultados.close();

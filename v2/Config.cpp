@@ -18,6 +18,7 @@
         relatorio = 0;
         execucoes = 1;
         C = 0;
+        generation_gap = 1.0;
     }
         
     int Config::getTipo(){return tipo;}
@@ -43,6 +44,8 @@
     int Config::getNumExecucoes() {return execucoes;}
     int Config::getExecucao() {return execucao;}
     double Config::getConstC() {return C;}
+    double Config::getGenerationGap() {return generation_gap;}
+
 
 
     void Config::setTipo(int tipo) {this->tipo = tipo;}
@@ -68,6 +71,7 @@
     void Config::setNumExecucoes(int num) {this->execucoes = num;}
     void Config::setExecucao(int num) {this->execucao = num;}
     void Config::setConstC(double num) {this->C = num;}
+    void Config::setGenerationGap(double num) {this->generation_gap = num;}
 
 
 
