@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as anim
 import matplotlib.cm as cm
 import sys
+import copy
 
 #Movimentos
 mov = []
@@ -15,23 +16,30 @@ with open(sys.argv[1]) as f:
 
 #Labirinto
 lab = [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,1,1,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,0,0],[0,1,1,1,1,1,1,1,1,0,1,0,1,0,1,0,0,0,0,0,0,0,1,1,0],[0,1,0,0,0,0,0,0,1,0,1,0,1,0,1,0,0,0,0,0,0,0,1,0,0],[0,1,1,1,1,1,1,0,1,0,1,0,1,0,1,0,1,1,1,0,1,1,1,1,0],[0,1,0,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,0,0,0,0,0,1,0],[0,1,0,0,0,0,1,0,1,1,1,1,1,1,1,0,1,1,1,1,1,0,1,1,0],[0,1,0,0,0,0,1,0,0,0,0,0,0,0,1,0,1,0,1,0,1,0,0,1,0],[0,1,1,1,1,1,1,1,0,1,1,0,1,1,1,0,1,0,1,0,1,0,1,1,0],[0,0,0,0,0,0,1,1,0,1,1,0,1,1,1,0,1,0,1,0,1,0,0,1,0],[0,1,1,1,1,0,1,0,0,1,1,0,1,0,0,0,1,0,1,0,1,0,1,1,0],[0,1,0,0,1,0,1,0,0,1,1,0,1,0,0,0,1,0,1,0,1,1,1,1,0],[0,1,0,0,1,0,1,0,0,1,0,0,1,0,0,0,1,0,1,0,0,0,0,1,0],[0,1,0,0,1,0,1,1,0,1,0,1,1,1,1,1,1,0,1,0,1,1,1,1,0],[0,1,0,0,1,0,1,1,0,1,0,0,0,0,0,0,0,0,1,0,1,0,0,1,0],[0,1,1,0,1,0,0,1,1,1,0,0,0,0,0,1,1,1,1,0,1,0,0,1,0],[0,1,1,0,1,0,0,1,1,1,1,1,1,1,1,1,0,0,0,0,1,0,1,1,0],[0,0,1,0,1,0,1,1,0,0,0,0,0,0,0,1,1,1,1,0,1,0,1,0,0],[0,1,1,0,0,0,1,1,0,1,1,1,1,0,0,0,0,0,1,0,1,1,1,1,0],[0,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,0,1,0,0,1,0],[0,0,0,0,1,0,0,0,0,1,1,0,1,1,1,0,1,0,1,0,1,1,0,1,0],[0,1,1,1,1,0,1,1,1,1,1,0,1,0,1,0,1,0,1,0,0,1,0,1,0],[0,1,1,0,1,0,1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,1,0,1,0],[0,1,1,0,1,0,1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,0,1,0],[0,1,1,0,1,0,1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,1,0,1,0],[0,1,1,0,1,0,1,0,0,0,1,0,1,0,1,0,1,0,0,0,0,1,0,1,0],[0,0,0,0,1,0,1,1,1,1,1,1,1,1,1,0,1,0,0,1,1,1,1,1,0],[0,1,1,1,1,0,1,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,1,0,0],[0,1,1,0,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]
+
 #Transforma em rgb
+lab_rgb = copy.deepcopy(lab)
 for x in range(30):
     for y in range(25):
-        if(lab[x][y] == 0):
-            lab[x][y] = [0,0,0]
+        if(lab_rgb[x][y] == 0):
+            lab_rgb[x][y] = [0,0,0]
         else:
-            lab[x][y] = [1,1,1]
-lab = np.asarray(lab)
+            lab_rgb[x][y] = [1,1,1]
+lab_rgb = np.asarray(lab_rgb, dtype=np.float32)
 
 fig = plt.figure()
 ims = []
 atual = [10, 1]
 
+
+def init():
+    pass
+
 def update(i):
 # for i in range(len(mov)):
-    temp_lab = lab[:]
-    temp_lab[int(atual[0])][int(atual[1])] = [1, 0, 0]
+    temp_lab = lab_rgb[:]
+    # temp_lab = copy.deepcopy(lab_rgb)
+    temp_lab[atual[0]][atual[1]] = [1, 0, 0]
     if(atual[0] == 1 and atual[1] == 20):
         return plt.imshow(temp_lab, interpolation = 'nearest')
 
@@ -39,24 +47,24 @@ def update(i):
     im = plt.imshow(temp_lab, interpolation = 'nearest')
 
 
-    if(mov[i]==0 and atual[0]-1 >=0):
+    if(mov[i]==0 and lab[atual[0]-1][atual[1]] !=0):
         atual[0] -=1
-    elif(mov[i]==1 and atual[1]+1 < 25):
+    elif(mov[i]==1 and lab[atual[0]][atual[1]+1] !=0):
         atual[1] +=1
-    elif(mov[i]==2 and atual[0]+1 < 30):
+    elif(mov[i]==2 and lab[atual[0]+1][atual[1]] !=0):
         atual[0] +=1
-    elif(mov[i]==3 and atual[1]-1 >= 0):
+    elif(mov[i]==3 and lab[atual[0]][atual[1]-1] !=0):
         atual[1] -=1
 
     return im
 
 # ax1.imshow(a, interpolation='nearest')
 # ani = anim.ArtistAnimation(fig, ims, interval=100, blit=True, repeat_delay=1000)
-ani = anim.FuncAnimation(fig, update, frames=len(mov), interval=50, blit=False, repeat = False)
+ani = anim.FuncAnimation(fig, update, frames=len(mov), interval=50, blit=False, repeat = False, init_func=init)
 
 plt.show()
 ################################
-fig = plt.figure()
+# fig = plt.figure()
 
 
 # def f(x, y):

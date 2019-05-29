@@ -514,78 +514,43 @@ Score_Restricao Problem<int>::labirinto(std::vector<std::vector<int> > &popul, C
 		for(int v = 0; v < config.getNumVars(); v++){
 			ja_foi.insert(atual);
 			switch(popul[k][v]){
-				// case 0: //cima
-				// 	if(lab[atual.first-1][atual.second] != 0){
-				// 		atual.first--;
-				// 		if(ja_foi.find(atual) != ja_foi.end()) repeticoes++;
-				// 		else movimentos_bons++;
-				// 		break;
-				// 	}
-				// 	repeticoes++;
-				// 	break;					
-				// case 1: //direita
-				// 	if(lab[atual.first][atual.second+1] != 0){
-				// 		atual.second++;
-				// 		if(ja_foi.find(atual) != ja_foi.end()) repeticoes++;
-				// 		else movimentos_bons++;
-				// 		break;
-				// 	}
-				// 	repeticoes++;
-				// 	break;
-				// case 2: //baixo
-				// 	if(lab[atual.first+1][atual.second] != 0){
-				// 		atual.first++;
-				// 		if(ja_foi.find(atual) != ja_foi.end()) repeticoes++;
-				// 		else movimentos_bons++;						
-				// 		break;
-				// 	}
-				// 	repeticoes++;
-				// 	break;
-				// case 3: //esquerda
-				// 	if(lab[atual.first][atual.second-1] != 0){
-				// 		atual.second--;
-				// 		if(ja_foi.find(atual) != ja_foi.end()) repeticoes++;
-				// 		else movimentos_bons++;
-				// 		break;
-				// 	}
-				// 	repeticoes++;
-				// 	break;
 				case 0: //cima
-					if(atual.first-1 >= 0){
+					if(lab[atual.first-1][atual.second] != 0){
 						atual.first--;
-						if(ja_foi.find(atual) != ja_foi.end() or lab[atual.first][atual.second] == 0) repeticoes++;
+						if(ja_foi.find(atual) != ja_foi.end()) repeticoes++;
 						else movimentos_bons++;
 						break;
 					}
 					repeticoes++;
 					break;					
 				case 1: //direita
-					if(atual.second+1 < 25){
+					if(lab[atual.first][atual.second+1] != 0){
 						atual.second++;
-						if(ja_foi.find(atual) != ja_foi.end() or lab[atual.first][atual.second] == 0) repeticoes++;
+						if(ja_foi.find(atual) != ja_foi.end()) repeticoes++;
 						else movimentos_bons++;
 						break;
 					}
 					repeticoes++;
 					break;
 				case 2: //baixo
-					if(atual.first+1 < 30){
+					if(lab[atual.first+1][atual.second] != 0){
 						atual.first++;
-						if(ja_foi.find(atual) != ja_foi.end() or lab[atual.first][atual.second] == 0) repeticoes++;
+						if(ja_foi.find(atual) != ja_foi.end()) repeticoes++;
 						else movimentos_bons++;						
 						break;
 					}
 					repeticoes++;
 					break;
 				case 3: //esquerda
-					if(atual.second-1 >= 0){
+					if(lab[atual.first][atual.second-1] != 0){
 						atual.second--;
-						if(ja_foi.find(atual) != ja_foi.end() or lab[atual.first][atual.second] == 0) repeticoes++;
+						if(ja_foi.find(atual) != ja_foi.end()) repeticoes++;
 						else movimentos_bons++;
 						break;
 					}
 					repeticoes++;
 					break;
+
 			}
 			double dist_manhattan = std::abs(destino.first - atual.first) + std::abs(destino.second - atual.second);
 			dist_total += dist_manhattan;
@@ -670,74 +635,37 @@ void Problem<int>::labirinto_decoder(std::vector<int> &indiv, Config &config){
 	for(int v = 0; v < config.getNumVars(); v++){
 		ja_foi.insert(atual);
 		switch(indiv[v]){
-			// case 0: //cima
-			// 	if(lab[atual.first-1][atual.second] != 0){
-			// 		atual.first--;
-			// 		if(ja_foi.find(atual) != ja_foi.end()) repeticoes++;
-			// 		else movimentos_bons++;
-			// 		break;
-			// 	}
-			// 	repeticoes++;
-			// 	break;					
-			// case 1: //direita
-			// 	if(lab[atual.first][atual.second+1] != 0){
-			// 		atual.second++;
-			// 		if(ja_foi.find(atual) != ja_foi.end()) repeticoes++;
-			// 		else movimentos_bons++;
-			// 		break;
-			// 	}
-			// 	repeticoes++;
-			// 	break;
-			// case 2: //baixo
-			// 	if(lab[atual.first+1][atual.second] != 0){
-			// 		atual.first++;
-			// 		if(ja_foi.find(atual) != ja_foi.end()) repeticoes++;
-			// 		else movimentos_bons++;						
-			// 		break;
-			// 	}
-			// 	repeticoes++;
-			// 	break;
-			// case 3: //esquerda
-			// 	if(lab[atual.first][atual.second-1] != 0){
-			// 		atual.second--;
-			// 		if(ja_foi.find(atual) != ja_foi.end()) repeticoes++;
-			// 		else movimentos_bons++;
-			// 		break;
-			// 	}
-			// 	repeticoes++;
-			// 	break;
-
 			case 0: //cima
-				if(atual.first-1 >= 0){
+				if(lab[atual.first-1][atual.second] != 0){
 					atual.first--;
-					if(ja_foi.find(atual) != ja_foi.end() or lab[atual.first][atual.second] == 0) repeticoes++;
+					if(ja_foi.find(atual) != ja_foi.end()) repeticoes++;
 					else movimentos_bons++;
 					break;
 				}
 				repeticoes++;
 				break;					
 			case 1: //direita
-				if(atual.second+1 < 25){
+				if(lab[atual.first][atual.second+1] != 0){
 					atual.second++;
-					if(ja_foi.find(atual) != ja_foi.end() or lab[atual.first][atual.second] == 0) repeticoes++;
+					if(ja_foi.find(atual) != ja_foi.end()) repeticoes++;
 					else movimentos_bons++;
 					break;
 				}
 				repeticoes++;
 				break;
 			case 2: //baixo
-				if(atual.first+1 < 30){
+				if(lab[atual.first+1][atual.second] != 0){
 					atual.first++;
-					if(ja_foi.find(atual) != ja_foi.end() or lab[atual.first][atual.second] == 0) repeticoes++;
+					if(ja_foi.find(atual) != ja_foi.end()) repeticoes++;
 					else movimentos_bons++;						
 					break;
 				}
 				repeticoes++;
 				break;
 			case 3: //esquerda
-				if(atual.second-1 >= 0){
+				if(lab[atual.first][atual.second-1] != 0){
 					atual.second--;
-					if(ja_foi.find(atual) != ja_foi.end() or lab[atual.first][atual.second] == 0) repeticoes++;
+					if(ja_foi.find(atual) != ja_foi.end()) repeticoes++;
 					else movimentos_bons++;
 					break;
 				}
