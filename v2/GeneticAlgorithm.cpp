@@ -236,8 +236,40 @@ void GeneticAlgorithm<bool>::crossover(std::vector<std::vector<bool> > &popul){
 
 template<> inline
 void GeneticAlgorithm<int>::crossover(std::vector<std::vector<int> > &popul){
+    std::vector<std::vector<int> > lab(30, std::vector<int>(25));
+    lab = {
+        {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+        {0,0,1,1,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,0,3,1,1,0,0},
+        {0,1,1,1,1,1,1,1,1,0,1,0,1,0,1,0,0,0,0,0,0,0,1,1,0},
+        {0,1,0,0,0,0,0,0,1,0,1,0,1,0,1,0,0,0,0,0,0,0,1,0,0},
+        {0,1,1,1,1,1,1,0,1,0,1,0,1,0,1,0,1,1,1,0,1,1,1,1,0},
+        {0,1,0,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,0,0,0,0,0,1,0},
+        {0,1,0,0,0,0,1,0,1,1,1,1,1,1,1,0,1,1,1,1,1,0,1,1,0},
+        {0,1,0,0,0,0,1,0,0,0,0,0,0,0,1,0,1,0,1,0,1,0,0,1,0},
+        {0,1,1,1,1,1,1,1,0,1,1,0,1,1,1,0,1,0,1,0,1,0,1,1,0},
+        {0,0,0,0,0,0,1,1,0,1,1,0,1,1,1,0,1,0,1,0,1,0,0,1,0},
+        {0,2,1,1,1,0,1,0,0,1,1,0,1,0,0,0,1,0,1,0,1,0,1,1,0},
+        {0,1,0,0,1,0,1,0,0,1,1,0,1,0,0,0,1,0,1,0,1,1,1,1,0},
+        {0,1,0,0,1,0,1,0,0,1,0,0,1,0,0,0,1,0,1,0,0,0,0,1,0},
+        {0,1,0,0,1,0,1,1,0,1,0,1,1,1,1,1,1,0,1,0,1,1,1,1,0},
+        {0,1,0,0,1,0,1,1,0,1,0,0,0,0,0,0,0,0,1,0,1,0,0,1,0},
+        {0,1,1,0,1,0,0,1,1,1,0,0,0,0,0,1,1,1,1,0,1,0,0,1,0},
+        {0,1,1,0,1,0,0,1,1,1,1,1,1,1,1,1,0,0,0,0,1,0,1,1,0},
+        {0,0,1,0,1,0,1,1,0,0,0,0,0,0,0,1,1,1,1,0,1,0,1,0,0},
+        {0,1,1,0,0,0,1,1,0,1,1,1,1,0,0,0,0,0,1,0,1,1,1,1,0},
+        {0,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,0,1,0,0,1,0},
+        {0,0,0,0,1,0,0,0,0,1,1,0,1,1,1,0,1,0,1,0,1,1,0,1,0},
+        {0,1,1,1,1,0,1,1,1,1,1,0,1,0,1,0,1,0,1,0,0,1,0,1,0},
+        {0,1,1,0,1,0,1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,1,0,1,0},
+        {0,1,1,0,1,0,1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,0,1,0},
+        {0,1,1,0,1,0,1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,1,0,1,0},
+        {0,1,1,0,1,0,1,0,0,0,1,0,1,0,1,0,1,0,0,0,0,1,0,1,0},
+        {0,0,0,0,1,0,1,1,1,1,1,1,1,1,1,0,1,0,0,1,1,1,1,1,0},
+        {0,1,1,1,1,0,1,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,1,0,0},
+        {0,1,1,0,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0},
+        {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+    };
     //Faz crossover entre os pares
-
     vvi popul_temp;
     popul_temp.assign(popul.begin(), popul.end());
     for(int i = 0; i < config.getPopSize(); i+=2){
@@ -264,18 +296,80 @@ void GeneticAlgorithm<int>::crossover(std::vector<std::vector<int> > &popul){
                     popul[i+1][j] = temp;
                 }
             }
-            else if(config.getCrossoverType() == 3){ //Adição/subtração + modulo (artigo 'A-Mazer with Genetic Algorithm')
-                int mod = (std::get<int>(config.getUpperBound()) - std::get<int>(config.getLowerBound()))+1;
+            else if(config.getCrossoverType() == 3){ //Crossover especial do labirinto, crossover nos pontos em comum
+                    std::set<std::pair<std::pair<int, int>, int> > visitados_A; //Guarda posição no lab e movimento em que estava lá
+                    std::vector<int> intersec;
+                    // int x_atual = 10, y_atual = 1;
+                    std::pair<int, int> atual(10, 1);
+                    std::pair<int, int> destino(1, 20);
 
-                for(int j= 0; j < config.getNumVars(); j++){
-                    //Child 1 = add
-                    popul_temp[i][j] = std::abs(popul[i][j] + popul[i+1][j]) % mod;
+                    //Acha os pontos do primeiro pai
+                    for(int v = 0; v < config.getNumVars(); v++){
+                        visitados_A.insert(make_pair(atual, v));
+                        switch(popul[i][v]){
+                            case 0: //cima
+                                if(lab[atual.first-1][atual.second] != 0){
+                                    atual.first--;
+                                    break;
+                                }
+                                break;					
+                            case 1: //direita
+                                if(lab[atual.first][atual.second+1] != 0){
+                                    atual.second++;
+                                    break;
+                                }
+                                break;
+                            case 2: //baixo
+                                if(lab[atual.first+1][atual.second] != 0){
+                                    atual.first++;
+                                    break;
+                                }
+                                break;
+                            case 3: //esquerda
+                                if(lab[atual.first][atual.second-1] != 0){
+                                    atual.second--;
+                                    break;
+                                }
+                                break;
+                        }
+                        if(atual.first == destino.first and atual.second == destino.second){
+                            break;
+                        }
+                    }
 
-                    //Child 2 = sub
-                    popul_temp[i+1][j] = std::abs(popul[i][j] - popul[i+1][j]) % mod;
-                }
-
-                popul.assign(popul_temp.begin(), popul_temp.end());
+                    //Acha pontos de intersecção
+                    for(int v = 0; v < config.getNumVars(); v++){
+                        if()
+                        switch(popul[i+1][v]){
+                            case 0: //cima
+                                if(lab[atual.first-1][atual.second] != 0){
+                                    atual.first--;
+                                    break;
+                                }
+                                break;					
+                            case 1: //direita
+                                if(lab[atual.first][atual.second+1] != 0){
+                                    atual.second++;
+                                    break;
+                                }
+                                break;
+                            case 2: //baixo
+                                if(lab[atual.first+1][atual.second] != 0){
+                                    atual.first++;
+                                    break;
+                                }
+                                break;
+                            case 3: //esquerda
+                                if(lab[atual.first][atual.second-1] != 0){
+                                    atual.second--;
+                                    break;
+                                }
+                                break;
+                        }
+                        if(atual.first == destino.first and atual.second == destino.second){
+                            break;
+                        }
+                    }
             }
         }
     }
