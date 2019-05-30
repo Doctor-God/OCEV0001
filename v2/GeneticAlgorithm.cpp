@@ -236,39 +236,6 @@ void GeneticAlgorithm<bool>::crossover(std::vector<std::vector<bool> > &popul){
 
 template<> inline
 void GeneticAlgorithm<int>::crossover(std::vector<std::vector<int> > &popul){
-    std::vector<std::vector<int> > lab(30, std::vector<int>(25));
-    lab = {
-        {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-        {0,0,1,1,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,0,3,1,1,0,0},
-        {0,1,1,1,1,1,1,1,1,0,1,0,1,0,1,0,0,0,0,0,0,0,1,1,0},
-        {0,1,0,0,0,0,0,0,1,0,1,0,1,0,1,0,0,0,0,0,0,0,1,0,0},
-        {0,1,1,1,1,1,1,0,1,0,1,0,1,0,1,0,1,1,1,0,1,1,1,1,0},
-        {0,1,0,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,0,0,0,0,0,1,0},
-        {0,1,0,0,0,0,1,0,1,1,1,1,1,1,1,0,1,1,1,1,1,0,1,1,0},
-        {0,1,0,0,0,0,1,0,0,0,0,0,0,0,1,0,1,0,1,0,1,0,0,1,0},
-        {0,1,1,1,1,1,1,1,0,1,1,0,1,1,1,0,1,0,1,0,1,0,1,1,0},
-        {0,0,0,0,0,0,1,1,0,1,1,0,1,1,1,0,1,0,1,0,1,0,0,1,0},
-        {0,2,1,1,1,0,1,0,0,1,1,0,1,0,0,0,1,0,1,0,1,0,1,1,0},
-        {0,1,0,0,1,0,1,0,0,1,1,0,1,0,0,0,1,0,1,0,1,1,1,1,0},
-        {0,1,0,0,1,0,1,0,0,1,0,0,1,0,0,0,1,0,1,0,0,0,0,1,0},
-        {0,1,0,0,1,0,1,1,0,1,0,1,1,1,1,1,1,0,1,0,1,1,1,1,0},
-        {0,1,0,0,1,0,1,1,0,1,0,0,0,0,0,0,0,0,1,0,1,0,0,1,0},
-        {0,1,1,0,1,0,0,1,1,1,0,0,0,0,0,1,1,1,1,0,1,0,0,1,0},
-        {0,1,1,0,1,0,0,1,1,1,1,1,1,1,1,1,0,0,0,0,1,0,1,1,0},
-        {0,0,1,0,1,0,1,1,0,0,0,0,0,0,0,1,1,1,1,0,1,0,1,0,0},
-        {0,1,1,0,0,0,1,1,0,1,1,1,1,0,0,0,0,0,1,0,1,1,1,1,0},
-        {0,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,0,1,0,0,1,0},
-        {0,0,0,0,1,0,0,0,0,1,1,0,1,1,1,0,1,0,1,0,1,1,0,1,0},
-        {0,1,1,1,1,0,1,1,1,1,1,0,1,0,1,0,1,0,1,0,0,1,0,1,0},
-        {0,1,1,0,1,0,1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,1,0,1,0},
-        {0,1,1,0,1,0,1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,0,1,0},
-        {0,1,1,0,1,0,1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,1,0,1,0},
-        {0,1,1,0,1,0,1,0,0,0,1,0,1,0,1,0,1,0,0,0,0,1,0,1,0},
-        {0,0,0,0,1,0,1,1,1,1,1,1,1,1,1,0,1,0,0,1,1,1,1,1,0},
-        {0,1,1,1,1,0,1,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,1,0,0},
-        {0,1,1,0,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0},
-        {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
-    };
     //Faz crossover entre os pares
     vvi popul_temp;
     popul_temp.assign(popul.begin(), popul.end());
@@ -297,15 +264,48 @@ void GeneticAlgorithm<int>::crossover(std::vector<std::vector<int> > &popul){
                 }
             }
             else if(config.getCrossoverType() == 3){ //Crossover especial do labirinto, crossover nos pontos em comum
-                    std::set<std::pair<std::pair<int, int>, int> > visitados_A; //Guarda posição no lab e movimento em que estava lá
-                    std::vector<int> intersec;
+                    std::vector<std::vector<int> > lab(30, std::vector<int>(25));
+                    lab = {
+                        {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                        {0,0,1,1,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,0,3,1,1,0,0},
+                        {0,1,1,1,1,1,1,1,1,0,1,0,1,0,1,0,0,0,0,0,0,0,1,1,0},
+                        {0,1,0,0,0,0,0,0,1,0,1,0,1,0,1,0,0,0,0,0,0,0,1,0,0},
+                        {0,1,1,1,1,1,1,0,1,0,1,0,1,0,1,0,1,1,1,0,1,1,1,1,0},
+                        {0,1,0,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,0,0,0,0,0,1,0},
+                        {0,1,0,0,0,0,1,0,1,1,1,1,1,1,1,0,1,1,1,1,1,0,1,1,0},
+                        {0,1,0,0,0,0,1,0,0,0,0,0,0,0,1,0,1,0,1,0,1,0,0,1,0},
+                        {0,1,1,1,1,1,1,1,0,1,1,0,1,1,1,0,1,0,1,0,1,0,1,1,0},
+                        {0,0,0,0,0,0,1,1,0,1,1,0,1,1,1,0,1,0,1,0,1,0,0,1,0},
+                        {0,2,1,1,1,0,1,0,0,1,1,0,1,0,0,0,1,0,1,0,1,0,1,1,0},
+                        {0,1,0,0,1,0,1,0,0,1,1,0,1,0,0,0,1,0,1,0,1,1,1,1,0},
+                        {0,1,0,0,1,0,1,0,0,1,0,0,1,0,0,0,1,0,1,0,0,0,0,1,0},
+                        {0,1,0,0,1,0,1,1,0,1,0,1,1,1,1,1,1,0,1,0,1,1,1,1,0},
+                        {0,1,0,0,1,0,1,1,0,1,0,0,0,0,0,0,0,0,1,0,1,0,0,1,0},
+                        {0,1,1,0,1,0,0,1,1,1,0,0,0,0,0,1,1,1,1,0,1,0,0,1,0},
+                        {0,1,1,0,1,0,0,1,1,1,1,1,1,1,1,1,0,0,0,0,1,0,1,1,0},
+                        {0,0,1,0,1,0,1,1,0,0,0,0,0,0,0,1,1,1,1,0,1,0,1,0,0},
+                        {0,1,1,0,0,0,1,1,0,1,1,1,1,0,0,0,0,0,1,0,1,1,1,1,0},
+                        {0,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,0,1,0,0,1,0},
+                        {0,0,0,0,1,0,0,0,0,1,1,0,1,1,1,0,1,0,1,0,1,1,0,1,0},
+                        {0,1,1,1,1,0,1,1,1,1,1,0,1,0,1,0,1,0,1,0,0,1,0,1,0},
+                        {0,1,1,0,1,0,1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,1,0,1,0},
+                        {0,1,1,0,1,0,1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,0,1,0},
+                        {0,1,1,0,1,0,1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,1,0,1,0},
+                        {0,1,1,0,1,0,1,0,0,0,1,0,1,0,1,0,1,0,0,0,0,1,0,1,0},
+                        {0,0,0,0,1,0,1,1,1,1,1,1,1,1,1,0,1,0,0,1,1,1,1,1,0},
+                        {0,1,1,1,1,0,1,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,1,0,0},
+                        {0,1,1,0,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0},
+                        {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+                    };
+                    std::vector<std::pair<int, int> > visitados_A; //Guarda posição no lab e movimento em que estava lá
+                    std::vector<std::pair<int, int> > intersec; //guarda os movimentos onde ocorreu interesecção
                     // int x_atual = 10, y_atual = 1;
                     std::pair<int, int> atual(10, 1);
                     std::pair<int, int> destino(1, 20);
 
-                    //Acha os pontos do primeiro pai
+                    //Acha as posições atingidas pelo primeiro pai
                     for(int v = 0; v < config.getNumVars(); v++){
-                        visitados_A.insert(make_pair(atual, v));
+                        visitados_A.push_back(atual);
                         switch(popul[i][v]){
                             case 0: //cima
                                 if(lab[atual.first-1][atual.second] != 0){
@@ -337,9 +337,17 @@ void GeneticAlgorithm<int>::crossover(std::vector<std::vector<int> > &popul){
                         }
                     }
 
-                    //Acha pontos de intersecção
+                    atual = std::make_pair(10, 1);
+
+                    //Acha pontos de intersecção percorrendo o segundo pai e comparando com posições atingidas do primeiro
                     for(int v = 0; v < config.getNumVars(); v++){
-                        if()
+                        int cont = 0;
+                        for(auto &p : visitados_A){
+                            if(atual.first == p.first and atual.second == p.second){
+                                intersec.push_back(std::make_pair(cont, v));
+                            }
+                            cont++;
+                        }
                         switch(popul[i+1][v]){
                             case 0: //cima
                                 if(lab[atual.first-1][atual.second] != 0){
@@ -370,6 +378,61 @@ void GeneticAlgorithm<int>::crossover(std::vector<std::vector<int> > &popul){
                             break;
                         }
                     }
+
+                    //Escolhe ponto de crossover
+                    int what = getRandInt(3*intersec.size()/4, intersec.size()-1);
+                    std::pair<int, int> p = intersec[what];
+
+                    if(p.first < p.second){
+                        //Antes do corte nos dois filhos
+                        for(int v1 = 0, v2 = p.second-p.first; v1 <= p.first; v1++, v2++){
+                            popul_temp[i][v1] = popul[i][v1];
+                            popul_temp[i+1][v1] = popul[i+1][v2];
+                        }
+                        //depois do corte no filho 2 (terá todo o resto do pai 1)
+                        for(int v1 = p.first+1; v1 < config.getNumVars(); v1++){
+                            popul_temp[i+1][v1] = popul[i][v1];
+                        }
+                        
+                        //filho 1 depois do corte (terá uma parte de aleatórios)
+                        for(int v1 = p.first+1, v2 = p.second+1; v2 < config.getNumVars(); v1++, v2++){
+                            popul_temp[i][v1] = popul[i+1][v2];
+                        }
+                        //aleatórios no fim do filho 1
+                        for(int v = p.first+config.getNumVars()-p.second+1; v < config.getNumVars(); v++){
+                            popul_temp[i][v] = getRandInt(std::get<int>(config.getLowerBound()), std::get<int>(config.getUpperBound()));
+                        }
+                    }
+                    else if(p.second < p.first){
+                        //Antes do corte nos dois filhos
+                        for(int v1 = 0, v2 = p.first-p.second; v1 <= p.second; v1++, v2++){
+                            popul_temp[i+1][v1] = popul[i+1][v1];
+                            popul_temp[i][v1] = popul[i][v2];
+                        }
+                        //depois do corte no filho 1 (terá todo o resto do pai 2)
+                        for(int v1 = p.second+1; v1 < config.getNumVars(); v1++){
+                            popul_temp[i][v1] = popul[i+1][v1];
+                        }
+                        
+                        //filho 2 depois do corte (terá uma parte de aleatórios)
+                        for(int v1 = p.second+1, v2 = p.first+1; v2 < config.getNumVars(); v1++, v2++){
+                            popul_temp[i+1][v1] = popul[i][v2];
+                        }
+                        //aleatórios no fim do filho 2
+                        for(int v = p.second+config.getNumVars()-p.first+1; v < config.getNumVars(); v++){
+                            popul_temp[i+1][v] = getRandInt(std::get<int>(config.getLowerBound()), std::get<int>(config.getUpperBound()));
+                        }
+                    }
+                    else{ //iguais
+                        for(int j = 0; j <= p.first; j++){
+                            bool temp;
+                            temp = popul[i][j];
+                            popul[i][j] = popul[i+1][j];
+                            popul[i+1][j] = temp;
+                        }
+                    }
+
+                    
             }
         }
     }
