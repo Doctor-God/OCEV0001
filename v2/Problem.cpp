@@ -505,12 +505,14 @@ Score_Restricao Problem<int>::labirinto(std::vector<std::vector<int> > &popul, C
 	#pragma omp parallel for shared(valores) schedule(dynamic)
 	for(int k = 0; k < config.getPopSize(); k++){
 		std::set<std::pair<int, int> > ja_foi;
+		std::vector<int> colisao;
 		// int x_atual = 10, y_atual = 1;
 		std::pair<int, int> atual(10, 1);
 		int movimentos = 0;
 		int movimentos_bons = 0;
 		int repeticoes = 0; //passou pela mesma posição
 		int dist_total = 0.0;
+		bool colidiu = false;
 		for(int v = 0; v < config.getNumVars(); v++){
 			ja_foi.insert(atual);
 			switch(popul[k][v]){
@@ -522,6 +524,8 @@ Score_Restricao Problem<int>::labirinto(std::vector<std::vector<int> > &popul, C
 						break;
 					}
 					repeticoes++;
+					colidiu = true;
+					colisao.push_back(v);
 					break;					
 				case 1: //direita
 					if(lab[atual.first][atual.second+1] != 0){
@@ -531,6 +535,8 @@ Score_Restricao Problem<int>::labirinto(std::vector<std::vector<int> > &popul, C
 						break;
 					}
 					repeticoes++;
+					colidiu = true;
+					colisao.push_back(v);
 					break;
 				case 2: //baixo
 					if(lab[atual.first+1][atual.second] != 0){
@@ -540,6 +546,8 @@ Score_Restricao Problem<int>::labirinto(std::vector<std::vector<int> > &popul, C
 						break;
 					}
 					repeticoes++;
+					colidiu = true;
+					colisao.push_back(v);					
 					break;
 				case 3: //esquerda
 					if(lab[atual.first][atual.second-1] != 0){
@@ -549,20 +557,33 @@ Score_Restricao Problem<int>::labirinto(std::vector<std::vector<int> > &popul, C
 						break;
 					}
 					repeticoes++;
+					colidiu = true;
+					colisao.push_back(v);
 					break;
 
 			}
-			double dist_manhattan = std::abs(destino.first - atual.first) + std::abs(destino.second - atual.second);
-			dist_total += dist_manhattan;
+			double dist_manhattan;
+			// if(!colidiu){
+				dist_manhattan =  std::abs(destino.first - atual.first) + std::abs(destino.second - atual.second);
+				dist_total += dist_manhattan;
+				movimentos ++;
+			// }
 
-			movimentos ++;
 			if(atual.first == destino.first and atual.second == destino.second){
 				break;
 			}	
 		}
+		for(int i = colisao.size()-1; i >= 0; i--){
+			for(int j = colisao[i]; j < config.getNumVars()-1; j++){
+				popul[k][j] = popul[k][j+1];
+			}
+			// popul[k][config.getNumVars()-1] = getRandInt(std::get<int>(config.getLowerBound()), std::get<int>(config.getUpperBound()));
+		}
 
-		double temp = 1.0 - dist_total/(config.getNumVars()*55.0);
 
+		double temp =1.0 - dist_total/(config.getNumVars()*55.0);
+		// double temp = 1.0 - (std::abs(destino.first - atual.first) + std::abs(destino.second - atual.second))/55.0;
+		// std::cout << repeticoes << std::endl;
 		// valores[k] = 0.90*((movimentos_bons/(double)movimentos)) + 0.10*(1.0 - dist_total/(config.getNumVars()*55.0));
 		valores[k] = temp - temp*(std::cbrt(repeticoes/(double)movimentos));
 		// valores[k] = (config.getNumVars()*55.0) - dist_total;
@@ -642,7 +663,7 @@ void Problem<int>::labirinto_decoder(std::vector<int> &indiv, Config &config){
 					else movimentos_bons++;
 					break;
 				}
-				repeticoes++;
+				// repeticoes++;
 				break;					
 			case 1: //direita
 				if(lab[atual.first][atual.second+1] != 0){
@@ -651,7 +672,7 @@ void Problem<int>::labirinto_decoder(std::vector<int> &indiv, Config &config){
 					else movimentos_bons++;
 					break;
 				}
-				repeticoes++;
+				// repeticoes++;
 				break;
 			case 2: //baixo
 				if(lab[atual.first+1][atual.second] != 0){
@@ -660,7 +681,7 @@ void Problem<int>::labirinto_decoder(std::vector<int> &indiv, Config &config){
 					else movimentos_bons++;						
 					break;
 				}
-				repeticoes++;
+				// repeticoes++;
 				break;
 			case 3: //esquerda
 				if(lab[atual.first][atual.second-1] != 0){
@@ -669,7 +690,7 @@ void Problem<int>::labirinto_decoder(std::vector<int> &indiv, Config &config){
 					else movimentos_bons++;
 					break;
 				}
-				repeticoes++;
+				// repeticoes++;
 				break;
 		}
 		double dist_manhattan = std::abs(destino.first - atual.first) + std::abs(destino.second - atual.second);
