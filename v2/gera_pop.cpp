@@ -27,6 +27,7 @@ void print_help(){
 	printf("[-b tunelamento_michalewicz]\n");
 	printf("[-C tipo_ajuste_diversidade]\n");
 	printf("[-w tipo_crowding]\n");	
+	printf("[-f competidores_standard_crowding]\n");
 	printf("[-r tipo_relatorio]\n");
 
 }
@@ -50,7 +51,7 @@ int main(int argc, char const *argv[]){
 	
 	//Serve pra fazer parse de opção de command line (flags)
 	int c ;
-	while( ( c = getopt (argc, (char**) argv, "u:l:k:p:t:s:z:g:e:d:c:m:o:a:b:r:E:C:G:w:") ) != -1 ) 
+	while( ( c = getopt (argc, (char**) argv, "u:l:k:p:t:s:z:g:e:d:c:m:o:a:b:r:E:C:G:w:f:") ) != -1 ) 
     {
         switch(c)
         {
@@ -126,6 +127,9 @@ int main(int argc, char const *argv[]){
 			case 'w':
 				if(optarg) config.setCrowdingType(atoi(optarg));
 					break;
+			case 'f':
+				if(optarg) config.setStandardCrowdingSize(atoi(optarg));
+					break;
 
         }
     }
@@ -148,8 +152,9 @@ int main(int argc, char const *argv[]){
 	temp << "tam_pop = " << config.getPopSize() << std::endl; 
 	temp << "diversidade = " << config.getConstC() << std::endl; 
 	temp << "alpha_blx = " << config.getAlpha() << std::endl; 
-	temp << "tam_pop = " << config.getPopSize() << std::endl; 
 	temp << "tunelamento_michalewicz = " << config.getB() << std::endl;
+	temp << "tipo_crowding = " << config.getCrowdingType() << std::endl;
+	temp << "competidores_standard_crowding = " << config.getStandardCrowdingSize() << std::endl;
 	temp << std::endl << std::endl; 
 
 	

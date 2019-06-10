@@ -20,6 +20,7 @@
         C = 0;
         generation_gap = 1.0;
         crowding_type = 0;
+        crowding_size = 2;
     }
         
     int Config::getTipo(){return tipo;}
@@ -47,6 +48,7 @@
     double Config::getConstC() {return C;}
     double Config::getGenerationGap() {return generation_gap;}
     int Config::getCrowdingType() {return crowding_type;}
+    int Config::getStandardCrowdingSize() {return crowding_size;}
 
 
 
@@ -76,6 +78,7 @@
     void Config::setConstC(double num) {this->C = num;}
     void Config::setGenerationGap(double num) {this->generation_gap = num;}
     void Config::setCrowdingType(int tipo) {this->crowding_type = tipo;}
+    void Config::setStandardCrowdingSize(int num) {this->crowding_size = num;}
 
 
 

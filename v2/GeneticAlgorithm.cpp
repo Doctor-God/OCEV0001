@@ -106,6 +106,10 @@ void GeneticAlgorithm<T>::run(){
             }
             deterministicCrowding(parents, parent_score_r, popul_temp, offspring_score_r);
         }
+        else if(config.getCrowdingType == 1){
+            standardCrowding(popul_temp);
+        }
+
 
         //Passa uma porcentagem da população desta geração para próxima
         if(config.getGenerationGap() < 1.0){
@@ -829,6 +833,24 @@ void GeneticAlgorithm<T>::deterministicCrowding(std::vector<std::vector<T> > &pa
             //else offspring k+1 não se altera  
         }
     }
+}
+
+template<typename T>
+void GeneticAlgorithm<T>::standardCrowding(std::vector<std::vector<T> > &popul_temp){
+    // for(int k = 0; k < config.getPopSize(); k++){
+    //     std::vector<int> competidores(config.getStandardCrowdingSize());
+    //     std::vector<double> distancia(config.getStandard, 0.0);
+    //     for(int i = 0; i < config.getStandardCrowdingSize(); i++){
+    //         int who = getRandInt(0, config.getPopSize()-1);
+    //         competidores[i] = who;
+    //         for(int v = 0; v < config.getNumVars(); v++){
+    //             distancia[i] += std::abs(popul_temp[k][v] - popul_temp[competidores[i]][v]);
+    //         }
+    //     }
+
+    //     int menor = menor_elemento(distancia);
+    //     popul_temp[k]
+    // }
 }
 
 

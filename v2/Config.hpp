@@ -32,6 +32,7 @@ private:
     double C;
     double generation_gap;
     int crowding_type;
+    int crowding_size;
 public:
     Config();
 
@@ -60,6 +61,7 @@ public:
     double getConstC();
     double getGenerationGap();
     int getCrowdingType();
+    int getStandardCrowdingSize();
 
 
 
@@ -88,8 +90,7 @@ public:
     void setConstC(double num);
     void setGenerationGap(double num);
     void setCrowdingType(int tipo);
-
-
+    void setStandardCrowdingSize(int num);
 };
 
 #endif
