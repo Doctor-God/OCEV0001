@@ -32,10 +32,10 @@ void GeneticAlgorithm<T>::run(){
 
     //Gerar populacao inicial
     gerarPopulacao();
+    //Avaliar a populacao inicial
+    score_r = fitness(popul);
 
     for(geracao_atual = 0; geracao_atual < config.getGenerations(); geracao_atual++){
-        //Avaliar populacao
-        score_r = fitness();
         // std::cout << score_r.scores[0];
         //Ordenar os indivíduos de melhor para pior
         std::vector<size_t> idx = sort_indexes(score_r.scores);
@@ -82,10 +82,30 @@ void GeneticAlgorithm<T>::run(){
 
         //Obtem populacao temporária para crossover e mutacao
         std::vector<std::vector<T> > popul_temp = selection();
+        std::vector<std::vector<T> > parents;
+        if(config.getCrowdingType() == 2){ //Deterministic
+            parents.assign(popul_temp.begin(), popul_temp.end());
+        }
         score_r.scores = backup_scores;
         crossover(popul_temp);
         mutacao(popul_temp);
+        Score_Restricao offspring_score_r = fitness(popul_temp);
 
+        //Calcula os scores da população gerada
+
+        //Deterministic Crowding
+        if(config.getCrowdingType() == 2){
+            Score_Restricao parent_score_r;
+            parent_score_r.scores = std::vector<double>(config.getPopSize());
+            parent_score_r.restritos = std::vector<bool>(config.getPopSize());
+            //Procura quem é o parent e obtém o seu score
+            for(int i = 0; i < config.getPopSize(); i++){
+                int who = findEqual(popul, parents[i]);
+                parent_score_r.scores[i] = score_r.scores[who];
+                parent_score_r.restritos[i] = score_r.restritos[who];
+            }
+            deterministicCrowding(parents, parent_score_r, popul_temp, offspring_score_r);
+        }
 
         //Passa uma porcentagem da população desta geração para próxima
         if(config.getGenerationGap() < 1.0){
@@ -93,16 +113,17 @@ void GeneticAlgorithm<T>::run(){
             for(int i =0; i < quantos; i++){
                 int who = getRandInt(0, config.getPopSize()-1);
                 popul_temp[i].assign(popul[who].begin(), popul[who].end());
+                offspring_score_r.scores[i] = score_r.scores[who];
+                offspring_score_r.restritos[i] = score_r.restritos[who];
             }
         }
 
-        //Atualiza a populacao para a próxima geração
+        //Atualiza a populacao e scores para a próxima geração
         popul.assign(popul_temp.begin(), popul_temp.end());
+        score_r.scores.assign(offspring_score_r.scores.begin(), offspring_score_r.scores.end());
+        score_r.restritos.assign(offspring_score_r.restritos.begin(), offspring_score_r.restritos.end());
 
     }
-
-    //Avalia a população ao final da execução
-    score_r = fitness();
 
     std::vector<size_t> idx = sort_indexes(score_r.scores);
 
@@ -173,25 +194,29 @@ void GeneticAlgorithm<T>::run(){
 /////////////////////////////////////////////////////////////////////////////////////////
 //                                  Fitness
 ////////////////////////////////////////////////////////////////////////////////////////
+#pragma region fitness
 template<typename T>
-Score_Restricao GeneticAlgorithm<T>::fitness(){
-	Problem<T> problem;
-	return problem.getFuncao(config.getProblem())(this->popul, this->config);
+Score_Restricao GeneticAlgorithm<T>::fitness(std::vector<std::vector<T> > &popul_temp){
+    Problem<T> problem;
+    return problem.getFuncao(config.getProblem())(popul_temp, this->config);
 }
-
+#pragma endregion
 /////////////////////////////////////////////////////////////////////////////////////////
 //                                  Selection
 ////////////////////////////////////////////////////////////////////////////////////////
+#pragma region selection   
 template<typename T>
 std::vector<std::vector<T> > GeneticAlgorithm<T>::selection(){
-	Selection<T> s;
-	return s.getFuncao(config.getSelectionMethod())(this->popul, this->score_r.scores, this->config);
+    Selection<T> s;
+    return s.getFuncao(config.getSelectionMethod())(this->popul, this->score_r.scores, this->config);
 }
+#pragma endregion selection
 
 
 /////////////////////////////////////////////////////////////////////////////////////////
 //                                  Crossover
 ////////////////////////////////////////////////////////////////////////////////////////
+#pragma region crossover
 template<> inline
 void GeneticAlgorithm<bool>::crossover(std::vector<std::vector<bool> > &popul){
     //Faz crossover entre os pares
@@ -531,11 +556,13 @@ void GeneticAlgorithm<double>::crossover(std::vector<std::vector<double> > &popu
         }
     }
 }
+#pragma endregion crossover
 
 
 /////////////////////////////////////////////////////////////////////////////////////////
 //                                  Mutacao
 ////////////////////////////////////////////////////////////////////////////////////////
+#pragma region mutacao
 template<> inline
 void GeneticAlgorithm<bool>::mutacao(std::vector<std::vector<bool> > &popul){
     //Para cada bit rola a chance para ver se sofrerá mutação
@@ -601,11 +628,14 @@ void GeneticAlgorithm<double>::mutacao(std::vector<std::vector<double> > &popul)
         }
     }
 }
+#pragma endregion mutacao
 
 /////////////////////////////////////////////////////////////////////////////////////////
 //                            Diversidade
 ////////////////////////////////////////////////////////////////////////////////////////
 
+//Highest Diversity
+#pragma region highest_diversity
 template<> inline
 double GeneticAlgorithm<bool>::highestDiversity(){}
 
@@ -637,7 +667,11 @@ double GeneticAlgorithm<int_permut_t>::highestDiversity(){
 
 template<> inline
 double GeneticAlgorithm<double>::highestDiversity(){}
+#pragma endregion highest_diversity
 
+
+//Diversity Measure
+#pragma region diversity_measure
 template<> inline
 double GeneticAlgorithm<bool>::diversityMeasure(){
     std::vector<double> centroide(config.getNumVars());
@@ -715,7 +749,7 @@ double GeneticAlgorithm<double>::diversityMeasure(){
 
     return inercia;
 }
-
+#pragma endregion diversity_measure
 
 template<typename T> 
 void GeneticAlgorithm<T>::escalonamentoLinear(){
@@ -752,56 +786,105 @@ void GeneticAlgorithm<T>::escalonamentoLinear(){
 
 }
 
+template<typename T>
+void GeneticAlgorithm<T>::deterministicCrowding(std::vector<std::vector<T> > &parents, Score_Restricao &parents_score_r, std::vector<std::vector<T> > &offspring, Score_Restricao &offspring_score_r){
+    for(int k = 0; k < config.getPopSize(); k+=2){
+        double div1, div2; //Diversidades dos conjuntos p1xf1 e p2xf2 OU p1xf2 e p2xf1 
+        for(int v = 0; v < config.getNumVars(); v++){
+            div1 += std::abs(parents[k][v] - offspring[k][v]);
+            div1 += std::abs(parents[k+1][v] - offspring[k+1][v]);
+
+            div2 += std::abs(parents[k][v] - offspring[k+1][v]);
+            div2 += std::abs(parents[k+1][v] - offspring[k][v]);
+        }
+
+        //Menor diversidade é escolhida
+        if(div1 <= div2){
+            if(offspring_score_r.scores[k] < parents_score_r.scores[k]){
+                offspring[k].assign(parents[k].begin(), parents[k].end());
+                offspring_score_r.scores[k] = parents_score_r.scores[k];
+                offspring_score_r.restritos[k] = parents_score_r.restritos[k];
+            }
+            //else offspring k não se altera
+
+            if(offspring_score_r.scores[k+1] < parents_score_r.scores[k+1]){
+                offspring[k+1].assign(parents[k+1].begin(), parents[k+1].end());
+                offspring_score_r.scores[k+1] = parents_score_r.scores[k+1];
+                offspring_score_r.restritos[k+1] = parents_score_r.restritos[k+1];
+            }
+            //else offspring k+1 não se altera
+        }
+        else{
+            if(offspring_score_r.scores[k] < parents_score_r.scores[k+1]){
+                offspring[k].assign(parents[k+1].begin(), parents[k+1].end());
+                offspring_score_r.scores[k] = parents_score_r.scores[k+1];
+            }
+            //else offspring k não se altera
+
+            if(offspring_score_r.scores[k+1] < parents_score_r.scores[k]){
+                offspring[k+1].assign(parents[k].begin(), parents[k].end());
+                offspring_score_r.scores[k+1] = parents_score_r.scores[k];
+                offspring_score_r.restritos[k+1] = parents_score_r.restritos[k];
+            }
+            //else offspring k+1 não se altera  
+        }
+    }
+}
+
+
 
 /////////////////////////////////////////////////////////////////////////////////////////
 //                            Geração de População
 ////////////////////////////////////////////////////////////////////////////////////////
+#pragma region gera_populacao
 template<> inline
 void GeneticAlgorithm<bool>::gerarPopulacao(){
-	vvb pop(config.getPopSize(), std::vector<bool>(config.getNumVars()));
-	for(int i = 0; i < config.getPopSize(); i++){
-		for(int j = 0; j < config.getNumVars(); j++){
-			pop[i][j] = (bool) getRandInt(0, 1);
-		}
-	}
-	this->popul = pop;
+    vvb pop(config.getPopSize(), std::vector<bool>(config.getNumVars()));
+    for(int i = 0; i < config.getPopSize(); i++){
+        for(int j = 0; j < config.getNumVars(); j++){
+            pop[i][j] = (bool) getRandInt(0, 1);
+        }
+    }
+    this->popul = pop;
 }
 
 template<> inline
 void GeneticAlgorithm<int>::gerarPopulacao(){
     vvi pop(config.getPopSize(), std::vector<int>(config.getNumVars()));
-	for(int i = 0; i < config.getPopSize(); i++){
-		for(int j = 0; j < config.getNumVars(); j++){
-			// pop[i][j] = std::floor(getRandDouble(upper, lower)); //Segfault se usar getRandInt diretamente
-			pop[i][j] = getRandInt(std::get<int>(config.getLowerBound()), std::get<int>(config.getUpperBound())); //Segfault se usar getRandInt diretamente
-		}
-	}
-	this->popul = pop;
+    for(int i = 0; i < config.getPopSize(); i++){
+        for(int j = 0; j < config.getNumVars(); j++){
+            // pop[i][j] = std::floor(getRandDouble(upper, lower)); //Segfault se usar getRandInt diretamente
+            pop[i][j] = getRandInt(std::get<int>(config.getLowerBound()), std::get<int>(config.getUpperBound())); //Segfault se usar getRandInt diretamente
+        }
+    }
+    this->popul = pop;
 }
 
 template<> inline
 void GeneticAlgorithm<int_permut_t>::gerarPopulacao(){
-	std::vector<std::vector<int_permut_t> > pop(config.getPopSize(), std::vector<int_permut_t>(config.getNumVars()));
-	for(int i = 0; i < config.getPopSize(); i++){
-		for(int j = 0; j < config.getNumVars(); j++){
-			pop[i][j] = j;
-		}
-		shuffle(pop[i]);
-	}
-	this->popul = pop;
+    std::vector<std::vector<int_permut_t> > pop(config.getPopSize(), std::vector<int_permut_t>(config.getNumVars()));
+    for(int i = 0; i < config.getPopSize(); i++){
+        for(int j = 0; j < config.getNumVars(); j++){
+            pop[i][j] = j;
+        }
+        shuffle(pop[i]);
+    }
+    this->popul = pop;
 }
 
 template<> inline
 void GeneticAlgorithm<double>::gerarPopulacao(){
-	vvd pop(config.getPopSize(), std::vector<double>(config.getNumVars()));
-	for(int i = 0; i < config.getPopSize(); i++){
-		for(int j = 0; j < config.getNumVars(); j++){
-			pop[i][j] = getRandDouble(std::get<double>(config.getLowerBound()), std::get<double>(config.getUpperBound())); //Segfault se usar getRandInt diretamente
-			// pop[i][j] = getRandInt(upper, lower)); //Segfault se usar getRandInt diretamente
-		}
-	}
-	this->popul = pop;
+    vvd pop(config.getPopSize(), std::vector<double>(config.getNumVars()));
+    for(int i = 0; i < config.getPopSize(); i++){
+        for(int j = 0; j < config.getNumVars(); j++){
+            pop[i][j] = getRandDouble(std::get<double>(config.getLowerBound()), std::get<double>(config.getUpperBound())); //Segfault se usar getRandInt diretamente
+            // pop[i][j] = getRandInt(upper, lower)); //Segfault se usar getRandInt diretamente
+        }
+    }
+    this->popul = pop;
 }
+#pragma endregion gera_populacao
+
 
 template<typename T>
 void GeneticAlgorithm<T>::printPopulacao(){

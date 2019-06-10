@@ -577,7 +577,7 @@ Score_Restricao Problem<int>::labirinto(std::vector<std::vector<int> > &popul, C
 			for(int j = colisao[i]; j < config.getNumVars()-1; j++){
 				popul[k][j] = popul[k][j+1];
 			}
-			// popul[k][config.getNumVars()-1] = getRandInt(std::get<int>(config.getLowerBound()), std::get<int>(config.getUpperBound()));
+			popul[k][config.getNumVars()-1] = getRandInt(std::get<int>(config.getLowerBound()), std::get<int>(config.getUpperBound()));
 		}
 
 

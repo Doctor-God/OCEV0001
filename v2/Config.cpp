@@ -19,6 +19,7 @@
         execucoes = 1;
         C = 0;
         generation_gap = 1.0;
+        crowding_type = 0;
     }
         
     int Config::getTipo(){return tipo;}
@@ -45,6 +46,8 @@
     int Config::getExecucao() {return execucao;}
     double Config::getConstC() {return C;}
     double Config::getGenerationGap() {return generation_gap;}
+    int Config::getCrowdingType() {return crowding_type;}
+
 
 
 
@@ -72,6 +75,8 @@
     void Config::setExecucao(int num) {this->execucao = num;}
     void Config::setConstC(double num) {this->C = num;}
     void Config::setGenerationGap(double num) {this->generation_gap = num;}
+    void Config::setCrowdingType(int tipo) {this->crowding_type = tipo;}
+
 
 
 

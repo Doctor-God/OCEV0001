@@ -31,6 +31,7 @@ private:
     int execucao;
     double C;
     double generation_gap;
+    int crowding_type;
 public:
     Config();
 
@@ -58,6 +59,7 @@ public:
     int getExecucao();
     double getConstC();
     double getGenerationGap();
+    int getCrowdingType();
 
 
 
@@ -85,6 +87,8 @@ public:
     void setExecucao(int num);
     void setConstC(double num);
     void setGenerationGap(double num);
+    void setCrowdingType(int tipo);
+
 
 };
 

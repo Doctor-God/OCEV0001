@@ -108,6 +108,25 @@ int menor_elemento(std::vector<T> &v){
   return menor;
 }
 
+template<typename T>
+int findEqual(std::vector<std::vector<T> > &popul, std::vector<T> &indiv){
+  for(int k = 0; k < popul.size(); k++){
+    // std::cout << "oi\n";
+    bool diff = false; //É diferente de indiv ou não
+    for(int v = 0; v < indiv.size(); v++){
+      // std::cout << "oi2\n";
+      if(indiv[v] != popul[k][v]){
+        diff = true;
+        break;
+      }
+    }
+    if(not diff)
+      return k;
+  }
+  return -1; //Teoricamente nunca vai acontecer
+}
+
+
 template <typename T>
 void print_matrix(std::vector<std::vector<T> > &matrix){
 	std::cout << std::fixed;

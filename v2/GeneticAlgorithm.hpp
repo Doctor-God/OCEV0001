@@ -34,7 +34,7 @@ public:
 
     void printPopulacao();
 
-    Score_Restricao fitness();
+    Score_Restricao fitness(std::vector<std::vector<T> > &popul_temp);
     std::vector<std::vector<T> > selection();
     void crossover(std::vector<std::vector<T> > &popul);
     void mutacao(std::vector<std::vector<T> > &popul);
@@ -43,6 +43,9 @@ public:
     double diversityMeasure();
 
     void escalonamentoLinear();
+
+    void deterministicCrowding(std::vector<std::vector<T> > &parents, Score_Restricao &parent_score_r, std::vector<std::vector<T> > &offspring, Score_Restricao &offspring_score_r);
+
 };
 
 #include "GeneticAlgorithm.cpp"

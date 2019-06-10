@@ -25,7 +25,8 @@ void print_help(){
 	printf("[-s metodo_selecao]\n");
 	printf("[-a alpha_blx]\n");
 	printf("[-b tunelamento_michalewicz]\n");
-	printf("[-C constante_ajuste_diversidade]\n");
+	printf("[-C tipo_ajuste_diversidade]\n");
+	printf("[-w tipo_crowding]\n");	
 	printf("[-r tipo_relatorio]\n");
 
 }
@@ -49,7 +50,7 @@ int main(int argc, char const *argv[]){
 	
 	//Serve pra fazer parse de opção de command line (flags)
 	int c ;
-	while( ( c = getopt (argc, (char**) argv, "u:l:k:p:t:s:z:g:e:d:c:m:o:a:b:r:E:C:G:") ) != -1 ) 
+	while( ( c = getopt (argc, (char**) argv, "u:l:k:p:t:s:z:g:e:d:c:m:o:a:b:r:E:C:G:w:") ) != -1 ) 
     {
         switch(c)
         {
@@ -121,6 +122,9 @@ int main(int argc, char const *argv[]){
 				break;
 			case 'G':
 				if(optarg) config.setGenerationGap(stod(optarg));
+					break;
+			case 'w':
+				if(optarg) config.setCrowdingType(atoi(optarg));
 					break;
 
         }
