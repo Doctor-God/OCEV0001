@@ -502,7 +502,7 @@ Score_Restricao Problem<int>::labirinto(std::vector<std::vector<int> > &popul, C
 	std::pair<int, int> destino(1, 20);
 	std::pair<int, int> inicio(10, 1);
 	// double maior_distancia = 142;
-	#pragma omp parallel for shared(valores) schedule(dynamic)
+	#pragma omp parallel for shared(valores, restricao, popul, config) schedule(dynamic)
 	for(int k = 0; k < config.getPopSize(); k++){
 		std::set<std::pair<int, int> > ja_foi;
 		std::vector<int> colisao;
@@ -645,7 +645,7 @@ void Problem<int>::labirinto_decoder(std::vector<int> &indiv, Config &config){
 
 
 	std::pair<int, int> destino(1, 20);
-// double maior_distancia = 142;
+	// double maior_distancia = 142;
 	std::set<std::pair<int, int>> ja_foi;
 	// int x_atual = 10, y_atual = 1;
 	std::pair<int, int> atual(10, 1);
@@ -717,6 +717,44 @@ void Problem<int>::labirinto_decoder(std::vector<int> &indiv, Config &config){
 }
 
 template<> inline
+Score_Restricao Problem<double>::michalewicz(std::vector<std::vector<double> > &popul, Config &config){
+	std::vector<double> valores(config.getPopSize(), 0); //Depois do tamanho da pop, tem 1.0 se o indivíduo violou alguma restrição
+	std::vector<bool> restricao(config.getPopSize(), false);
+	
+	#pragma omp parallel for shared(valores, restricao, popul, config) schedule(dynamic)
+	for(int k = 0; k < config.getPopSize(); k++){
+		double sum = 0.0;
+		for(int i = 0; i < config.getNumVars(); i++){
+			sum += std::sin(popul[k][i])*std::pow(std::sin(i*(popul[k][i]*popul[k][i])/M_PI), 20.0);
+		}
+
+		valores[k] = sum;
+	}
+
+	Score_Restricao retorno;
+	retorno.scores = valores;
+	retorno.restritos = restricao;
+
+	return retorno;
+}
+
+template<> inline
+void Problem<double>::michalewicz_decoder(std::vector<double> &indiv, Config &config){
+	std::ofstream resultados;
+	resultados.open("./testes/" + config.getArquivoDestino() + "-resultados", std::ofstream::out | std::ofstream::app);
+
+	double sum = 0.0;
+	for(int i = 0; i < config.getNumVars(); i++){
+		sum += std::sin(indiv[i])*std::pow(std::sin(i*(indiv[i]*indiv[i])/M_PI), 20);
+	}
+
+	resultados << "f(xi) = " << sum << std::endl;
+
+	resultados.close();
+
+}
+
+template<> inline
 Problem<bool>::Problem(){
 	funcao.insert(std::pair<std::string, std::function<Score_Restricao(vvb&, Config&)> >("slide_max", slide_max));
 	decoder.insert(std::pair<std::string, std::function<void(std::vector<bool>&, Config&)> >("slide_max", slide_max_decoder));
@@ -745,7 +783,8 @@ Problem<int_permut_t>::Problem(){
 
 template<> inline
 Problem<double>::Problem(){
-
+	funcao.insert(std::pair<std::string, std::function<Score_Restricao(std::vector<std::vector<double>> &, Config &)>>("michal", michalewicz));
+	decoder.insert(std::pair<std::string, std::function<void(std::vector<double> &, Config &)>>("michal", michalewicz_decoder));
 }
 
 

@@ -1,6 +1,8 @@
 #include <bits/stdc++.h>
 #include <unistd.h>
 #include <stdio.h>
+#include <string.h>
+#include <cmath>
 
 #include "GeneticAlgorithm.hpp"
 #include "Config.hpp"
@@ -60,6 +62,10 @@ int main(int argc, char const *argv[]){
 					if(config.getTipo() == INTEIRA)	
 						config.setLowerBound(atoi(optarg));
 					else if(config.getTipo() == REAL)
+						if(strcmp(optarg, "pi") == 0){
+							config.setLowerBound(M_PI);
+							break;
+						}
 						config.setLowerBound(stod(optarg));
 				}
 				break;
@@ -68,6 +74,10 @@ int main(int argc, char const *argv[]){
 					if(config.getTipo() == INTEIRA)	
 						config.setUpperBound(atoi(optarg));
 					else if(config.getTipo() == REAL)
+						if(strcmp(optarg, "pi") == 0){
+							config.setUpperBound(M_PI);
+							break;
+						}
 						config.setUpperBound(stod(optarg));
 				}
 				break;
@@ -140,7 +150,15 @@ int main(int argc, char const *argv[]){
 	temp.open("./testes/" + config.getArquivoDestino() + "-resultados", std::ifstream::out | std::ifstream::trunc);
 	temp << "Configuração:\n";
 	temp << "tam_pop = " << config.getPopSize() << std::endl; 
-	temp << "num_geracoes = " << config.getGenerations() << std::endl; 
+	temp << "num_geracoes = " << config.getGenerations() << std::endl;
+	if(config.getTipo() == INTEIRA){
+		temp << "lower_bound = " << std::get<int>(config.getLowerBound()) << std::endl; 
+		temp << "upper_bound = " << std::get<int>(config.getUpperBound()) << std::endl; 
+	}
+	else{
+		temp << "lower_bound = " << std::get<double>(config.getLowerBound()) << std::endl; 
+		temp << "upper_bound = " << std::get<double>(config.getUpperBound()) << std::endl; 
+	} 
 	temp << "num_elitistas = " << config.getNumElitistas() << std::endl; 
 	temp << "prob_crossover = " << config.getProbCrossover() << std::endl; 
 	temp << "prob_mutacao = " << config.getProbMutacao() << std::endl; 

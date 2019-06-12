@@ -32,6 +32,9 @@ private:
     static Score_Restricao labirinto(std::vector<std::vector<int> > &popul, Config &config);
     static void labirinto_decoder(std::vector<int> &indiv, Config &config);
 
+    static Score_Restricao michalewicz(std::vector<std::vector<double> > &popul, Config &config);
+    static void michalewicz_decoder(std::vector<double> &indiv, Config &config);
+
 
 
 public:

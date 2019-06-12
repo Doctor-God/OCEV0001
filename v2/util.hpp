@@ -7,6 +7,7 @@
 #include <numeric>
 #include <algorithm>
 #include <variant>
+#include <stdio.h>
 
 #define BINARIA 0
 #define INTEIRA 1

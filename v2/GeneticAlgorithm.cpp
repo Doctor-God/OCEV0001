@@ -83,7 +83,7 @@ void GeneticAlgorithm<T>::run(){
         //Obtem populacao temporária para crossover e mutacao
         std::vector<std::vector<T> > popul_temp = selection();
         std::vector<std::vector<T> > parents;
-        if(config.getCrowdingType() == 2){ //Deterministic
+        if(config.getCrowdingType() != 0){ //Deterministic or Standard
             parents.assign(popul_temp.begin(), popul_temp.end());
         }
         score_r.scores = backup_scores;
@@ -106,8 +106,8 @@ void GeneticAlgorithm<T>::run(){
             }
             deterministicCrowding(parents, parent_score_r, popul_temp, offspring_score_r);
         }
-        else if(config.getCrowdingType == 1){
-            standardCrowding(popul_temp);
+        else if(config.getCrowdingType() == 1){
+            standardCrowding(parents, popul_temp);
         }
 
 
@@ -550,8 +550,8 @@ void GeneticAlgorithm<double>::crossover(std::vector<std::vector<double> > &popu
             else if(config.getCrossoverType() == 2){ //Aritmético
                 double a = getRandDouble(0.0, 1.0);
                 for(int j = 0; j < config.getNumVars(); j++){
-                    double filho1 = a*popul[i][j] + (1-a)*popul[i+1][j];
-                    double filho2 = (a-1)*popul[i][j] + a*popul[i+1][j];
+                    double filho1 = a*popul[i][j] + (1.0-a)*popul[i+1][j];
+                    double filho2 = (1.0-a)*popul[i][j] + a*popul[i+1][j];
 
                     popul[i][j] = filho1;
                     popul[i+1][j] = filho2;
@@ -622,12 +622,19 @@ void GeneticAlgorithm<double>::mutacao(std::vector<std::vector<double> > &popul)
                 double y;
                 if(ba == 1){
                     y = std::get<double>(config.getUpperBound()) - popul[i][j];
+                    // printf("u=%lf x=%lf  y=%lf\n", std::get<double>(config.getUpperBound()), popul[i][j], y);
                 }
                 else{
-                    y = popul[i][j] - std::get<double>(config.getLowerBound());
+                    y = std::get<double>(config.getLowerBound()) - popul[i][j];
+                    // printf("x=%lf l=%lf  y=%lf\n", popul[i][j], std::get<double>(config.getLowerBound()), y);
                 }
-                double delta = y*(1-std::pow(a, std::pow((1.0-geracao_atual)/(double)config.getGenerations(), config.getB())));
-                popul[i][j] += delta;
+                double delta = y*(1-std::pow(a, std::pow(1.0l-(double)geracao_atual/(double)config.getGenerations(), config.getB())));
+                // if(delta < 0.0 or delta > y) std::cout << "Antes: " << popul[i][j] << std::endl;
+                // double temp = popul[i][j];
+                popul[i][j] += delta;   
+                // if(popul[i][j] > M_PI or popul[i][j] < 0.0)
+                //     printf("Antes=%lf Depois=%lf  y=%lf ba=%d Delta=%lf\n", temp, popul[i][j], y, ba, delta);
+            //    if(delta < 0.0 or delta > y) std::cout << "Depois: " << popul[i][j] << " Delta: " << delta << std::endl;
             }
         }
     }
@@ -670,7 +677,9 @@ double GeneticAlgorithm<int_permut_t>::highestDiversity(){
 }
 
 template<> inline
-double GeneticAlgorithm<double>::highestDiversity(){}
+double GeneticAlgorithm<double>::highestDiversity(){
+    return 1; // só pra ele não encher o saco
+}
 #pragma endregion highest_diversity
 
 
@@ -836,21 +845,24 @@ void GeneticAlgorithm<T>::deterministicCrowding(std::vector<std::vector<T> > &pa
 }
 
 template<typename T>
-void GeneticAlgorithm<T>::standardCrowding(std::vector<std::vector<T> > &popul_temp){
-    // for(int k = 0; k < config.getPopSize(); k++){
-    //     std::vector<int> competidores(config.getStandardCrowdingSize());
-    //     std::vector<double> distancia(config.getStandard, 0.0);
-    //     for(int i = 0; i < config.getStandardCrowdingSize(); i++){
-    //         int who = getRandInt(0, config.getPopSize()-1);
-    //         competidores[i] = who;
-    //         for(int v = 0; v < config.getNumVars(); v++){
-    //             distancia[i] += std::abs(popul_temp[k][v] - popul_temp[competidores[i]][v]);
-    //         }
-    //     }
+void GeneticAlgorithm<T>::standardCrowding(std::vector<std::vector<T> > &parents, std::vector<std::vector<T> > &offspring){
+    std::vector<std::vector<T> > popul_temp(config.getPopSize(), std::vector<T>(config.getNumVars()));
+    popul_temp.assign(parents.begin(), parents.end());
+    for(int k = 0; k < config.getPopSize(); k++){
+        std::vector<int> competidores(config.getStandardCrowdingSize());
+        std::vector<double> distancia(config.getStandardCrowdingSize(), 0.0);
+        for(int i = 0; i < config.getStandardCrowdingSize(); i++){
+            int who = getRandInt(0, config.getPopSize()-1);
+            competidores[i] = who;
+            for(int v = 0; v < config.getNumVars(); v++){
+                distancia[i] += std::abs(offspring[k][v] - parents[competidores[i]][v]);
+            }
+        }
 
-    //     int menor = menor_elemento(distancia);
-    //     popul_temp[k]
-    // }
+        int menor = menor_elemento(distancia);
+        popul_temp[competidores[menor]].assign(offspring[k].begin(), offspring[k].end());
+    }
+    offspring.assign(popul_temp.begin(), popul_temp.end());
 }
 
 

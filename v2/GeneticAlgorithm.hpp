@@ -45,7 +45,7 @@ public:
     void escalonamentoLinear();
 
     void deterministicCrowding(std::vector<std::vector<T> > &parents, Score_Restricao &parent_score_r, std::vector<std::vector<T> > &offspring, Score_Restricao &offspring_score_r);
-    void standardCrowding(std::vector<std::vector<T> > &popul_temp);
+    void standardCrowding(std::vector<std::vector<T> > &parents, std::vector<std::vector<T> > &offspring);
 };
 
 #include "GeneticAlgorithm.cpp"
