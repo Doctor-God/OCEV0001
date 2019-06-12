@@ -68,9 +68,9 @@ def main(argv):
     fig, ax = plt.subplots()
     ax.set_xlim(left=0, right=generations+1)
 
-    plt.plot(maiores, color = 'red', label="Melhor")
-    plt.plot(medias, color = 'green', label="Média")
     plt.plot(menores, color = 'blue', label = "Pior")
+    plt.plot(medias, color = 'green', label="Média")
+    plt.plot(maiores, color = 'red', label="Melhor")
 
 
     plt.xlabel("Geração")

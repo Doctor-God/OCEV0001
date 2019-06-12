@@ -855,7 +855,7 @@ void GeneticAlgorithm<T>::standardCrowding(std::vector<std::vector<T> > &parents
             int who = getRandInt(0, config.getPopSize()-1);
             competidores[i] = who;
             for(int v = 0; v < config.getNumVars(); v++){
-                distancia[i] += std::abs(offspring[k][v] - parents[competidores[i]][v]);
+                distancia[i] += std::abs(offspring[k][v] - popul_temp[competidores[i]][v]);
             }
         }
 

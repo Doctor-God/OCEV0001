@@ -35,6 +35,9 @@ private:
     static Score_Restricao michalewicz(std::vector<std::vector<double> > &popul, Config &config);
     static void michalewicz_decoder(std::vector<double> &indiv, Config &config);
 
+    static Score_Restricao keane(std::vector<std::vector<double> > &popul, Config &config);
+    static void keane_decoder(std::vector<double> &indiv, Config &config);
+
 
 
 public:

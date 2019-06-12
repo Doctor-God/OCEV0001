@@ -725,7 +725,7 @@ Score_Restricao Problem<double>::michalewicz(std::vector<std::vector<double> > &
 	for(int k = 0; k < config.getPopSize(); k++){
 		double sum = 0.0;
 		for(int i = 0; i < config.getNumVars(); i++){
-			sum += std::sin(popul[k][i])*std::pow(std::sin(i*(popul[k][i]*popul[k][i])/M_PI), 20.0);
+			sum += std::sin(popul[k][i])*std::pow(std::sin((i+1)*(popul[k][i]*popul[k][i])/M_PI), 20.0);
 		}
 
 		valores[k] = sum;
@@ -745,7 +745,45 @@ void Problem<double>::michalewicz_decoder(std::vector<double> &indiv, Config &co
 
 	double sum = 0.0;
 	for(int i = 0; i < config.getNumVars(); i++){
-		sum += std::sin(indiv[i])*std::pow(std::sin(i*(indiv[i]*indiv[i])/M_PI), 20);
+		sum += std::sin(indiv[i])*std::pow(std::sin((i+1)*(indiv[i]*indiv[i])/M_PI), 20);
+	}
+
+	resultados << "f(xi) = " << sum << std::endl;
+
+	resultados.close();
+
+}
+
+template<> inline
+Score_Restricao Problem<double>::keane(std::vector<std::vector<double> > &popul, Config &config){
+	std::vector<double> valores(config.getPopSize(), 0); //Depois do tamanho da pop, tem 1.0 se o indivíduo violou alguma restrição
+	std::vector<bool> restricao(config.getPopSize(), false);
+	
+	#pragma omp parallel for shared(valores, restricao, popul, config) schedule(dynamic)
+	for(int k = 0; k < config.getPopSize(); k++){
+		double sum = 0.0;
+		for(int i = 0; i < config.getNumVars(); i++){
+			sum += std::sin(popul[k][i])*std::pow(std::sin((i+1)*(popul[k][i]*popul[k][i])/M_PI), 20.0);
+		}
+
+		valores[k] = sum;
+	}
+
+	Score_Restricao retorno;
+	retorno.scores = valores;
+	retorno.restritos = restricao;
+
+	return retorno;
+}
+
+template<> inline
+void Problem<double>::keane_decoder(std::vector<double> &indiv, Config &config){
+	std::ofstream resultados;
+	resultados.open("./testes/" + config.getArquivoDestino() + "-resultados", std::ofstream::out | std::ofstream::app);
+
+	double sum = 0.0;
+	for(int i = 0; i < config.getNumVars(); i++){
+		sum += std::sin(indiv[i])*std::pow(std::sin((i+1)*(indiv[i]*indiv[i])/M_PI), 20);
 	}
 
 	resultados << "f(xi) = " << sum << std::endl;
@@ -785,6 +823,9 @@ template<> inline
 Problem<double>::Problem(){
 	funcao.insert(std::pair<std::string, std::function<Score_Restricao(std::vector<std::vector<double>> &, Config &)>>("michal", michalewicz));
 	decoder.insert(std::pair<std::string, std::function<void(std::vector<double> &, Config &)>>("michal", michalewicz_decoder));
+
+	funcao.insert(std::pair<std::string, std::function<Score_Restricao(std::vector<std::vector<double>> &, Config &)>>("keane", keane));
+	decoder.insert(std::pair<std::string, std::function<void(std::vector<double> &, Config &)>>("keane", keane_decoder));
 }
 
 
