@@ -107,7 +107,16 @@ void GeneticAlgorithm<T>::run(){
             deterministicCrowding(parents, parent_score_r, popul_temp, offspring_score_r);
         }
         else if(config.getCrowdingType() == 1){
-            standardCrowding(parents, popul_temp);
+            Score_Restricao parent_score_r;
+            parent_score_r.scores = std::vector<double>(config.getPopSize());
+            parent_score_r.restritos = std::vector<bool>(config.getPopSize());
+            //Procura quem é o parent e obtém o seu score
+            for(int i = 0; i < config.getPopSize(); i++){
+                int who = findEqual(popul, parents[i]);
+                parent_score_r.scores[i] = score_r.scores[who];
+                parent_score_r.restritos[i] = score_r.restritos[who];
+            }
+            standardCrowding(parents, parent_score_r, popul_temp, offspring_score_r);
         }
 
 
@@ -522,8 +531,10 @@ template<> inline
 void GeneticAlgorithm<double>::crossover(std::vector<std::vector<double> > &popul){
     for(int i = 0; i < config.getPopSize(); i+=2){
         double will_it_happen = getRandDouble(0.0, 1.0);
-        if(will_it_happen < config.getProbCrossover()){
+        if(will_it_happen <= config.getProbCrossover()){
             if(config.getCrossoverType() == 1){ //BLX-a
+                double lower = std::get<double>(config.getLowerBound());
+                double upper = std::get<double>(config.getUpperBound());
                 for(int j = 0; j < config.getNumVars(); j++){
                     double max_i = std::max(popul[i][j], popul[i+1][j]);
                     double min_i = std::min(popul[i][j], popul[i+1][j]);
@@ -533,15 +544,17 @@ void GeneticAlgorithm<double>::crossover(std::vector<std::vector<double> > &popu
                     double sec_lower = min_i - d_i*config.getAlpha();
                     double sec_upper = max_i + d_i*config.getAlpha();
 
-                    double lower = std::get<double>(config.getLowerBound());
-                    double upper = std::get<double>(config.getUpperBound());
-
                     double filho1 = getRandDouble(sec_lower, sec_upper);
                     double filho2 = getRandDouble(sec_lower, sec_upper);
 
-                    //Ajustar para o intervalo válido
-                    filho1 = (filho1 - sec_lower)*(upper-lower)/(sec_upper-sec_lower) + lower;
-                    filho2 = (filho2 - sec_lower)*(upper-lower)/(sec_upper-sec_lower) + lower;
+                    //Ajustar para o intervalo válido (dá segfault em algum momento, i don't even know anymore)
+                    // filho1 = (((filho1 - sec_lower)*(upper-lower))/(sec_upper-sec_lower)) + lower;
+                    // filho2 = (((filho2 - sec_lower)*(upper-lower))/(sec_upper-sec_lower)) + lower;
+                    if(filho1 > upper) filho1 = upper;
+                    else if(filho1 < lower) filho1 = lower;
+
+                    if(filho2 > upper) filho2 = upper;
+                    else if(filho2 < lower) filho2 = lower;
 
                     popul[i][j] = filho1;
                     popul[i+1][j] = filho2;
@@ -628,12 +641,13 @@ void GeneticAlgorithm<double>::mutacao(std::vector<std::vector<double> > &popul)
                     y = std::get<double>(config.getLowerBound()) - popul[i][j];
                     // printf("x=%lf l=%lf  y=%lf\n", popul[i][j], std::get<double>(config.getLowerBound()), y);
                 }
-                double delta = y*(1-std::pow(a, std::pow(1.0l-(double)geracao_atual/(double)config.getGenerations(), config.getB())));
-                // if(delta < 0.0 or delta > y) std::cout << "Antes: " << popul[i][j] << std::endl;
-                // double temp = popul[i][j];
+                double delta = y*(1.0-std::pow(a, std::pow(1.0-geracao_atual/(double)config.getGenerations(), config.getB())));
+                // std::cout << "Antes: " << popul[i][j] << std::endl;
+                double temp = popul[i][j];
                 popul[i][j] += delta;   
                 // if(popul[i][j] > M_PI or popul[i][j] < 0.0)
-                //     printf("Antes=%lf Depois=%lf  y=%lf ba=%d Delta=%lf\n", temp, popul[i][j], y, ba, delta);
+                // std::cout << 1.0-geracao_atual/(double)config.getGenerations() << std::endl;
+                // printf("Antes=%lf Depois=%lf  a=%lf y=%lf ba=%d Delta=%lf\n", temp, popul[i][j], a, y, ba, delta);
             //    if(delta < 0.0 or delta > y) std::cout << "Depois: " << popul[i][j] << " Delta: " << delta << std::endl;
             }
         }
@@ -831,6 +845,7 @@ void GeneticAlgorithm<T>::deterministicCrowding(std::vector<std::vector<T> > &pa
             if(offspring_score_r.scores[k] < parents_score_r.scores[k+1]){
                 offspring[k].assign(parents[k+1].begin(), parents[k+1].end());
                 offspring_score_r.scores[k] = parents_score_r.scores[k+1];
+                offspring_score_r.restritos[k] = parents_score_r.restritos[k+1];
             }
             //else offspring k não se altera
 
@@ -845,9 +860,10 @@ void GeneticAlgorithm<T>::deterministicCrowding(std::vector<std::vector<T> > &pa
 }
 
 template<typename T>
-void GeneticAlgorithm<T>::standardCrowding(std::vector<std::vector<T> > &parents, std::vector<std::vector<T> > &offspring){
+void GeneticAlgorithm<T>::standardCrowding(std::vector<std::vector<T> > &parents, Score_Restricao &parents_score_r, std::vector<std::vector<T> > &offspring, Score_Restricao &offspring_score_r){
     std::vector<std::vector<T> > popul_temp(config.getPopSize(), std::vector<T>(config.getNumVars()));
     popul_temp.assign(parents.begin(), parents.end());
+    Score_Restricao temp_score_r = parents_score_r;
     for(int k = 0; k < config.getPopSize(); k++){
         std::vector<int> competidores(config.getStandardCrowdingSize());
         std::vector<double> distancia(config.getStandardCrowdingSize(), 0.0);
@@ -861,8 +877,11 @@ void GeneticAlgorithm<T>::standardCrowding(std::vector<std::vector<T> > &parents
 
         int menor = menor_elemento(distancia);
         popul_temp[competidores[menor]].assign(offspring[k].begin(), offspring[k].end());
+        temp_score_r.scores[competidores[menor]] = offspring_score_r.scores[k];
+        temp_score_r.restritos[competidores[menor]] = offspring_score_r.restritos[k];
     }
     offspring.assign(popul_temp.begin(), popul_temp.end());
+    offspring_score_r = temp_score_r;
 }
 
 

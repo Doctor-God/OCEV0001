@@ -716,6 +716,7 @@ void Problem<int>::labirinto_decoder(std::vector<int> &indiv, Config &config){
 	resultados.close();
 }
 
+//torneio d=2 w=2 m=0.01
 template<> inline
 Score_Restricao Problem<double>::michalewicz(std::vector<std::vector<double> > &popul, Config &config){
 	std::vector<double> valores(config.getPopSize(), 0); //Depois do tamanho da pop, tem 1.0 se o indivíduo violou alguma restrição
@@ -754,6 +755,7 @@ void Problem<double>::michalewicz_decoder(std::vector<double> &indiv, Config &co
 
 }
 
+//torneio d=2 w=1 m=0.01
 template<> inline
 Score_Restricao Problem<double>::keane(std::vector<std::vector<double> > &popul, Config &config){
 	std::vector<double> valores(config.getPopSize(), 0); //Depois do tamanho da pop, tem 1.0 se o indivíduo violou alguma restrição
@@ -761,12 +763,37 @@ Score_Restricao Problem<double>::keane(std::vector<std::vector<double> > &popul,
 	
 	#pragma omp parallel for shared(valores, restricao, popul, config) schedule(dynamic)
 	for(int k = 0; k < config.getPopSize(); k++){
-		double sum = 0.0;
+		double sum1 = 0.0, sum2 = 0.0, mult = 1.0, 
+				sum_xi = 0.0, mult_xi = 1.0;
 		for(int i = 0; i < config.getNumVars(); i++){
-			sum += std::sin(popul[k][i])*std::pow(std::sin((i+1)*(popul[k][i]*popul[k][i])/M_PI), 20.0);
+			double temp = std::cos(popul[k][i]);
+			sum1 += temp*temp*temp*temp;
+			mult *= temp*temp;
+			sum2 += (i+1.0)*popul[k][i]*popul[k][i];
+
+			sum_xi += popul[k][i];
+			mult_xi *= popul[k][i];
+		}
+		double fx = std::abs(sum1 - 2.0*mult)/std::sqrt(sum2);
+
+		// mult_xi > 0.75
+		//mult_xi - 0.75 > 0
+		// <0 if mult_xi > 0.75
+		double r1 = 1.0, r2 = 1.0;
+		if(mult_xi < 0.75){
+			r1 = 1.0 - (0.75 - mult_xi/10000000000.75);
+		}
+		if(sum_xi > 7.2*config.getNumVars()){
+			r2 = 1.0 - (sum_xi - 7.5*config.getNumVars())/(100.0 - 7.5*config.getNumVars());
+		}
+		// double h1 = 1.0 - std::max(0.0, (-mult_xi + 0.75)/10000000000.75);
+		// double h2 = 1.0 - std::max(0.0, (sum_xi - 7.5*config.getNumVars())/(100.0 - 7.5*config.getNumVars()));
+		if(r1 < 1.0 or r2 < 1.0){
+			restricao[k] = true;
 		}
 
-		valores[k] = sum;
+		if(mult_xi <= 0.75) valores[k] = 0.0;
+		else valores[k] = 0.5*fx + 0.25*fx*r1 + 0.25*fx*r2; // Função objetivo mais penalizações
 	}
 
 	Score_Restricao retorno;
@@ -781,12 +808,31 @@ void Problem<double>::keane_decoder(std::vector<double> &indiv, Config &config){
 	std::ofstream resultados;
 	resultados.open("./testes/" + config.getArquivoDestino() + "-resultados", std::ofstream::out | std::ofstream::app);
 
-	double sum = 0.0;
+	double sum1 = 0.0, sum2 = 0.0, mult = 1.0, 
+			sum_xi = 0.0, mult_xi = 1.0;
 	for(int i = 0; i < config.getNumVars(); i++){
-		sum += std::sin(indiv[i])*std::pow(std::sin((i+1)*(indiv[i]*indiv[i])/M_PI), 20);
+		double temp = std::cos(indiv[i]);
+		sum1 += temp*temp*temp*temp;
+		mult *= temp*temp;
+		sum2 += (i+1)*indiv[i]*indiv[i];
+
+		sum_xi += indiv[i];
+		mult_xi *= indiv[i];
+	}
+	double fx = std::abs(sum1 - 2.0*mult)/std::sqrt(sum2);
+
+	double r1 = 1.0, r2 = 1.0;
+	if(mult_xi < 0.75){
+		r1 = 1.0 - (0.75 - mult_xi/10000000000.75);
+	}
+	if(sum_xi > 7.2*config.getNumVars()){
+		r2 = 1.0 - (sum_xi - 7.5*config.getNumVars())/(100.0 - 7.5*config.getNumVars());
 	}
 
-	resultados << "f(xi) = " << sum << std::endl;
+	resultados << "f(xi) = " << fx << std::endl;
+	resultados << "Restricao 1 = " << r1 << std::endl;
+	resultados << "Restricao 2 = " << r2 << std::endl;
+	resultados << std::endl;
 
 	resultados.close();
 
