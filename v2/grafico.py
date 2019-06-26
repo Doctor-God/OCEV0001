@@ -3,6 +3,7 @@
 import sys
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.ticker import FormatStrFormatter
 # from matplotlib import rc
 
 # rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
@@ -78,6 +79,7 @@ def main(argv):
 
     ax2 = ax.twinx()
     ax2.set_yticks(list(ax.get_yticks()) + [maiores[final]])
+    ax2.yaxis.set_major_formatter(FormatStrFormatter('%.4f'))
     ax2.set_ylim(ax.get_ylim())
     fig.canvas.draw()
 
@@ -126,6 +128,7 @@ def main(argv):
     # plt.ylabel(r'Fitness')
 
     plt.savefig("testes/" + nome_arq + "_conv.png")
+    # plt.show();
 
     plt.close()
 

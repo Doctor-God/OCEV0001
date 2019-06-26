@@ -733,7 +733,7 @@ double GeneticAlgorithm<int>::diversityMeasure(){
             }
         }
     }
-    distancia_total /= highest_diversity;
+    // distancia_total /= highest_diversity;
     return distancia_total;
 }
 
@@ -863,7 +863,10 @@ template<typename T>
 void GeneticAlgorithm<T>::standardCrowding(std::vector<std::vector<T> > &parents, Score_Restricao &parents_score_r, std::vector<std::vector<T> > &offspring, Score_Restricao &offspring_score_r){
     std::vector<std::vector<T> > popul_temp(config.getPopSize(), std::vector<T>(config.getNumVars()));
     popul_temp.assign(parents.begin(), parents.end());
-    Score_Restricao temp_score_r = parents_score_r;
+
+    Score_Restricao temp_score_r;
+    temp_score_r.scores.assign(parents_score_r.scores.begin(), parents_score_r.scores.end());
+    temp_score_r.restritos.assign(parents_score_r.restritos.begin(), parents_score_r.restritos.end());
     for(int k = 0; k < config.getPopSize(); k++){
         std::vector<int> competidores(config.getStandardCrowdingSize());
         std::vector<double> distancia(config.getStandardCrowdingSize(), 0.0);

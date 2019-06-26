@@ -577,7 +577,7 @@ Score_Restricao Problem<int>::labirinto(std::vector<std::vector<int> > &popul, C
 			for(int j = colisao[i]; j < config.getNumVars()-1; j++){
 				popul[k][j] = popul[k][j+1];
 			}
-			popul[k][config.getNumVars()-1] = getRandInt(std::get<int>(config.getLowerBound()), std::get<int>(config.getUpperBound()));
+			// popul[k][config.getNumVars()-1] = getRandInt(std::get<int>(config.getLowerBound()), std::get<int>(config.getUpperBound()));
 		}
 
 
@@ -763,6 +763,7 @@ Score_Restricao Problem<double>::keane(std::vector<std::vector<double> > &popul,
 	
 	#pragma omp parallel for shared(valores, restricao, popul, config) schedule(dynamic)
 	for(int k = 0; k < config.getPopSize(); k++){
+		// std::sort(popul[k].begin(), popul[k].end(), std::greater<double>());
 		double sum1 = 0.0, sum2 = 0.0, mult = 1.0, 
 				sum_xi = 0.0, mult_xi = 1.0;
 		for(int i = 0; i < config.getNumVars(); i++){
@@ -779,21 +780,21 @@ Score_Restricao Problem<double>::keane(std::vector<std::vector<double> > &popul,
 		// mult_xi > 0.75
 		//mult_xi - 0.75 > 0
 		// <0 if mult_xi > 0.75
-		double r1 = 1.0, r2 = 1.0;
-		if(mult_xi < 0.75){
-			r1 = 1.0 - (0.75 - mult_xi/10000000000.75);
+		double r1 = 0.0, r2 = 0.0;
+		if(mult_xi < 0.75){ //Perto de 1 = penalização é menor
+			r1 = (0.75 - mult_xi)/0.75;
 		}
-		if(sum_xi > 7.2*config.getNumVars()){
-			r2 = 1.0 - (sum_xi - 7.5*config.getNumVars())/(100.0 - 7.5*config.getNumVars());
+		if(sum_xi > 7.5*config.getNumVars()){
+			r2 = (sum_xi - 7.5*config.getNumVars())/(500.0 - 7.5*config.getNumVars());
 		}
 		// double h1 = 1.0 - std::max(0.0, (-mult_xi + 0.75)/10000000000.75);
 		// double h2 = 1.0 - std::max(0.0, (sum_xi - 7.5*config.getNumVars())/(100.0 - 7.5*config.getNumVars()));
-		if(r1 < 1.0 or r2 < 1.0){
+		if(r1 > 0.0 or r2 > 0.0){
 			restricao[k] = true;
 		}
 
-		if(mult_xi <= 0.75) valores[k] = 0.0;
-		else valores[k] = 0.5*fx + 0.25*fx*r1 + 0.25*fx*r2; // Função objetivo mais penalizações
+		// if(mult_xi <= 0.75) valores[k] = 0.0;
+		valores[k] = fx - 0.5*fx*r1 - 0.5*fx*r2; // Função objetivo + penalizações
 	}
 
 	Score_Restricao retorno;
@@ -808,6 +809,7 @@ void Problem<double>::keane_decoder(std::vector<double> &indiv, Config &config){
 	std::ofstream resultados;
 	resultados.open("./testes/" + config.getArquivoDestino() + "-resultados", std::ofstream::out | std::ofstream::app);
 
+	// std::sort(indiv.begin(), indiv.end(), std::greater<double>());
 	double sum1 = 0.0, sum2 = 0.0, mult = 1.0, 
 			sum_xi = 0.0, mult_xi = 1.0;
 	for(int i = 0; i < config.getNumVars(); i++){
@@ -821,17 +823,17 @@ void Problem<double>::keane_decoder(std::vector<double> &indiv, Config &config){
 	}
 	double fx = std::abs(sum1 - 2.0*mult)/std::sqrt(sum2);
 
-	double r1 = 1.0, r2 = 1.0;
-	if(mult_xi < 0.75){
-		r1 = 1.0 - (0.75 - mult_xi/10000000000.75);
+	double r1 = 0.0, r2 = 0.0;
+	if(mult_xi < 0.75){ //Perto de 1 = penalização é menor
+		r1 = (0.75 - mult_xi)/0.75;
 	}
-	if(sum_xi > 7.2*config.getNumVars()){
-		r2 = 1.0 - (sum_xi - 7.5*config.getNumVars())/(100.0 - 7.5*config.getNumVars());
+	if(sum_xi > 7.5*config.getNumVars()){
+		r2 = (sum_xi - 7.5*config.getNumVars())/(500.0 - 7.5*config.getNumVars());
 	}
 
 	resultados << "f(xi) = " << fx << std::endl;
-	resultados << "Restricao 1 = " << r1 << std::endl;
-	resultados << "Restricao 2 = " << r2 << std::endl;
+	resultados << "Restricao 1 (Mult) = " << r1 << std::endl;
+	resultados << "Restricao 2 (Soma) = " << r2 << std::endl;
 	resultados << std::endl;
 
 	resultados.close();
